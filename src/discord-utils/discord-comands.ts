@@ -6,7 +6,7 @@ export class DiscordCommands {
   constructor(private readonly commands: any[], config?: AxiosRequestConfig) {
     this.axiosInstance = axios.create(
       config || {
-        baseURL: `https://discord.com/api/v10/applications/${process.env.APP_ID}/guilds/${process.env.GUILD_ID}/commands`,
+        baseURL: `https://discord.com/api/v10/applications/${process.env.APP_ID}/commands`,
         headers: {
           Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
           'Content-Type': 'application/json; charset=UTF-8',
@@ -19,6 +19,23 @@ export class DiscordCommands {
 
   public async commandsInit() {
     const existingCommands = await this.getExistingCommands();
+
+    // const tokenResponse = await axios({
+    //   method: 'POST',
+    //   url: 'https://discord.com/api/oauth2/token',
+    //   data: {
+    //     client_id: process.env.CLIENT_ID,
+    //     client_secret: process.env.CLIENT_SECRET,
+    //     grant_type: 'client_credentials',
+    //     scope: 'applications.commands',
+    //   },
+    //   headers: {
+    //     'Content-Type': 'application/x-www-form-urlencoded',
+    //   },
+    // });
+
+    // console.log('to ----> ', tokenResponse?.data.access_token);
+
     await Promise.all(
       existingCommands.map(async ({ id }: { id: string }) => {
         return await this.deleteCommand(id);

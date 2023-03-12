@@ -1,8 +1,9 @@
 export const calendarCommands = [
   {
-    name: 'get-a-meeting',
+    name: 'get-meeting',
     type: 1,
-    description: 'Getting a meeting with you mentor',
+    description: 'Getting a meeting with people from our community',
+    dm_permission: true,
     // options: [
     //   {
     //     name: 'type',
