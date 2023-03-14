@@ -2,8 +2,9 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { config } from 'dotenv';
-import base64url from 'base64url';
+
 config();
+// https://db15-185-246-208-183.ngrok.io/auth/google
 
 @Injectable()
 export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
@@ -16,11 +17,6 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
       state: 'test state',
     });
   }
-
-  // authorizeParams(): Record<string, string> {
-  //   return { myCustomParam: 'myCustomValue' };
-  // }
-
 
   async validate(
     accessToken: string,
@@ -38,14 +34,7 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
       picture: photos[0].value,
     };
 
-    console.log('profile ----> ', profile);
-
-    // console.log(
-    //   'access token!!!!!!!!!!! ----> ',
-    //   accessToken,
-    //   ' <---- !!!!!!!!!!!',
-    // );
-    // console.log('!!!!!!!!!!! ----> ', user, ' <---- !!!!!!!!!!!');
+    console.log('!!!!!!!!!!! ----> ', user, ' <---- !!!!!!!!!!!');
 
     return done(null, user);
   }
