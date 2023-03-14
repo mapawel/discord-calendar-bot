@@ -12,8 +12,7 @@ async function bootstrap() {
     bodyParser: false,
   });
 
-  // app.use(verifyKeyMiddleware(process.env.PUBLIC_KEY || ''));
-
+  //TODO !!!!!!!!!!!!!!! change to init if not existing due to limit!
   new DiscordCommands(calendarCommands).commandsInit();
 
   await app.listen(6000);

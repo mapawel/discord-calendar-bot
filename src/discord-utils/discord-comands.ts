@@ -18,34 +18,18 @@ export class DiscordCommands {
   }
 
   public async commandsInit() {
-    const existingCommands = await this.getExistingCommands();
-
-    // const tokenResponse = await axios({
-    //   method: 'POST',
-    //   url: 'https://discord.com/api/oauth2/token',
-    //   data: {
-    //     client_id: process.env.CLIENT_ID,
-    //     client_secret: process.env.CLIENT_SECRET,
-    //     grant_type: 'client_credentials',
-    //     scope: 'applications.commands',
-    //   },
-    //   headers: {
-    //     'Content-Type': 'application/x-www-form-urlencoded',
-    //   },
-    // });
-
-    // console.log('to ----> ', tokenResponse?.data.access_token);
-
-    await Promise.all(
-      existingCommands.map(async ({ id }: { id: string }) => {
-        return await this.deleteCommand(id);
-      }),
-    );
-    await Promise.all(
-      this.commands.map(async (command: any) => {
-        return await this.addCommand(command);
-      }),
-    );
+    // const existingCommands = await this.getExistingCommands();
+    // console.log('existingCommands ----> ', existingCommands);
+    // await Promise.all(
+    //   existingCommands.map(async ({ id }: { id: string }) => {
+    //     return await this.deleteCommand(id);
+    //   }),
+    // );
+    // await Promise.all(
+    //   this.commands.map(async (command: any) => {
+    //     return await this.addCommand(command);
+    //   }),
+    // );
   }
 
   private async getExistingCommands() {

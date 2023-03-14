@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { PassportStrategy } from '@nestjs/passport';
 import { Strategy, VerifyCallback } from 'passport-google-oauth20';
 import { config } from 'dotenv';
+import base64url from 'base64url';
 config();
 
 @Injectable()
@@ -10,10 +11,16 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
     super({
       clientID: process.env.CLIENT_ID,
       clientSecret: process.env.CLIENT_SECRET,
-      callbackURL: process.env.AUTH_CALLBACK_URL,
+      callbackURL: `${process.env.APP_BASE_URL}/auth/google/callback`,
       scope: ['profile', 'email'],
+      state: 'test state',
     });
   }
+
+  // authorizeParams(): Record<string, string> {
+  //   return { myCustomParam: 'myCustomValue' };
+  // }
+
 
   async validate(
     accessToken: string,
@@ -31,12 +38,14 @@ export class GoogleOauthStrategy extends PassportStrategy(Strategy, 'google') {
       picture: photos[0].value,
     };
 
-    console.log(
-      'access token!!!!!!!!!!! ----> ',
-      accessToken,
-      ' <---- !!!!!!!!!!!',
-    );
-    console.log('!!!!!!!!!!! ----> ', user, ' <---- !!!!!!!!!!!');
+    console.log('profile ----> ', profile);
+
+    // console.log(
+    //   'access token!!!!!!!!!!! ----> ',
+    //   accessToken,
+    //   ' <---- !!!!!!!!!!!',
+    // );
+    // console.log('!!!!!!!!!!! ----> ', user, ' <---- !!!!!!!!!!!');
 
     return done(null, user);
   }

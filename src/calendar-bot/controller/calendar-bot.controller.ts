@@ -1,32 +1,46 @@
-import { Controller, Post, Body, Get, UseGuards } from '@nestjs/common';
-import { CalendarBotService } from '../service/calendar-bot.service';
 import {
-  InteractionWMemberDTO,
-  InteractionWUserDTO,
-} from '../dto/interaction.dto';
-import { UserDto } from '../dto/user.dto';
-import { GoogleOauthGuard } from 'src/auth/guards/google-oauth.guard';
+  Controller,
+  Post,
+  Body,
+  UseGuards,
+  UseFilters,
+  Res,
+} from '@nestjs/common';
+import { CalendarBotService } from '../service/calendar-bot.service';
+import { MappedInteraction } from '../dto/interaction.dto';
+import { AuthenticatedGuard } from '../guards/authenticated.guard';
+import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
+import { Response } from 'express';
 
 @Controller()
 export class CalendarBotController {
   constructor(private readonly calendarBotService: CalendarBotService) {}
 
-  @Get()
-  test() {
-    return 'Hello World!';
-  }
+  // @Get()
+  // test() {
+  //   return 'Hello World!';
+  // }
 
   @Post('/interactions')
+  @UseGuards(AuthenticatedGuard)
+  @UseFilters(ForbiddenExceptionFilter)
   async postForHello(
     @Body()
-    interaction: InteractionWMemberDTO | InteractionWUserDTO,
+    body: MappedInteraction,
+    // @Res() res: Response,
   ) {
-    const { type, data } = interaction;
-    const name = data?.name;
-    const appUser: UserDto = interaction.user || interaction.member?.user;
+    const {
+      type,
+      data: { name },
+      discord_usr,
+      token,
+      id,
+    } = body;
 
     if (type === 1) return this.calendarBotService.responseWithPong();
-    if (type === 2 && name === 'get-meeting')
-      return await this.calendarBotService.responseForMeeting(appUser);
+    if (type === 2 && name === 'get-meeting') {
+      return await this.calendarBotService.responseForMeeting(id, token);
+      // return res.status(201).end();
+    }
   }
 }

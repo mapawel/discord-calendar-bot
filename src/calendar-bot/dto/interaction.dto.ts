@@ -9,6 +9,16 @@ class InteractionBase {
   };
 }
 
+export class MappedInteraction {
+  type: number;
+  token: string;
+  id: string;
+  data: {
+    name: string;
+  };
+  discord_usr: UserDto;
+}
+
 export class InteractionWUserDTO extends InteractionBase {
   member: undefined;
   user: UserDto;
