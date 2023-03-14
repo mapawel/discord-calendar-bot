@@ -11,6 +11,7 @@ import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
 import { Response } from 'express';
+import { InteractionResponseType } from 'discord-interactions';
 
 @Controller()
 export class CalendarBotController {
@@ -27,7 +28,6 @@ export class CalendarBotController {
   async postForHello(
     @Body()
     body: MappedInteraction,
-    // @Res() res: Response,
   ) {
     const {
       type,
@@ -38,9 +38,8 @@ export class CalendarBotController {
     } = body;
 
     if (type === 1) return this.calendarBotService.responseWithPong();
-    if (type === 2 && name === 'get-meeting') {
+    if (type === 2 && name === 'get-a-meeting') {
       return await this.calendarBotService.responseForMeeting(id, token);
-      // return res.status(201).end();
     }
   }
 }

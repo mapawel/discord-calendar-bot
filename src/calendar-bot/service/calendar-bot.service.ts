@@ -29,7 +29,7 @@ export class CalendarBotService {
 
       // await axios({
       //   method: 'POST',
-      //   url: `https://discord.com/api/v10/interactions/${id}/${token}/callback`,
+      //   url: `https://discord.com/api/v9/interactions/${id}/${token}/callback`,
       //   headers: {
       //     'Content-Type': 'application/json',
       //   },
@@ -40,8 +40,6 @@ export class CalendarBotService {
       //     },
       //   },
       // });
-
-      // return;
 
       return {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,

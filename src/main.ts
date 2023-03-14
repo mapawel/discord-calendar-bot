@@ -4,7 +4,6 @@ import { config } from 'dotenv';
 import { calendarCommands } from './calendar-bot/discord-commands/calendar.commands';
 import { DiscordCommands } from './discord-utils/discord-comands';
 import * as session from 'express-session';
-const passport = require('passport');
 
 config();
 
@@ -23,6 +22,8 @@ async function bootstrap() {
       saveUninitialized: false,
     }),
   );
+
+
 
   //TODO !!!!!!!!!!!!!!! change to init if not existing due to limit!
   new DiscordCommands(calendarCommands).commandsInit();
