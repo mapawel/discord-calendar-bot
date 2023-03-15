@@ -16,7 +16,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
         jwksRequestsPerMinute: 5,
         jwksUri: `${process.env.AUTH0_ISSUER_URL}.well-known/jwks.json`,
       }),
-
+      state: 'teścik',
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       audience: process.env.AUTH0_AUDIENCE,
       issuer: `${process.env.AUTH0_ISSUER_URL}`,
@@ -25,7 +25,7 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   }
 
   validate(payload: unknown): unknown {
-    // console.log('payload ----> ', payload);
+    console.log('payload ----> ', payload);
     return payload;
   }
 }

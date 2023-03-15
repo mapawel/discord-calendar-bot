@@ -5,7 +5,7 @@ import { calendarCommands } from './calendar-bot/discord-commands/calendar.comma
 import { DiscordCommands } from './discord-utils/discord-comands';
 import { auth } from 'express-openid-connect';
 import { authConfig } from './authz/config';
-
+import { requiresAuth } from 'express-openid-connect';
 config();
 
 async function bootstrap() {
@@ -15,9 +15,9 @@ async function bootstrap() {
   app.enableCors();
 
   app.use(auth(authConfig));
-
+  // app.use(requiresAuth());
   //TODO !!!!!!!!!!!!!!! change to init if not existing due to limit!
-  new DiscordCommands(calendarCommands).commandsInit();
+  // new DiscordCommands(calendarCommands).commandsInit();
 
   await app.listen(6000);
 }
