@@ -4,23 +4,23 @@ import {
   Body,
   UseGuards,
   UseFilters,
-  Res,
+  Get,
 } from '@nestjs/common';
 import { CalendarBotService } from '../service/calendar-bot.service';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
-import { Response } from 'express';
-import { InteractionResponseType } from 'discord-interactions';
+import { AuthGuard } from '@nestjs/passport';
 
 @Controller()
 export class CalendarBotController {
   constructor(private readonly calendarBotService: CalendarBotService) {}
 
-  // @Get()
-  // test() {
-  //   return 'Hello World!';
-  // }
+  @UseGuards(AuthGuard('jwt'))
+  @Get()
+  test() {
+    return 'Hello World!';
+  }
 
   @Post('/interactions')
   @UseGuards(AuthenticatedGuard)

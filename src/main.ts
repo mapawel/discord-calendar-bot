@@ -3,7 +3,8 @@ import { AppModule } from './app.module';
 import { config } from 'dotenv';
 import { calendarCommands } from './calendar-bot/discord-commands/calendar.commands';
 import { DiscordCommands } from './discord-utils/discord-comands';
-import * as session from 'express-session';
+import { auth } from 'express-openid-connect';
+import { authConfig } from './authz/config';
 
 config();
 
@@ -11,19 +12,9 @@ async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
     bodyParser: false,
   });
+  app.enableCors();
 
-  if (!process.env.SESSION_SECRET)
-    throw new Error('SESSION_SECRET is not defined!');
-
-  app.use(
-    session({
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-      saveUninitialized: false,
-    }),
-  );
-
-
+  app.use(auth(authConfig));
 
   //TODO !!!!!!!!!!!!!!! change to init if not existing due to limit!
   new DiscordCommands(calendarCommands).commandsInit();
