@@ -11,16 +11,17 @@ import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
 import { AuthGuard } from '@nestjs/passport';
+import { Commands } from '../discord-commands/commands.enum';
 
 @Controller()
 export class CalendarBotController {
   constructor(private readonly calendarBotService: CalendarBotService) {}
 
-  @UseGuards(AuthGuard('jwt'))
-  @Get()
-  test() {
-    return 'Hello World!';
-  }
+  // @UseGuards(AuthGuard('jwt'))
+  // @Get()
+  // test() {
+  //   return 'Hello World!';
+  // }
 
   @Post('/interactions')
   @UseGuards(AuthenticatedGuard)
@@ -38,8 +39,11 @@ export class CalendarBotController {
     } = body;
 
     if (type === 1) return this.calendarBotService.responseWithPong();
-    if (type === 2 && name === 'get-a-meeting') {
+    if (type === 2 && name === Commands.GET_MEETING) {
       return await this.calendarBotService.responseForMeeting(id, token);
+    }
+    if (type === 2 && name === Commands.AUTHENTICATE) {
+      return await this.calendarBotService.authenticate(discord_usr);
     }
   }
 }

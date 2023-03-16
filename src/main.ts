@@ -1,11 +1,9 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { config } from 'dotenv';
-import { calendarCommands } from './calendar-bot/discord-commands/calendar.commands';
-import { DiscordCommands } from './discord-utils/discord-comands';
-import { auth } from 'express-openid-connect';
-import { authConfig } from './authz/config';
-import { requiresAuth } from 'express-openid-connect';
+import { commands } from './calendar-bot/discord-commands/commands.list';
+import { DiscordCommands } from './calendar-bot/discord-commands/comands.service';
+
 config();
 
 async function bootstrap() {
@@ -14,10 +12,8 @@ async function bootstrap() {
   });
   app.enableCors();
 
-  app.use(auth(authConfig));
-  // app.use(requiresAuth());
   //TODO !!!!!!!!!!!!!!! change to init if not existing due to limit!
-  // new DiscordCommands(calendarCommands).commandsInit();
+  // new DiscordCommands(commands).commandsInit();
 
   await app.listen(6000);
 }

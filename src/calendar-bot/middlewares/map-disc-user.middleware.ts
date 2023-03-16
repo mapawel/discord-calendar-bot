@@ -9,7 +9,6 @@ import { UserDto } from '../dto/user.dto';
 @Injectable()
 export class MapDiscUserMiddleware implements NestMiddleware {
   use(req: Request, _res: Response, next: NextFunction) {
-    console.log('body ----> ', req.body);
     const body: InteractionWMemberDTO | InteractionWUserDTO = req.body;
     const appUser: UserDto = body.user || body.member?.user;
 

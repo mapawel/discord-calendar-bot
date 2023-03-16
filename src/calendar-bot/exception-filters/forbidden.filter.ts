@@ -7,6 +7,8 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { InteractionResponseType } from 'discord-interactions';
+import { Commands } from '../discord-commands/commands.enum';
+
 config();
 
 @Catch(ForbiddenException)
@@ -18,7 +20,7 @@ export class ForbiddenExceptionFilter implements ExceptionFilter {
     response.status(201).json({
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: `brak autoryzacji -> ${process.env.APP_BASE_URL}/auth/google`,
+        content: `Brak autentykacji! Najpierw potwierdź tożsamość zaczynając komendą: "/${Commands.AUTHENTICATE}"`,
       },
     });
   }

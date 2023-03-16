@@ -22,6 +22,19 @@ export class CalendarBotService {
 
   async responseForMeeting(id: string, token: string) {
     try {
+      return {
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: 'Redirecting to the calendar...',
+        },
+      };
+    } catch (err: any) {
+      throw new Error(err.message);
+    }
+  }
+
+  async authenticate({ id }: { id: string }) {
+    try {
       // await this.usersRepository.create({
       //   discordId: user.id,
       //   name: user.username,
@@ -44,7 +57,7 @@ export class CalendarBotService {
       return {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: 'Redirecting to the calendar...',
+          content: `auth...id: ${id}`,
         },
       };
     } catch (err: any) {
