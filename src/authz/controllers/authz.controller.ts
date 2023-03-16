@@ -9,6 +9,7 @@ import {
 import { Request, Response } from 'express';
 import axios from 'axios';
 import { config } from 'dotenv';
+import { User } from 'src/calendar-bot/entities/User.entity';
 
 config();
 
@@ -18,6 +19,7 @@ export class AuthzController {
   async authorize(
     @Req()
     req: Request,
+    @Query() { id }: { id: string },
     @Res() res: Response,
   ) {
     try {
@@ -26,7 +28,7 @@ export class AuthzController {
         scope: 'openid profile email',
         response_type: 'code',
         client_id: `${process.env.AUTHZ_CLIENT_ID}`,
-        state: JSON.stringify({ test: '12345678' }),
+        state: id,
         redirect_uri: `${process.env.APP_BASE_URL}/auth/callback`,
       });
 
@@ -57,8 +59,13 @@ export class AuthzController {
           redirect_uri: `${process.env.APP_BASE_URL}/auth/callback`,
         },
       });
+
+      await User.update(
+        { authenticated: true },
+        { where: { discordId: state } },
+      );
       console.log('TOKENS---> ', data);
-      console.log('STATE---> ', JSON.parse(state));
+      console.log('STATE---> ', state);
       res.send(data);
     } catch (err: any) {
       throw new HttpException(err.message, err.status);

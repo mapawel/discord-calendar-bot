@@ -20,6 +20,7 @@ export class AuthenticatedGuard implements CanActivate {
         discordId: discord_usr.id,
       },
     });
+
     return foundUser?.dataValues?.authenticated ? true : false;
   }
 }

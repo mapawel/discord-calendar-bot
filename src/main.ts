@@ -18,3 +18,5 @@ async function bootstrap() {
   await app.listen(6000);
 }
 bootstrap();
+
+//TODO all routes to enum, try catch all DB operations, authz controller - logic to service + BD DI provider!

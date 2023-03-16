@@ -33,31 +33,19 @@ export class CalendarBotService {
     }
   }
 
-  async authenticate({ id }: { id: string }) {
+  async authenticate(user: UserDto) {
     try {
-      // await this.usersRepository.create({
-      //   discordId: user.id,
-      //   name: user.username,
-      // });
+      const { id, username }: { id: string; username: string } = user;
 
-      // await axios({
-      //   method: 'POST',
-      //   url: `https://discord.com/api/v9/interactions/${id}/${token}/callback`,
-      //   headers: {
-      //     'Content-Type': 'application/json',
-      //   },
-      //   data: {
-      //     type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      //     data: {
-      //       content: 'Redirecting to the calendar 22222',
-      //     },
-      //   },
-      // });
+      await this.usersRepository.create({
+        discordId: id,
+        name: username,
+      });
 
       return {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: `auth...id: ${id}`,
+          content: `${process.env.APP_BASE_URL}/auth/login?id=${id}`,
         },
       };
     } catch (err: any) {
