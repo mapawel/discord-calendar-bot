@@ -18,7 +18,7 @@ export class CalendarBotController {
   // }
 
   @Post(AppRoutes.DISCORD_INTERACTIONS_METHOD)
-  @UseGuards(new AuthenticatedGuard(new AuthenticatedGuardService()))
+  @UseGuards(AuthenticatedGuard)
   @UseFilters(ForbiddenExceptionFilter)
   async interactionsHandler(
     @Body()

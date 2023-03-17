@@ -1,15 +1,15 @@
-import { ForbiddenException } from '@nestjs/common';
+import { Injectable, ForbiddenException } from '@nestjs/common';
 import { UserDto } from '../dto/user.dto';
 import { User } from '../entities/User.entity';
 import { Commands } from '../discord-commands/commands.enum';
 
-// @Injectable()
+@Injectable()
 export class AuthenticatedGuardService {
   async getMeetingCommand(discord_usr: UserDto): Promise<true> {
     const user: User | undefined = await this.getUserFromDB(discord_usr.id);
     if (!user)
       throw new ForbiddenException(
-        `Brak autentykacji! Najpierw potwierdź tożsamość zaczynając komendą: "/${Commands.AUTHENTICATE}"`,
+        `User not authenticated! Proceed authentication starting with discord command: "/${Commands.AUTHENTICATE}"`,
       );
     return true;
   }
