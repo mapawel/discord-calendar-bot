@@ -22,7 +22,7 @@ export class CalendarBotService {
     };
   }
 
-  async responseForMeeting(id: string, token: string) {
+  async responseForMeeting() {
     try {
       return {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,

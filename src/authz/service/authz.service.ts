@@ -18,9 +18,6 @@ export class AuthzService {
   async buildRedirectLink(id: string): Promise<string> {
     const signedId = await this.jwtService.signAsync({ id });
 
-    console.log('Id ----> ', id);
-    console.log('signedId ----> ', signedId);
-
     const querystring: URLSearchParams = new URLSearchParams({
       audience: `${process.env.AUTH0_AUDIENCE}`,
       scope: 'openid profile email',
@@ -35,7 +32,7 @@ export class AuthzService {
 
   async getToken(code: string, state: string) {
     try {
-      const { id } = await this.jwtService.verifyAsync(state + 'a');
+      const { id } = await this.jwtService.verifyAsync(state);
       const { data } = await axios({
         method: 'POST',
         url: `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_TOKEN}`,

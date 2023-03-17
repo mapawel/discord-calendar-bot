@@ -1,16 +1,13 @@
-import {
-  Injectable,
-  CanActivate,
-  ExecutionContext,
-  ForbiddenException,
-  HttpException,
-} from '@nestjs/common';
-import { User } from '../entities/User.entity';
+import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { Commands } from '../discord-commands/commands.enum';
+import { AuthenticatedGuardService } from './authentcated-guard.service';
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
+  constructor(
+    private readonly authenticatedGuardService: AuthenticatedGuardService,
+  ) {}
   async canActivate(context: ExecutionContext) {
     const {
       body: {
@@ -19,19 +16,16 @@ export class AuthenticatedGuard implements CanActivate {
       },
     }: { body: MappedInteraction } = context.switchToHttp().getRequest();
 
-    if (name === Commands.AUTHENTICATE) return true;
+    if (name === Commands.AUTHENTICATE)
+      return await this.authenticatedGuardService.autenticationCommand(
+        discord_usr,
+      );
+    if (name === Commands.GET_MEETING)
+      return await this.authenticatedGuardService.getMeetingCommand(
+        discord_usr,
+      );
 
-    const [foundUser] = await User.findAll({
-      where: {
-        discordId: discord_usr.id,
-      },
-    });
-
-    if (!foundUser?.dataValues?.authenticated) {
-      throw new ForbiddenException();
-    }
-
-    return true;
+    return false;
   }
 }
 // TODO to split this into two guards
