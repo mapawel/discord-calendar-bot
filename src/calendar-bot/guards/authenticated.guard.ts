@@ -1,4 +1,10 @@
-import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
+import {
+  Injectable,
+  CanActivate,
+  ExecutionContext,
+  ForbiddenException,
+  HttpException,
+} from '@nestjs/common';
 import { User } from '../entities/User.entity';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { Commands } from '../discord-commands/commands.enum';
@@ -21,7 +27,11 @@ export class AuthenticatedGuard implements CanActivate {
       },
     });
 
-    return foundUser?.dataValues?.authenticated ? true : false;
+    if (!foundUser?.dataValues?.authenticated) {
+      throw new ForbiddenException();
+    }
+
+    return true;
   }
 }
 // TODO to split this into two guards

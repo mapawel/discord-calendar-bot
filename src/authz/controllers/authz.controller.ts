@@ -10,12 +10,14 @@ import { Request, Response } from 'express';
 import axios from 'axios';
 import { config } from 'dotenv';
 import { User } from 'src/calendar-bot/entities/User.entity';
+import { AppRoutes } from 'src/routes/app-routes.enum';
+import { AuthzRoutes } from 'src/routes/app-routes.enum';
 
 config();
 
-@Controller('/auth')
+@Controller(AppRoutes.LOGIN_CONTROLLER)
 export class AuthzController {
-  @Get('/login')
+  @Get(AppRoutes.LOGIN_METHOD)
   async authorize(
     @Req()
     req: Request,
@@ -29,18 +31,18 @@ export class AuthzController {
         response_type: 'code',
         client_id: `${process.env.AUTHZ_CLIENT_ID}`,
         state: id,
-        redirect_uri: `${process.env.APP_BASE_URL}/auth/callback`,
+        redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
       });
 
       res.redirect(
-        `https://discord-calendar-bot-by-dd.eu.auth0.com/authorize?${querystring}`,
+        `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_AUTHORIZE}?${querystring}`,
       );
     } catch (err: any) {
       throw new HttpException(err.message, err.status);
     }
   }
 
-  @Get('/callback')
+  @Get(AppRoutes.LOGIN_CALLBACK_METHOD)
   async getToken(
     @Query()
     { code, state }: { code: string; state: string },
@@ -49,14 +51,14 @@ export class AuthzController {
     try {
       const { data } = await axios({
         method: 'POST',
-        url: 'https://discord-calendar-bot-by-dd.eu.auth0.com/oauth/token',
+        url: `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_TOKEN}`,
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         data: {
           grant_type: 'authorization_code',
           client_id: process.env.AUTHZ_CLIENT_ID,
           client_secret: process.env.AUTHZ_SECRET,
           code,
-          redirect_uri: `${process.env.APP_BASE_URL}/auth/callback`,
+          redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
         },
       });
 

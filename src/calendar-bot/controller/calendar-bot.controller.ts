@@ -5,16 +5,15 @@ import {
   UseGuards,
   UseFilters,
   Get,
-  Res,
 } from '@nestjs/common';
 import { CalendarBotService } from '../service/calendar-bot.service';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
-import { AuthGuard } from '@nestjs/passport';
 import { Commands } from '../discord-commands/commands.enum';
+import { AppRoutes } from 'src/routes/app-routes.enum';
+import { AuthGuard } from '@nestjs/passport';
 import { Response } from 'express';
-import { InteractionResponseType } from 'discord-interactions';
 
 @Controller()
 export class CalendarBotController {
@@ -26,7 +25,7 @@ export class CalendarBotController {
   //   return 'Hello World!';
   // }
 
-  @Post('/interactions')
+  @Post(AppRoutes.DISCORD_INTERACTIONS_METHOD)
   @UseGuards(AuthenticatedGuard)
   @UseFilters(ForbiddenExceptionFilter)
   async postForHello(
