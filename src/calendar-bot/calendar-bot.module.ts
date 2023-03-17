@@ -5,9 +5,10 @@ import { usersProviders } from './providers/users.providers';
 import { MapDiscUserMiddleware } from './middlewares/map-disc-user.middleware';
 import { verifyKeyMiddleware } from 'discord-interactions';
 import { AuthenticatedGuardService } from './guards/authentcated-guard.service';
+import { AxiosModule } from 'src/axios/axios.module';
 
 @Module({
-  imports: [],
+  imports: [AxiosModule],
   controllers: [CalendarBotController],
   providers: [CalendarBotService, ...usersProviders, AuthenticatedGuardService],
 })

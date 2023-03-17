@@ -6,6 +6,7 @@ import axios from 'axios';
 import { Response } from 'express';
 import { config } from 'dotenv';
 import { AppRoutes } from 'src/routes/app-routes.enum';
+import { AxiosProvider } from 'src/axios/axios.provider';
 
 config();
 
@@ -14,6 +15,7 @@ export class CalendarBotService {
   constructor(
     @Inject('USERS_REPOSITORY')
     private usersRepository: typeof User,
+    private readonly axiosProvider: AxiosProvider,
   ) {}
 
   responseWithPong() {
@@ -22,8 +24,20 @@ export class CalendarBotService {
     };
   }
 
-  async responseForMeeting() {
+  async responseForMeeting(id: string) {
     try {
+      const { data: data1 } = await this.axiosProvider.instance({
+        method: 'GET',
+        url: `/guilds/${process.env.GUILD_ID}/members/${id}`,
+      });
+      const { data: data2 } = await this.axiosProvider.instance({
+        method: 'GET',
+        url: `/guilds/${process.env.GUILD_ID}/roles`,
+      });
+
+      console.log('data1 ----> ', data1);
+      console.log('data2 ----> ', data2);
+
       return {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
@@ -31,7 +45,8 @@ export class CalendarBotService {
         },
       };
     } catch (err: any) {
-      throw new Error(err.message);
+      console.log('err ----> ', err);
+      throw new Error(err);
     }
   }
 

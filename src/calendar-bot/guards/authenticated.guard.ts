@@ -1,6 +1,6 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { MappedInteraction } from '../dto/interaction.dto';
-import { Commands } from '../discord-commands/commands.enum';
+import { Commands } from '../../discord-commands/commands.enum';
 import { AuthenticatedGuardService } from './authentcated-guard.service';
 
 @Injectable()

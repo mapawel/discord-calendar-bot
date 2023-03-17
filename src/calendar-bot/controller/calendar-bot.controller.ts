@@ -3,7 +3,7 @@ import { CalendarBotService } from '../service/calendar-bot.service';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
-import { Commands } from '../discord-commands/commands.enum';
+import { Commands } from '../../discord-commands/commands.enum';
 import { AppRoutes } from 'src/routes/app-routes.enum';
 import { AuthenticatedGuardService } from '../guards/authentcated-guard.service';
 
@@ -34,7 +34,7 @@ export class CalendarBotController {
 
     if (type === 1) return this.calendarBotService.responseWithPong();
     if (type === 2 && name === Commands.GET_MEETING) {
-      return await this.calendarBotService.responseForMeeting();
+      return await this.calendarBotService.responseForMeeting(discord_usr.id);
     }
     if (type === 2 && name === Commands.AUTHENTICATE) {
       return await this.calendarBotService.authenticate(discord_usr);

@@ -1,7 +1,7 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { UserDto } from '../dto/user.dto';
 import { User } from '../entities/User.entity';
-import { Commands } from '../discord-commands/commands.enum';
+import { Commands } from '../../discord-commands/commands.enum';
 
 @Injectable()
 export class AuthenticatedGuardService {
