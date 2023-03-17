@@ -3,10 +3,14 @@ import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthzService } from './service/authz.service';
 import { AuthzController } from './controllers/authz.controller';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
   controllers: [AuthzController],
-  imports: [PassportModule.register({ defaultStrategy: 'jwt' })],
+  imports: [
+    JwtModule.register({ secret: process.env.JWT_SECRET }),
+    PassportModule.register({ defaultStrategy: 'jwt' }),
+  ],
   providers: [JwtStrategy, AuthzService],
   exports: [PassportModule],
 })

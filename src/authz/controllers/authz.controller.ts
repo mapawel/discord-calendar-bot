@@ -22,6 +22,6 @@ export class AuthzController {
     { code, state }: { code: string; state: string },
   ) {
     await this.authzService.getToken(code, state);
-    return 'Authentication successful! Now you can close this window and book a meeting in the Discord server.';
+    return 'Authentication successfull! Now you can close this window and book a meeting in the Discord server.';
   }
 }

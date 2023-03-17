@@ -1,22 +1,32 @@
-import { HttpException, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { config } from 'dotenv';
 import { User } from 'src/calendar-bot/entities/User.entity';
 import { AppRoutes } from 'src/routes/app-routes.enum';
 import { AuthzRoutes } from 'src/routes/app-routes.enum';
+import { AuthServiceException } from './exceptions/auth-service.exception';
+import { JwtService } from '@nestjs/jwt';
+import { JsonWebTokenError } from 'jsonwebtoken';
 
 config();
 // TODO encode the state!
 
 @Injectable()
 export class AuthzService {
-  buildRedirectLink(id: string): string {
+  constructor(private readonly jwtService: JwtService) {}
+
+  async buildRedirectLink(id: string): Promise<string> {
+    const signedId = await this.jwtService.signAsync({ id });
+
+    console.log('Id ----> ', id);
+    console.log('signedId ----> ', signedId);
+
     const querystring: URLSearchParams = new URLSearchParams({
       audience: `${process.env.AUTH0_AUDIENCE}`,
       scope: 'openid profile email',
       response_type: 'code',
       client_id: `${process.env.AUTHZ_CLIENT_ID}`,
-      state: id,
+      state: signedId,
       redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
     });
 
@@ -25,6 +35,7 @@ export class AuthzService {
 
   async getToken(code: string, state: string) {
     try {
+      const { id } = await this.jwtService.verifyAsync(state + 'a');
       const { data } = await axios({
         method: 'POST',
         url: `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_TOKEN}`,
@@ -38,14 +49,17 @@ export class AuthzService {
         },
       });
 
-      await User.update(
-        { authenticated: true },
-        { where: { discordId: state } },
-      );
-      console.log('TOKENS---> ', data);
-      console.log('STATE---> ', state);
+      await User.update({ authenticated: true }, { where: { discordId: id } });
+
+      console.log('TOKENS---> ', data); // TODO to remove if not utilized
     } catch (err: any) {
-      throw new HttpException(err.message, err.status);
+      if (err instanceof JsonWebTokenError)
+        throw new AuthServiceException(
+          `Error while verifing a json webtoken from state! ${err.message}`,
+        );
+      throw new AuthServiceException(
+        `Error while getting a token: ${err.message}`,
+      );
     }
   }
 }
