@@ -1,5 +1,6 @@
 import { Sequelize } from 'sequelize-typescript';
 import { User } from '../../calendar-bot/entities/User.entity';
+import { Role } from 'src/roles/entity/Role.entity';
 import { join } from 'path';
 
 export const databaseProviders = [
@@ -10,7 +11,7 @@ export const databaseProviders = [
         dialect: 'sqlite',
         storage: join(process.cwd(), 'db', 'test.sqlite'),
       });
-      sequelize.addModels([User]);
+      sequelize.addModels([User, Role]);
       await sequelize.sync();
       return sequelize;
     },

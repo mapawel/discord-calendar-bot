@@ -1,18 +1,26 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/axios.provider';
+import { Role } from '../entity/Role.entity';
+import { RoleDTO } from '../dto/Role.dto';
+import { RoleDBoperationsProvider } from './role.db-operations.provider';
 
 @Injectable()
 export class RolesProvider {
-  constructor(private readonly axiosProvider: AxiosProvider) {}
+  constructor(
+    private readonly axiosProvider: AxiosProvider,
+    private readonly roleDBoperationsProvider: RoleDBoperationsProvider,
+  ) {}
 
   async getServerRoles() {
     try {
-      const { data: data2 } = await this.axiosProvider.instance({
-        method: 'GET',
-        url: `/guilds/${process.env.GUILD_ID}/roles`,
-      });
+      const { data: roles }: { data: RoleDTO[] } =
+        await this.axiosProvider.instance({
+          method: 'GET',
+          url: `/guilds/${process.env.GUILD_ID}/roles`,
+        });
 
-      console.log('data2 ----> ', data2);
+      await this.roleDBoperationsProvider.removeAllDBroles();
+      await this.roleDBoperationsProvider.createBulkBDRoles(roles);
     } catch (err: any) {
       throw new Error(err);
       //TODO add a custom error
