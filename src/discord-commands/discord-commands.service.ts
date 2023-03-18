@@ -67,4 +67,8 @@ export class DiscordCommandsService {
       throw new Error(err.message);
     }
   }
+
+  async onModuleInit() {
+    await this.commandsInit([]);
+  }
 }
