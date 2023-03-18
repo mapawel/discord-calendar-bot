@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/axios.provider';
-import { Role } from '../entity/Role.entity';
-import { RoleDTO } from '../dto/Role.dto';
+import { DiscordRoleDTO } from '../dto/Discord-role.dto';
 import { RoleDBoperationsProvider } from './role.db-operations.provider';
+import { AppRoleDTO } from '../dto/App-role.dto';
 
 @Injectable()
 export class RolesProvider {
@@ -11,9 +11,9 @@ export class RolesProvider {
     private readonly roleDBoperationsProvider: RoleDBoperationsProvider,
   ) {}
 
-  async getServerRoles() {
+  private async updateAllDBroles(): Promise<void> {
     try {
-      const { data: roles }: { data: RoleDTO[] } =
+      const { data: roles }: { data: DiscordRoleDTO[] } =
         await this.axiosProvider.instance({
           method: 'GET',
           url: `/guilds/${process.env.GUILD_ID}/roles`,
@@ -26,11 +26,16 @@ export class RolesProvider {
       //TODO add a custom error
     }
   }
+
+  async getDBroles(): Promise<AppRoleDTO[]> {
+    return await this.roleDBoperationsProvider.getDBroles();
+  }
+
   async getUserRole(userid: string): Promise<string[]> {
     try {
       const {
         data: { roles },
-      } = await this.axiosProvider.instance({
+      }: { data: { roles: string[] } } = await this.axiosProvider.instance({
         method: 'GET',
         url: `/guilds/${process.env.GUILD_ID}/members/${userid}`,
       });
@@ -42,6 +47,6 @@ export class RolesProvider {
   }
 
   onModuleInit() {
-    this.getServerRoles();
+    this.updateAllDBroles();
   }
 }

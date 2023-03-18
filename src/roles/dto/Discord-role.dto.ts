@@ -1,5 +1,5 @@
 // add validator
-export class RoleDTO {
+export class DiscordRoleDTO {
   id: string;
   name: string;
 }
