@@ -5,7 +5,7 @@ import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
 import { Commands } from '../../discord-commands/commands.enum';
 import { AppRoutes } from 'src/routes/app-routes.enum';
-import { AuthenticatedGuardService } from '../guards/authentcated-guard.service';
+import { RolesdGuard } from '../guards/roles.guard';
 
 @Controller()
 export class CalendarBotController {
@@ -19,6 +19,7 @@ export class CalendarBotController {
 
   @Post(AppRoutes.DISCORD_INTERACTIONS_METHOD)
   @UseGuards(AuthenticatedGuard)
+  @UseGuards(RolesdGuard)
   @UseFilters(ForbiddenExceptionFilter)
   async interactionsHandler(
     @Body()

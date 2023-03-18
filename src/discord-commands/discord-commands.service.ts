@@ -10,8 +10,8 @@ export class DiscordCommandsService {
   //TODO ask SEBASTIAN about DI! I have access to the axiosProvider here if I import MODULE and it's not nesessary to import PROVIDER but I have to because I want to create CiscordCommandsService instance to fire init method
 
   public async commandsInit(commands: any[]) {
-    const existingCommands = await this.getExistingCommands();
-    console.log('existingCommands ----> ', existingCommands);
+    // const existingCommands = await this.getExistingCommands();
+    // console.log('existingCommands ----> ', existingCommands);
     // await Promise.all(
     //   existingCommands.map(async ({ id }: { id: string }) => {
     //     return await this.deleteCommand(id);

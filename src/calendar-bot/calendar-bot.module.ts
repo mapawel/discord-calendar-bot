@@ -6,11 +6,18 @@ import { MapDiscUserMiddleware } from './middlewares/map-disc-user.middleware';
 import { verifyKeyMiddleware } from 'discord-interactions';
 import { AuthenticatedGuardService } from './guards/authentcated-guard.service';
 import { AxiosModule } from 'src/axios/axios.module';
+import { RolesGuardService } from './guards/roles-guard.service';
+import { RolesModule } from 'src/roles/roles.module';
 
 @Module({
-  imports: [AxiosModule],
+  imports: [RolesModule, AxiosModule],
   controllers: [CalendarBotController],
-  providers: [CalendarBotService, ...usersProviders, AuthenticatedGuardService],
+  providers: [
+    CalendarBotService,
+    ...usersProviders,
+    AuthenticatedGuardService,
+    RolesGuardService,
+  ],
 })
 export class CalendarBotModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
