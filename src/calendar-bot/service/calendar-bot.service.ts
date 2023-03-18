@@ -29,6 +29,15 @@ export class CalendarBotService {
     };
   }
 
+  async manageBot() {
+    return {
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: 'Redirecting to the management...',
+      },
+    };
+  }
+
   async authenticate(user: UserDto) {
     try {
       const { id, username }: { id: string; username: string } = user;

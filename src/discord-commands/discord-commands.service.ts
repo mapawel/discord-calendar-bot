@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/axios.provider';
 import { config } from 'dotenv';
+import { commands } from './commands.list';
 
 config();
 
@@ -18,7 +19,7 @@ export class DiscordCommandsService {
     //   }),
     // );
     // await Promise.all(
-    //   this.commands.map(async (command: any) => {
+    //   commands.map(async (command: any) => {
     //     return await this.addCommand(command);
     //   }),
     // );
@@ -42,7 +43,7 @@ export class DiscordCommandsService {
   private async deleteCommand(id: string) {
     return await this.discordRequest({
       method: 'DELETE',
-      url: id,
+      url: `/${id}`,
     });
   }
 
@@ -69,6 +70,6 @@ export class DiscordCommandsService {
   }
 
   async onModuleInit() {
-    await this.commandsInit([]);
+    await this.commandsInit(commands);
   }
 }

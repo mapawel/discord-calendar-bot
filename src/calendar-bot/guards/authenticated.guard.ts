@@ -1,7 +1,7 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { MappedInteraction } from '../dto/interaction.dto';
-import { Commands } from '../../discord-commands/commands.enum';
 import { AuthenticatedGuardService } from './authentcated-guard.service';
+import { commands } from 'src/discord-commands/commands.list';
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
@@ -16,16 +16,10 @@ export class AuthenticatedGuard implements CanActivate {
       },
     }: { body: MappedInteraction } = context.switchToHttp().getRequest();
 
-    if (name === Commands.AUTHENTICATE)
-      return await this.authenticatedGuardService.autenticationCommand(
-        discord_usr,
-      );
-    if (name === Commands.GET_MEETING)
-      return await this.authenticatedGuardService.getMeetingCommand(
-        discord_usr,
-      );
-
-    return false;
+    const serviceMethod =
+      commands.find((command) => command.name === name)
+        ?.authenticated_guard_rule || 'default';
+    return await this.authenticatedGuardService[serviceMethod](discord_usr);
   }
 }
 // TODO to split this into two guards

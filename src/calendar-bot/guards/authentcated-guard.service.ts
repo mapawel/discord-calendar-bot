@@ -5,7 +5,7 @@ import { Commands } from '../../discord-commands/commands.enum';
 
 @Injectable()
 export class AuthenticatedGuardService {
-  async getMeetingCommand(discord_usr: UserDto): Promise<true> {
+  async isAuthenticated(discord_usr: UserDto): Promise<true> {
     const user: User | undefined = await this.getUserFromDB(discord_usr.id);
     if (!user)
       throw new ForbiddenException(
@@ -14,14 +14,16 @@ export class AuthenticatedGuardService {
     return true;
   }
 
-  async test() {
-    return true;
-  }
-
-  async autenticationCommand(discord_usr: UserDto): Promise<true> {
+  async notAuthenticated(discord_usr: UserDto): Promise<true> {
     const user: User | undefined = await this.getUserFromDB(discord_usr.id);
     if (user) throw new ForbiddenException('User already authenticated!');
     return true;
+  }
+
+  async default(discord_usr: UserDto): Promise<true> {
+    throw new ForbiddenException(
+      'There is no suit authorization rule for this command! Contact the bot administrator to solve this issue.',
+    );
   }
 
   private async getUserFromDB(id: string): Promise<User | undefined> {

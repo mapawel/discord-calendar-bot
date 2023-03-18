@@ -11,15 +11,9 @@ import { RolesdGuard } from '../guards/roles.guard';
 export class CalendarBotController {
   constructor(private readonly calendarBotService: CalendarBotService) {}
 
-  // @UseGuards(AuthGuard('jwt'))
-  // @Get()
-  // test() {
-  //   return 'Hello World!';
-  // }
-
   @Post(AppRoutes.DISCORD_INTERACTIONS_METHOD)
-  @UseGuards(AuthenticatedGuard)
   @UseGuards(RolesdGuard)
+  @UseGuards(AuthenticatedGuard)
   @UseFilters(ForbiddenExceptionFilter)
   async interactionsHandler(
     @Body()
@@ -39,6 +33,9 @@ export class CalendarBotController {
     }
     if (type === 2 && name === Commands.AUTHENTICATE) {
       return await this.calendarBotService.authenticate(discord_usr);
+    }
+    if (type === 2 && name === Commands.BOT_MANAGE) {
+      return await this.calendarBotService.manageBot();
     }
   }
 }
