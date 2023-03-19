@@ -5,6 +5,6 @@ import { AxiosModule } from 'src/axios/axios.module';
 @Module({
   imports: [AxiosModule],
   providers: [DiscordCommandsService],
-  exports: [DiscordCommandsService],
+  exports: [],
 })
 export class DiscordCommandsModule {}

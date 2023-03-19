@@ -1,5 +1,5 @@
 import { Controller, Post, Body, UseGuards, UseFilters } from '@nestjs/common';
-import { CalendarBotService } from '../service/calendar-bot.service';
+import { DiscordInteractionService } from '../service/discord-interactions.service';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
@@ -8,8 +8,10 @@ import { RolesdGuard } from '../guards/roles.guard';
 import { commands } from 'src/discord-commands/commands.list';
 
 @Controller()
-export class CalendarBotController {
-  constructor(private readonly calendarBotService: CalendarBotService) {}
+export class DiscordInteractionController {
+  constructor(
+    private readonly discordInteractionService: DiscordInteractionService,
+  ) {}
 
   @Post(AppRoutes.DISCORD_INTERACTIONS_METHOD)
   @UseGuards(RolesdGuard)
@@ -25,12 +27,12 @@ export class CalendarBotController {
       discord_usr,
     } = body;
 
-    if (type === 1) return this.calendarBotService.responseWithPong();
+    if (type === 1) return this.discordInteractionService.responseWithPong();
     if (type === 2) {
       const serviceMethod =
         commands.find(({ name: n }) => n === name)?.controller_service_method ||
         'default';
-      return await this.calendarBotService[serviceMethod](discord_usr);
+      return await this.discordInteractionService[serviceMethod](discord_usr);
     }
   }
 }

@@ -1,24 +1,48 @@
-import { SpelunkerModule } from 'nestjs-spelunker';
+import { SpelunkedTree, SpelunkerModule } from 'nestjs-spelunker';
 import { INestApplication } from '@nestjs/common';
 import { writeFile } from 'fs/promises';
 
 export class DependenciesAnalizer {
+  private readonly filesPath = './Dependencies-analizer/files';
   constructor(private readonly app: INestApplication) {}
 
-  public async start(): Promise<void> {
+  public async start(): Promise<string> {
     const tree = SpelunkerModule.explore(this.app);
+    const detailedData: SpelunkedTree[] = SpelunkerModule.explore(this.app);
     const root = SpelunkerModule.graph(tree);
     const edges = SpelunkerModule.findGraphEdges(root);
     const mermaidEdges = edges.map(
       ({ from, to }) => `  ${from.module.name}-->${to.module.name}`,
     );
 
-    const graphTest = `graph LR\n${mermaidEdges.join('\n')}`;
-    const graph: string = this.generateMermaidGraph(graphTest);
-    await this.writeGraph(graph);
+    const results = await Promise.all([
+      this.generateGraphEdges(mermaidEdges),
+      this.generateDetailedData(detailedData),
+    ]);
+    return `To check dependencies in this project open in browser files below in ${
+      this.filesPath
+    }:\n${results.join('\n')}`;
   }
 
-  private generateMermaidGraph(textContent: string) {
+  private async generateDetailedData(
+    detailedData: SpelunkedTree[],
+  ): Promise<string> {
+    const fileName = 'modules-details.html';
+    const detailedDataString = JSON.stringify(detailedData, null, 2);
+    const detailedHTML: string = this.generateHTML(detailedDataString);
+    await this.writeFile(fileName, detailedHTML);
+    return `-> ${fileName}`;
+  }
+
+  private async generateGraphEdges(mermaidEdges: string[]): Promise<string> {
+    const fileName = 'modules-graph.html';
+    const graphText = `graph LR\n${mermaidEdges.join('\n')}`;
+    const graphHTML: string = this.generateHTML(graphText, true);
+    await this.writeFile(fileName, graphHTML);
+    return `-> ${fileName}`;
+  }
+
+  private generateHTML(textContent: string, isGraph = false): string {
     return `
       <!DOCTYPE html>
       <html lang="en">
@@ -26,9 +50,12 @@ export class DependenciesAnalizer {
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <title>Document</title>
+        <title>${isGraph ? `Dependencies graph` : `Modules list`}</title>
         <script type="module">
-          import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';
+          ${
+            isGraph &&
+            `import mermaid from 'https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.esm.min.mjs';`
+          }
         </script>
       </head>
       <body>
@@ -40,7 +67,7 @@ export class DependenciesAnalizer {
       `;
   }
 
-  private async writeGraph(graph: string) {
-    await writeFile(`./Dependencies-analizer/modules-graph.html`, graph);
+  private async writeFile(fileName: string, data: string) {
+    await writeFile(`${this.filesPath}/${fileName}`, data);
   }
 }

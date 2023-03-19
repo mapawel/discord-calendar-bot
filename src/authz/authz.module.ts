@@ -12,7 +12,6 @@ import { UsersModule } from 'src/users/users.module';
     UsersModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
-  //TODO: ask SEBASTIAN about registering UserModule here if it's theoreticly accesible due to thole module import higher in the dependency tree
   providers: [JwtStrategy, AuthzService],
   exports: [PassportModule],
 })

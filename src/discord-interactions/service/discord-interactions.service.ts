@@ -7,7 +7,7 @@ import { UsersService } from 'src/users/providers/users.service';
 config();
 
 @Injectable()
-export class CalendarBotService {
+export class DiscordInteractionService {
   constructor(private usersService: UsersService) {}
 
   responseWithPong() {

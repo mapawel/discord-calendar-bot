@@ -1,0 +1,186 @@
+
+      <!DOCTYPE html>
+      <html lang="en">
+      <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Modules list</title>
+        <script type="module">
+          false
+        </script>
+      </head>
+      <body>
+        <pre class="mermaid">
+          [
+  {
+    "name": "AppModule",
+    "imports": [
+      "DiscordCommandsModule",
+      "CalendarBotModule",
+      "AuthzModule",
+      "DatabaseModule"
+    ],
+    "providers": {},
+    "controllers": [],
+    "exports": []
+  },
+  {
+    "name": "DiscordCommandsModule",
+    "imports": [
+      "AxiosModule"
+    ],
+    "providers": {
+      "DiscordCommandsService": {
+        "method": "standard"
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "DiscordCommandsService"
+    ]
+  },
+  {
+    "name": "AxiosModule",
+    "imports": [],
+    "providers": {
+      "AxiosProvider": {
+        "method": "standard"
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "AxiosProvider"
+    ]
+  },
+  {
+    "name": "CalendarBotModule",
+    "imports": [
+      "RolesModule"
+    ],
+    "providers": {
+      "CalendarBotService": {
+        "method": "standard"
+      },
+      "AuthenticatedGuardService": {
+        "method": "standard"
+      },
+      "UsersService": {
+        "method": "standard"
+      },
+      "UsersRepository": {
+        "method": "standard"
+      },
+      "RolesGuardService": {
+        "method": "standard"
+      }
+    },
+    "controllers": [
+      "CalendarBotController"
+    ],
+    "exports": []
+  },
+  {
+    "name": "RolesModule",
+    "imports": [
+      "AxiosModule"
+    ],
+    "providers": {
+      "RolesService": {
+        "method": "standard"
+      },
+      "RolesRepository": {
+        "method": "standard"
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "RolesService"
+    ]
+  },
+  {
+    "name": "AuthzModule",
+    "imports": [
+      "JwtModule",
+      "UsersModule",
+      "PassportModule"
+    ],
+    "providers": {
+      "JwtStrategy": {
+        "method": "standard"
+      },
+      "AuthzService": {
+        "method": "standard"
+      }
+    },
+    "controllers": [
+      "AuthzController"
+    ],
+    "exports": [
+      "PassportModule"
+    ]
+  },
+  {
+    "name": "JwtModule",
+    "imports": [],
+    "providers": {
+      "JwtService": {
+        "method": "standard"
+      },
+      "JWT_MODULE_OPTIONS": {
+        "method": "value"
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "JwtService"
+    ]
+  },
+  {
+    "name": "UsersModule",
+    "imports": [],
+    "providers": {
+      "UsersService": {
+        "method": "standard"
+      },
+      "UsersRepository": {
+        "method": "standard"
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "UsersService"
+    ]
+  },
+  {
+    "name": "PassportModule",
+    "imports": [],
+    "providers": {
+      "AuthModuleOptions": {
+        "method": "value"
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "AuthModuleOptions"
+    ]
+  },
+  {
+    "name": "DatabaseModule",
+    "imports": [],
+    "providers": {
+      "SEQUELIZE": {
+        "method": "factory",
+        "injections": []
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "SEQUELIZE"
+    ]
+  }
+]
+      </pre>
+      </body>
+      </html>
+      

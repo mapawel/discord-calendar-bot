@@ -15,9 +15,10 @@
           graph LR
   AppModule-->DiscordCommandsModule
   DiscordCommandsModule-->AxiosModule
-  AppModule-->CalendarBotModule
-  CalendarBotModule-->RolesModule
+  AppModule-->DiscordInteractionsModule
+  DiscordInteractionsModule-->RolesModule
   RolesModule-->AxiosModule
+  DiscordInteractionsModule-->UsersModule
   AppModule-->AuthzModule
   AuthzModule-->JwtModule
   AuthzModule-->UsersModule

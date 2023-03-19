@@ -14,7 +14,7 @@ async function bootstrap() {
   // for development only! for DI debuging!
   // -------------------
   const da = new DependenciesAnalizer(app);
-  da.start();
+  console.log(await da.start());
   // -------------------
 
   await app.listen(6000);
