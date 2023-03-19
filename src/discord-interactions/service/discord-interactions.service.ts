@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
 import { UserDto } from '../../users/dto/user.dto';
 import { config } from 'dotenv';
-import { AppRoutes } from 'src/routes/app-routes.enum';
+import { AppRoutes } from 'src/app-routes/app-routes.enum';
 import { UsersService } from 'src/users/providers/users.service';
 config();
 

@@ -1,7 +1,7 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { config } from 'dotenv';
-import { DependenciesAnalizer } from 'Dependencies-analizer/dependencies-analizer';
+import { DependenciesAnalizer } from 'DEV-dependencies-analizer/dependencies-analizer';
 
 config();
 

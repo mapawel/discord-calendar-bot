@@ -3,9 +3,9 @@ import { DiscordInteractionService } from '../service/discord-interactions.servi
 import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
-import { AppRoutes } from 'src/routes/app-routes.enum';
+import { AppRoutes } from 'src/app-routes/app-routes.enum';
 import { RolesdGuard } from '../guards/roles.guard';
-import { commands } from 'src/discord-commands/commands.list';
+import { commands } from 'src/discord-commands/app-commands-SETUP/commands.list';
 
 @Controller()
 export class DiscordInteractionController {

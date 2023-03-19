@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { config } from 'dotenv';
-import { AppRoutes } from 'src/routes/app-routes.enum';
-import { AuthzRoutes } from 'src/routes/app-routes.enum';
+import { AppRoutes } from 'src/app-routes/app-routes.enum';
+import { AuthzRoutes } from 'src/app-routes/app-routes.enum';
 import { AuthServiceException } from './exceptions/auth-service.exception';
 import { JwtService } from '@nestjs/jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';

@@ -1,6 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { UserDto } from '../../users/dto/user.dto';
-import { Commands } from '../../discord-commands/commands.enum';
+import { Commands } from '../../discord-commands/app-commands-SETUP/commands.enum';
 import { UsersService } from 'src/users/providers/users.service';
 
 @Injectable()

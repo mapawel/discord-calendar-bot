@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AxiosProvider } from 'src/axios/axios.provider';
+import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { DiscordRoleDTO } from '../dto/Discord-role.dto';
 import { RolesRepository } from './roles.repository';
 import { AppRoleDTO } from '../dto/App-role.dto';
