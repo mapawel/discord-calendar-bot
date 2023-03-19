@@ -3,9 +3,9 @@ import { CalendarBotService } from '../service/calendar-bot.service';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
-import { Commands } from '../../discord-commands/commands.enum';
 import { AppRoutes } from 'src/routes/app-routes.enum';
 import { RolesdGuard } from '../guards/roles.guard';
+import { commands } from 'src/discord-commands/commands.list';
 
 @Controller()
 export class CalendarBotController {
@@ -23,19 +23,14 @@ export class CalendarBotController {
       type,
       data: { name },
       discord_usr,
-      token,
-      id,
     } = body;
 
     if (type === 1) return this.calendarBotService.responseWithPong();
-    if (type === 2 && name === Commands.GET_MEETING) {
-      return await this.calendarBotService.responseForMeeting(discord_usr.id);
-    }
-    if (type === 2 && name === Commands.AUTHENTICATE) {
-      return await this.calendarBotService.authenticate(discord_usr);
-    }
-    if (type === 2 && name === Commands.BOT_MANAGE) {
-      return await this.calendarBotService.manageBot();
+    if (type === 2) {
+      const serviceMethod =
+        commands.find(({ name: n }) => n === name)?.controller_service_method ||
+        'default';
+      return await this.calendarBotService[serviceMethod](discord_usr);
     }
   }
 }

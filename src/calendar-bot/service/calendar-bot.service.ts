@@ -20,7 +20,7 @@ export class CalendarBotService {
     };
   }
 
-  async responseForMeeting(id: string) {
+  async responseForMeeting(user: UserDto) {
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -29,7 +29,7 @@ export class CalendarBotService {
     };
   }
 
-  async manageBot() {
+  async managingBot() {
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -57,5 +57,14 @@ export class CalendarBotService {
     } catch (err: any) {
       throw new Error(err.message);
     }
+  }
+
+  public async default(user: UserDto) {
+    return {
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: 'No action implemented for this command yet.',
+      },
+    };
   }
 }

@@ -8,6 +8,7 @@ export const commands: AppCommands = [
     dm_permission: true,
     authenticated_guard_rule: 'isAuthenticated',
     role_guard_rules: [],
+    controller_service_method: 'responseForMeeting',
   },
   {
     name: Commands.AUTHENTICATE,
@@ -16,6 +17,7 @@ export const commands: AppCommands = [
     dm_permission: true,
     authenticated_guard_rule: 'notAuthenticated',
     role_guard_rules: [],
+    controller_service_method: 'authenticate',
   },
   {
     name: Commands.BOT_MANAGE,
@@ -24,6 +26,7 @@ export const commands: AppCommands = [
     dm_permission: true,
     authenticated_guard_rule: 'isAuthenticated',
     role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
+    controller_service_method: 'managingBot',
   },
 ];
 
@@ -34,4 +37,8 @@ type AppCommands = {
   dm_permission: boolean;
   authenticated_guard_rule: 'isAuthenticated' | 'notAuthenticated';
   role_guard_rules: ('Mentor' | 'Calendar-bot-admin')[]; // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
+  controller_service_method:
+    | 'responseForMeeting'
+    | 'authenticate'
+    | 'managingBot';
 }[];
