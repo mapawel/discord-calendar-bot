@@ -3,7 +3,7 @@ import { INestApplication } from '@nestjs/common';
 import { writeFile } from 'fs/promises';
 
 export class DependenciesAnalizer {
-  private readonly filesPath = './Dependencies-analizer/files';
+  private readonly filesPath = `./DEV-dependencies-analizer/files`;
   constructor(private readonly app: INestApplication) {}
 
   public async start(): Promise<string> {
