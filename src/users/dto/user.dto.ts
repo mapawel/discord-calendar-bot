@@ -2,4 +2,5 @@
 export class UserDto {
   id: string;
   username: string;
+  authenticated: boolean;
 }

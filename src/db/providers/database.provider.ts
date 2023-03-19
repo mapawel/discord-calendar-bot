@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-import { User } from '../../calendar-bot/entities/User.entity';
+import { User } from '../../users/entity/User.entity';
 import { Role } from 'src/roles/entity/Role.entity';
 import { join } from 'path';
 

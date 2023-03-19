@@ -1,13 +1,17 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
-import { UserDto } from '../dto/user.dto';
-import { User } from '../entities/User.entity';
+import { UserDto } from '../../users/dto/user.dto';
 import { Commands } from '../../discord-commands/commands.enum';
+import { UsersService } from 'src/users/providers/users.service';
 
 @Injectable()
 export class AuthenticatedGuardService {
+  constructor(private readonly usersService: UsersService) {}
+
   async isAuthenticated(discord_usr: UserDto): Promise<true> {
-    const user: User | undefined = await this.getUserFromDB(discord_usr.id);
-    if (!user)
+    const user: UserDto | undefined = await this.usersService.getUserById(
+      discord_usr.id,
+    );
+    if (!user?.authenticated)
       throw new ForbiddenException(
         `User not authenticated! Proceed authentication starting with discord command: "/${Commands.AUTHENTICATE}"`,
       );
@@ -15,8 +19,10 @@ export class AuthenticatedGuardService {
   }
 
   async notAuthenticated(discord_usr: UserDto): Promise<true> {
-    const user: User | undefined = await this.getUserFromDB(discord_usr.id);
-    if (user) throw new ForbiddenException('User already authenticated!');
+    const user: UserDto | undefined = await this.usersService.getUserById(
+      discord_usr.id,
+    );
+    if (user?.authenticated) throw new ForbiddenException('User already authenticated!');
     return true;
   }
 
@@ -24,15 +30,5 @@ export class AuthenticatedGuardService {
     throw new ForbiddenException(
       'There is no suit authorization rule for this command! Contact the bot administrator to solve this issue.',
     );
-  }
-
-  private async getUserFromDB(id: string): Promise<User | undefined> {
-    const [foundUser] = await User.findAll({
-      where: {
-        discordId: id,
-      },
-    });
-
-    return foundUser;
   }
 }

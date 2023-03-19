@@ -1,19 +1,22 @@
 import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { config } from 'dotenv';
-import { User } from 'src/calendar-bot/entities/User.entity';
 import { AppRoutes } from 'src/routes/app-routes.enum';
 import { AuthzRoutes } from 'src/routes/app-routes.enum';
 import { AuthServiceException } from './exceptions/auth-service.exception';
 import { JwtService } from '@nestjs/jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';
+import { UsersService } from 'src/users/providers/users.service';
 
 config();
 // TODO encode the state!
 
 @Injectable()
 export class AuthzService {
-  constructor(private readonly jwtService: JwtService) {}
+  constructor(
+    private readonly jwtService: JwtService,
+    private readonly usersService: UsersService,
+  ) {}
 
   async buildRedirectLink(id: string): Promise<string> {
     const signedId = await this.jwtService.signAsync({ id });
@@ -46,7 +49,7 @@ export class AuthzService {
         },
       });
 
-      await User.update({ authenticated: true }, { where: { discordId: id } });
+      await this.usersService.updateUserAuthStatus(id, true);
 
       console.log('TOKENS---> ', data); // TODO to remove if not utilized
     } catch (err: any) {

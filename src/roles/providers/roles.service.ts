@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/axios.provider';
 import { DiscordRoleDTO } from '../dto/Discord-role.dto';
-import { RoleDBoperationsProvider } from './role.db-operations.provider';
+import { RolesRepository } from './roles.repository';
 import { AppRoleDTO } from '../dto/App-role.dto';
 
 @Injectable()
-export class RolesProvider {
+export class RolesService {
   constructor(
     private readonly axiosProvider: AxiosProvider,
-    private readonly roleDBoperationsProvider: RoleDBoperationsProvider,
+    private readonly rolesRepository: RolesRepository,
   ) {}
 
   public async getUserRole(userid: string): Promise<string[]> {
@@ -38,7 +38,7 @@ export class RolesProvider {
   }
 
   private async getDBroles(): Promise<AppRoleDTO[]> {
-    return await this.roleDBoperationsProvider.getDBroles();
+    return await this.rolesRepository.getDBroles();
   }
 
   private async updateAllDBroles(): Promise<void> {
@@ -49,8 +49,8 @@ export class RolesProvider {
           url: `/guilds/${process.env.GUILD_ID}/roles`,
         });
 
-      await this.roleDBoperationsProvider.removeAllDBroles();
-      await this.roleDBoperationsProvider.createBulkBDRoles(roles);
+      await this.rolesRepository.removeAllDBroles();
+      await this.rolesRepository.createBulkBDRoles(roles);
     } catch (err: any) {
       throw new Error(err);
       //TODO add a custom error

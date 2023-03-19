@@ -1,4 +1,4 @@
-import { UserDto } from './user.dto';
+import { UserDto } from '../../users/dto/user.dto';
 
 class InteractionBase {
   type: number;

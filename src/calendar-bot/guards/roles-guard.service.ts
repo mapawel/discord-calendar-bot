@@ -1,18 +1,18 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
-import { RolesProvider } from 'src/roles/providers/roles.provider';
+import { RolesService } from 'src/roles/providers/roles.service';
 
 @Injectable()
 export class RolesGuardService {
-  constructor(private readonly rolesProvider: RolesProvider) {}
+  constructor(private readonly rolesService: RolesService) {}
   async verifyUserRole(
     id: string,
     rolesAllowedOrAllIfEmpty: string[],
   ): Promise<true> {
-    const userRoles: string[] = await this.rolesProvider.getUserRole(id);
+    const userRoles: string[] = await this.rolesService.getUserRole(id);
 
     if (rolesAllowedOrAllIfEmpty.length === 0) return true;
 
-    const rolesAllowedIds = await this.rolesProvider.translateRoleNamesToIds(
+    const rolesAllowedIds = await this.rolesService.translateRoleNamesToIds(
       rolesAllowedOrAllIfEmpty,
     );
 

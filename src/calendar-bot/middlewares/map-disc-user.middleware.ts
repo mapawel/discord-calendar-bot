@@ -4,7 +4,7 @@ import {
   InteractionWMemberDTO,
   InteractionWUserDTO,
 } from '../dto/interaction.dto';
-import { UserDto } from '../dto/user.dto';
+import { UserDto } from '../../users/dto/user.dto';
 
 @Injectable()
 export class MapDiscUserMiddleware implements NestMiddleware {

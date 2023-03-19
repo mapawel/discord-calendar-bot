@@ -5,7 +5,7 @@ import { Role } from '../entity/Role.entity';
 import { appRoleMapper } from '../dto/app-roles.mapper';
 
 @Injectable()
-export class RoleDBoperationsProvider {
+export class RolesRepository {
   public async removeAllDBroles(): Promise<void> {
     await Role.destroy({
       where: {},
@@ -26,5 +26,3 @@ export class RoleDBoperationsProvider {
     );
   }
 }
-
-// TODO the same for USER
