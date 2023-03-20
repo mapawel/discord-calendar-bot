@@ -28,6 +28,8 @@ export class DiscordInteractionController {
     body: MappedInteraction,
   ) {
     const {
+      id,
+      token,
       type,
       data: { name, custom_id },
       discord_usr,

@@ -4,5 +4,6 @@ import { UserManagementRepository } from './providers/user-management.repository
 
 @Module({
   providers: [UserManagementService, UserManagementRepository],
+  exports: [UserManagementService],
 })
 export class UserManagementModule {}

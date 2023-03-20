@@ -3,14 +3,20 @@ import { InteractionResponseType } from 'discord-interactions';
 import { UserDto } from '../../users/dto/user.dto';
 import { config } from 'dotenv';
 import { AppRoutes } from 'src/app-routes/app-routes.enum';
-import { UsersService } from 'src/users/providers/users.service';
 import { commandsComponents } from 'src/discord-commands/app-commands-SETUP/commands-components.list';
+import { UsersService } from 'src/users/providers/users.service';
+import { UserManagementService } from 'src/user-management/providers/user-management.service';
+import { commandsSelectComponents } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
+import axios from 'axios';
 
 config();
 
 @Injectable()
 export class DiscordInteractionService {
-  constructor(private usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly userManagementService: UserManagementService,
+  ) {}
 
   responseWithPong() {
     return {
@@ -77,11 +83,42 @@ export class DiscordInteractionService {
     };
   }
 
-  async managingBotResponse() {
+  async addingUserToWhitelist() {
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: 'bot received button click',
+        content: 'What do you want to do?',
+        components: [
+          {
+            type: 1,
+            components: commandsSelectComponents.managingBotSelect1.map(
+              (component) => ({
+                type: component.type,
+                placeholder: component.placeholder,
+                options: component.options,
+                custom_id: component.custom_id,
+              }),
+            ),
+          },
+        ],
+      },
+    };
+  }
+
+  async removingUserFromWhitelist() {
+    return {
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: 'bot received button click2',
+      },
+    };
+  }
+
+  async settingUserConnections() {
+    return {
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: 'bot received button click3',
       },
     };
   }

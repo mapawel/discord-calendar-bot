@@ -25,7 +25,8 @@ export const commands: AppCommand[] = [
     description: 'Managing the bot by the bot-admins',
     dm_permission: true,
     authenticated_guard_rule: 'isAuthenticated',
-    role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
+    // role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
+    role_guard_rules: [],
     controller_service_method: 'managingBot',
   },
 ];
