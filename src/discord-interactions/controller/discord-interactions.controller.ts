@@ -10,8 +10,7 @@ import { commands } from '../../discord-commands/app-commands-SETUP/commands.lis
 import { commandsComponents } from '../../discord-commands/app-commands-SETUP/commands-components.list';
 import { AppCommand } from '../../discord-commands/app-commands-SETUP/commands.list';
 import { AppCommandComponent } from '../../discord-commands/app-commands-SETUP/commands-components.list';
-import { isItemProperType } from '../utils/ingetrations-utils';
-import { joinAppCommandsWAppCommandsComp } from '../utils/ingetrations-utils';
+import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
 
 @Controller()
 export class DiscordInteractionController {
@@ -34,35 +33,23 @@ export class DiscordInteractionController {
       discord_usr,
     } = body;
 
-    const toSearchForMethod: (AppCommandComponent | AppCommand)[] =
-      joinAppCommandsWAppCommandsComp(commands, commandsComponents);
+    const allCommandsComponents: AppCommandComponent[] =
+      getAllCommandComponentsFromObj(commandsComponents);
 
-    console.log('name ----> ', name);
-    console.log('custom_id ----> ', custom_id);
-
-    console.log('>>>>>>>>> ----> ', );
     if (type === 1) return this.discordInteractionService.responseWithPong();
+
     if (type === 2) {
       const serviceMethod =
-        toSearchForMethod.find((integration) =>
-          isItemProperType<AppCommand, AppCommandComponent>(integration, 'name')
-            ? integration.name === name
-            : integration.custom_id === custom_id,
-        )?.controller_service_method || 'default';
-
-      console.log('serviceMethod ----> ', serviceMethod);
+        commands.find((integration) => integration.name === name)
+          ?.controller_service_method || 'default';
 
       return await this.discordInteractionService[serviceMethod](discord_usr);
     }
     if (type === 3) {
       const serviceMethod =
-        toSearchForMethod.find((integration) =>
-          isItemProperType<AppCommand, AppCommandComponent>(integration, 'name')
-            ? integration.name === name
-            : integration.custom_id === custom_id,
+        allCommandsComponents.find(
+          (integration) => integration.custom_id === custom_id,
         )?.controller_service_method || 'default';
-
-      console.log('serviceMethod ----> ', serviceMethod);
 
       return await this.discordInteractionService[serviceMethod](discord_usr);
     }

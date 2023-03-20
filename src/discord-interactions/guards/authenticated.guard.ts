@@ -4,9 +4,7 @@ import { AuthenticatedGuardService } from './authentcated-guard.service';
 import { commands } from 'src/discord-commands/app-commands-SETUP/commands.list';
 import { commandsComponents } from 'src/discord-commands/app-commands-SETUP/commands-components.list';
 import { AppCommandComponent } from 'src/discord-commands/app-commands-SETUP/commands-components.list';
-import { AppCommand } from 'src/discord-commands/app-commands-SETUP/commands.list';
-import { isItemProperType } from '../utils/ingetrations-utils';
-import { joinAppCommandsWAppCommandsComp } from '../utils/ingetrations-utils';
+import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
@@ -17,19 +15,25 @@ export class AuthenticatedGuard implements CanActivate {
     const {
       body: {
         discord_usr,
+        type,
         data: { name, custom_id },
       },
     }: { body: MappedInteraction } = context.switchToHttp().getRequest();
 
-    const allIntegrationsToValidate: (AppCommand | AppCommandComponent)[] =
-      joinAppCommandsWAppCommandsComp(commands, commandsComponents);
+    const allCommandsComponents: AppCommandComponent[] =
+      getAllCommandComponentsFromObj(commandsComponents);
 
-    const serviceMethod =
-      allIntegrationsToValidate.find((integration) =>
-        isItemProperType<AppCommand, AppCommandComponent>(integration, 'name')
-          ? integration.name === name
-          : integration.custom_id === custom_id,
-      )?.authenticated_guard_rule || 'default';
+    const rulesObject =
+      type === 2
+        ? commands.find((integration) => integration.name === name)
+        : type === 3
+        ? allCommandsComponents.find(
+            (integration) => integration.custom_id === custom_id,
+          )
+        : null;
+
+    const serviceMethod = rulesObject?.authenticated_guard_rule || 'default';
+
     return await this.authenticatedGuardService[serviceMethod](discord_usr);
   }
 }
