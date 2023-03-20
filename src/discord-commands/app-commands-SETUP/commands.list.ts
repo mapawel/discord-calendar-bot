@@ -1,6 +1,6 @@
 import { Commands } from './commands.enum';
 
-export const commands: AppCommands = [
+export const commands: AppCommand[] = [
   {
     name: Commands.GET_MEETING,
     type: 1,
@@ -30,7 +30,7 @@ export const commands: AppCommands = [
   },
 ];
 
-type AppCommands = {
+export type AppCommand = {
   name: Commands;
   type: number;
   description: string;
@@ -41,4 +41,4 @@ type AppCommands = {
     | 'responseForMeeting'
     | 'authenticate'
     | 'managingBot';
-}[];
+};

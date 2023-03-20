@@ -5,7 +5,7 @@ class InteractionBase {
   token: string;
   id: string;
   data: {
-    name: string;
+    name?: string;
   };
 }
 
@@ -14,7 +14,8 @@ export class MappedInteraction {
   token: string;
   id: string;
   data: {
-    name: string;
+    name?: string;
+    custom_id?: string;
   };
   discord_usr: UserDto;
 }

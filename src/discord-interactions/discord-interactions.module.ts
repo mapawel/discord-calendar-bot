@@ -9,9 +9,10 @@ import { RolesModule } from 'src/roles/roles.module';
 import { UsersModule } from 'src/users/users.module';
 import { AppRoutes } from 'src/app-routes/app-routes.enum';
 import { WhitelistGuardService } from './guards/whitelist-guard.service';
+import { UserManagementModule } from 'src/user-management/user-management.module';
 
 @Module({
-  imports: [RolesModule, UsersModule],
+  imports: [RolesModule, UsersModule, UserManagementModule],
   controllers: [DiscordInteractionController],
   providers: [
     DiscordInteractionService,

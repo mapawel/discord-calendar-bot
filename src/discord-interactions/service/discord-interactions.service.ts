@@ -4,6 +4,8 @@ import { UserDto } from '../../users/dto/user.dto';
 import { config } from 'dotenv';
 import { AppRoutes } from 'src/app-routes/app-routes.enum';
 import { UsersService } from 'src/users/providers/users.service';
+import { commandsComponents } from 'src/discord-commands/app-commands-SETUP/commands-components.list';
+
 config();
 
 @Injectable()
@@ -25,15 +27,6 @@ export class DiscordInteractionService {
     };
   }
 
-  async managingBot() {
-    return {
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        content: 'Redirecting to the management...',
-      },
-    };
-  }
-
   async authenticate(user: UserDto) {
     try {
       const { id: discordId, username }: { id: string; username: string } =
@@ -44,12 +37,53 @@ export class DiscordInteractionService {
       return {
         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         data: {
-          content: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${discordId}`,
+          components: [
+            {
+              type: 1,
+              components: [
+                {
+                  type: 2,
+                  label: 'Start authentication with Auth0',
+                  style: 5,
+                  url: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${discordId}`,
+                },
+              ],
+            },
+          ],
         },
       };
     } catch (err: any) {
       throw new Error(err.message);
     }
+  }
+
+  async managingBot() {
+    return {
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: 'What do you want to do?',
+        components: [
+          {
+            type: 1,
+            components: commandsComponents.managingBot.map((component) => ({
+              type: component.type,
+              label: component.label,
+              style: component.style,
+              custom_id: component.custom_id,
+            })),
+          },
+        ],
+      },
+    };
+  }
+
+  async managingBotResponse() {
+    return {
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: 'bot received button click',
+      },
+    };
   }
 
   public async default(user: UserDto) {

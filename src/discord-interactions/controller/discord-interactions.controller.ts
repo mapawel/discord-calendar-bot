@@ -3,10 +3,15 @@ import { DiscordInteractionService } from '../service/discord-interactions.servi
 import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
-import { AppRoutes } from 'src/app-routes/app-routes.enum';
+import { AppRoutes } from '../../app-routes/app-routes.enum';
 import { RolesdGuard } from '../guards/roles.guard';
-import { commands } from 'src/discord-commands/app-commands-SETUP/commands.list';
 import { WhitelistGuard } from '../guards/whitelist.guard';
+import { commands } from '../../discord-commands/app-commands-SETUP/commands.list';
+import { commandsComponents } from '../../discord-commands/app-commands-SETUP/commands-components.list';
+import { AppCommand } from '../../discord-commands/app-commands-SETUP/commands.list';
+import { AppCommandComponent } from '../../discord-commands/app-commands-SETUP/commands-components.list';
+import { isItemProperType } from '../utils/ingetrations-utils';
+import { joinAppCommandsWAppCommandsComp } from '../utils/ingetrations-utils';
 
 @Controller()
 export class DiscordInteractionController {
@@ -15,7 +20,7 @@ export class DiscordInteractionController {
   ) {}
 
   @Post(AppRoutes.DISCORD_INTERACTIONS_METHOD)
-  @UseGuards(WhitelistGuard)
+  // @UseGuards(WhitelistGuard)
   @UseGuards(RolesdGuard)
   @UseGuards(AuthenticatedGuard)
   @UseFilters(ForbiddenExceptionFilter)
@@ -25,15 +30,40 @@ export class DiscordInteractionController {
   ) {
     const {
       type,
-      data: { name },
+      data: { name, custom_id },
       discord_usr,
     } = body;
 
+    const toSearchForMethod: (AppCommandComponent | AppCommand)[] =
+      joinAppCommandsWAppCommandsComp(commands, commandsComponents);
+
+    console.log('name ----> ', name);
+    console.log('custom_id ----> ', custom_id);
+
+    console.log('>>>>>>>>> ----> ', );
     if (type === 1) return this.discordInteractionService.responseWithPong();
     if (type === 2) {
       const serviceMethod =
-        commands.find(({ name: n }) => n === name)?.controller_service_method ||
-        'default';
+        toSearchForMethod.find((integration) =>
+          isItemProperType<AppCommand, AppCommandComponent>(integration, 'name')
+            ? integration.name === name
+            : integration.custom_id === custom_id,
+        )?.controller_service_method || 'default';
+
+      console.log('serviceMethod ----> ', serviceMethod);
+
+      return await this.discordInteractionService[serviceMethod](discord_usr);
+    }
+    if (type === 3) {
+      const serviceMethod =
+        toSearchForMethod.find((integration) =>
+          isItemProperType<AppCommand, AppCommandComponent>(integration, 'name')
+            ? integration.name === name
+            : integration.custom_id === custom_id,
+        )?.controller_service_method || 'default';
+
+      console.log('serviceMethod ----> ', serviceMethod);
+
       return await this.discordInteractionService[serviceMethod](discord_usr);
     }
   }

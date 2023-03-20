@@ -55,7 +55,8 @@
     "name": "DiscordInteractionsModule",
     "imports": [
       "RolesModule",
-      "UsersModule"
+      "UsersModule",
+      "UserManagementModule"
     ],
     "providers": {
       "DiscordInteractionService": {
@@ -109,6 +110,20 @@
     "exports": [
       "UsersService"
     ]
+  },
+  {
+    "name": "UserManagementModule",
+    "imports": [],
+    "providers": {
+      "UserManagementService": {
+        "method": "standard"
+      },
+      "UserManagementRepository": {
+        "method": "standard"
+      }
+    },
+    "controllers": [],
+    "exports": []
   },
   {
     "name": "AuthzModule",
