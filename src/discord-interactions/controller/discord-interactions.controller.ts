@@ -6,6 +6,7 @@ import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter'
 import { AppRoutes } from 'src/app-routes/app-routes.enum';
 import { RolesdGuard } from '../guards/roles.guard';
 import { commands } from 'src/discord-commands/app-commands-SETUP/commands.list';
+import { WhitelistGuard } from '../guards/whitelist.guard';
 
 @Controller()
 export class DiscordInteractionController {
@@ -14,6 +15,7 @@ export class DiscordInteractionController {
   ) {}
 
   @Post(AppRoutes.DISCORD_INTERACTIONS_METHOD)
+  @UseGuards(WhitelistGuard)
   @UseGuards(RolesdGuard)
   @UseGuards(AuthenticatedGuard)
   @UseFilters(ForbiddenExceptionFilter)

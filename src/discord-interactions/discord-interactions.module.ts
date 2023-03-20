@@ -7,6 +7,8 @@ import { AuthenticatedGuardService } from './guards/authentcated-guard.service';
 import { RolesGuardService } from './guards/roles-guard.service';
 import { RolesModule } from 'src/roles/roles.module';
 import { UsersModule } from 'src/users/users.module';
+import { AppRoutes } from 'src/app-routes/app-routes.enum';
+import { WhitelistGuardService } from './guards/whitelist-guard.service';
 
 @Module({
   imports: [RolesModule, UsersModule],
@@ -15,6 +17,7 @@ import { UsersModule } from 'src/users/users.module';
     DiscordInteractionService,
     AuthenticatedGuardService,
     RolesGuardService,
+    WhitelistGuardService,
   ],
 })
 export class DiscordInteractionsModule implements NestModule {
@@ -24,6 +27,6 @@ export class DiscordInteractionsModule implements NestModule {
         verifyKeyMiddleware(process.env.PUBLIC_KEY || ''),
         MapDiscUserMiddleware,
       )
-      .forRoutes('interactions');
+      .forRoutes(AppRoutes.DISCORD_INTERACTIONS_METHOD);
   }
 }
