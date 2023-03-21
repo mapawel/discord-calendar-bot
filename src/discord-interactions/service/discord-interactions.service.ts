@@ -7,7 +7,7 @@ import { commandsComponents } from 'src/discord-commands/app-commands-SETUP/comm
 import { UsersService } from 'src/users/providers/users.service';
 import { UserManagementService } from 'src/user-management/providers/user-management.service';
 import { commandsSelectComponents } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
-import axios from 'axios';
+import { UsersFromDiscordDTO } from 'src/user-management/dto/users-from-discord.dto';
 
 config();
 
@@ -84,10 +84,12 @@ export class DiscordInteractionService {
   }
 
   async addingUserToWhitelist() {
+    const allUsers: UsersFromDiscordDTO[] =
+      await this.userManagementService.getUsersFromDiscord();
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: 'What do you want to do?',
+        content: 'Choose a user to add to the whitelist:',
         components: [
           {
             type: 1,
@@ -95,7 +97,12 @@ export class DiscordInteractionService {
               (component) => ({
                 type: component.type,
                 placeholder: component.placeholder,
-                options: component.options,
+                options: allUsers
+                  .filter(({ id }) => id !== process.env.APP_ID)
+                  .map((user) => ({
+                    label: user.username,
+                    value: user.id,
+                  })),
                 custom_id: component.custom_id,
               }),
             ),

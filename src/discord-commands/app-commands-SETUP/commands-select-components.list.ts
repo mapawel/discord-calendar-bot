@@ -10,16 +10,8 @@ export const commandsSelectComponents: Record<
       custom_id: CommandsSelectComponents.SELECT_USER,
       options: [
         {
-          label: 'user1',
-          value: 'user1',
-          description: 'user1',
-          default: false,
-        },
-        {
-          label: 'user2',
-          value: 'user2',
-          description: 'user2',
-          default: false,
+          label: 'to replace in app code',
+          value: 'to replace in app code',
         },
       ],
       placeholder: 'Select user',
@@ -33,8 +25,8 @@ export const commandsSelectComponents: Record<
 };
 
 export type AppCommandSelectComponent = {
-  type: 3
-  options: any[];
+  type: 3;
+  options: { value: string; label: string }[];
   custom_id: CommandsSelectComponents;
   placeholder: string;
   min_value: number;

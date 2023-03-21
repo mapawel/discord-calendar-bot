@@ -9,7 +9,6 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 import { UsersService } from 'src/users/providers/users.service';
 
 config();
-// TODO encode the state!
 
 @Injectable()
 export class AuthzService {
