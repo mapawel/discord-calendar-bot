@@ -18,4 +18,19 @@ export class UserManagementRepository {
     await WhitelistedUser.create({ discordId });
     return true;
   }
+
+  async getFromWhitelist(): Promise<WhitelistedUserDto[]> {
+    const foundUsers: WhitelistedUser[] = await WhitelistedUser.findAll();
+    return foundUsers.map((user) => whitelistedUserDtoMapper(user));
+  }
+
+  async removeFromWhitelist(discordId: string): Promise<boolean> {
+    const found: WhitelistedUser | null = await WhitelistedUser.findOne({
+      where: { discordId },
+    });
+    if (!found) return false;
+
+    await found.destroy();
+    return true;
+  }
 }

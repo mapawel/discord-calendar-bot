@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserManagementRepository } from './user-management.repository';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { UsersFromDiscordDTO } from '../dto/users-from-discord.dto';
+import { WhitelistedUserDto } from '../dto/whitelisted-user.dto';
 
 @Injectable()
 export class UserManagementService {
@@ -23,7 +24,6 @@ export class UserManagementService {
 
       if (!data) throw new Error('No data from Discord trying to get users');
 
-      console.log('data ----> ', data);
       return data.map((item) => ({
         id: item.user.id,
         username: item.user.username,
@@ -41,5 +41,13 @@ export class UserManagementService {
       return false;
     }
     return await this.userManagementRepository.addToWhitelist(discordId);
+  }
+
+  async getExistingUsers(): Promise<WhitelistedUserDto[]> {
+    return await this.userManagementRepository.getFromWhitelist();
+  }
+
+  async removeExistingUsers(discordId: string): Promise<boolean> {
+    return await this.userManagementRepository.removeFromWhitelist(discordId);
   }
 }

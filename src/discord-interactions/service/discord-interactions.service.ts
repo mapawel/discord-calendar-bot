@@ -8,6 +8,7 @@ import { UsersService } from 'src/users/providers/users.service';
 import { UserManagementService } from 'src/user-management/providers/user-management.service';
 import { commandsSelectComponents } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
 import { UsersFromDiscordDTO } from 'src/user-management/dto/users-from-discord.dto';
+import { WhitelistedUserDto } from 'src/user-management/dto/whitelisted-user.dto';
 
 config();
 
@@ -24,7 +25,7 @@ export class DiscordInteractionService {
     };
   }
 
-  async responseForMeeting(user: UserDto) {
+  async responseForMeeting(user: UserDto, values: string[]) {
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -33,7 +34,7 @@ export class DiscordInteractionService {
     };
   }
 
-  async authenticate(user: UserDto) {
+  async authenticate(user: UserDto, values: string[]) {
     try {
       const { id: discordId, username }: { id: string; username: string } =
         user;
@@ -63,7 +64,7 @@ export class DiscordInteractionService {
     }
   }
 
-  async managingBot() {
+  async managingBot(user: UserDto, values: string[]) {
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -83,9 +84,26 @@ export class DiscordInteractionService {
     };
   }
 
-  async addingUserToWhitelist() {
+  async addingUserToWhitelist(user: UserDto, values: string[]) {
     const allUsers: UsersFromDiscordDTO[] =
       await this.userManagementService.getUsersFromDiscord();
+    const existingUsers: WhitelistedUserDto[] =
+      await this.userManagementService.getExistingUsers();
+    const existingUsersIds: string[] = existingUsers.map(
+      ({ discordId }) => discordId,
+    );
+    const usersToShow: UsersFromDiscordDTO[] = allUsers.filter(
+      ({ id }) => id !== process.env.APP_ID && !existingUsersIds.includes(id),
+    );
+
+    if (!usersToShow.length)
+      return {
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: 'No more users to add to the whitelist.',
+        },
+      };
+
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -93,16 +111,14 @@ export class DiscordInteractionService {
         components: [
           {
             type: 1,
-            components: commandsSelectComponents.managingBotSelect1.map(
+            components: commandsSelectComponents.managingBotSelectAdding.map(
               (component) => ({
                 type: component.type,
                 placeholder: component.placeholder,
-                options: allUsers
-                  .filter(({ id }) => id !== process.env.APP_ID)
-                  .map((user) => ({
-                    label: user.username,
-                    value: user.id,
-                  })),
+                options: usersToShow.map((user) => ({
+                  label: user.username,
+                  value: user.id,
+                })),
                 custom_id: component.custom_id,
               }),
             ),
@@ -112,16 +128,67 @@ export class DiscordInteractionService {
     };
   }
 
-  async removingUserFromWhitelist() {
+  async addingUserToWhitelistCallback(user: UserDto, values: string[]) {
+    const [discordId] = values;
+    await this.userManagementService.addToWhitelistIdNotExisting(discordId);
+
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
-        content: 'bot received button click2',
+        content: 'User added!',
       },
     };
   }
 
-  async settingUserConnections() {
+  async removingUserFromWhitelist(user: UserDto, values: string[]) {
+    const usersToShow: WhitelistedUserDto[] =
+      await this.userManagementService.getExistingUsers();
+
+    if (!usersToShow.length)
+      return {
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+        data: {
+          content: 'Nothing to remove...',
+        },
+      };
+
+    return {
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: 'Choose user id to remove from whitelist:',
+        components: [
+          {
+            type: 1,
+            components: commandsSelectComponents.managingBotSelectRemoving.map(
+              (component) => ({
+                type: component.type,
+                placeholder: component.placeholder,
+                options: usersToShow.map((user) => ({
+                  label: user.discordId,
+                  value: user.discordId,
+                })),
+                custom_id: component.custom_id,
+              }),
+            ),
+          },
+        ],
+      },
+    };
+  }
+
+  async removingUserFromWhitelistCallback(user: UserDto, values: string[]) {
+    const [discordId] = values;
+    await this.userManagementService.removeExistingUsers(discordId);
+
+    return {
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content: 'User removed!',
+      },
+    };
+  }
+
+  async settingUserConnections(user: UserDto, values: string[]) {
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -130,7 +197,7 @@ export class DiscordInteractionService {
     };
   }
 
-  public async default(user: UserDto) {
+  public async default(user: UserDto, values: string[]) {
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {

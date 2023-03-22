@@ -8,7 +8,9 @@ import { RolesdGuard } from '../guards/roles.guard';
 import { WhitelistGuard } from '../guards/whitelist.guard';
 import { commands } from '../../discord-commands/app-commands-SETUP/commands.list';
 import { commandsComponents } from '../../discord-commands/app-commands-SETUP/commands-components.list';
+import { commandsSelectComponents } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
 import { AppCommand } from '../../discord-commands/app-commands-SETUP/commands.list';
+import { AppCommandSelectComponent } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
 import { AppCommandComponent } from '../../discord-commands/app-commands-SETUP/commands-components.list';
 import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
 
@@ -31,12 +33,17 @@ export class DiscordInteractionController {
       id,
       token,
       type,
-      data: { name, custom_id },
+      data: { name, custom_id, values },
       discord_usr,
     } = body;
 
-    const allCommandsComponents: AppCommandComponent[] =
-      getAllCommandComponentsFromObj(commandsComponents);
+    const allCommandsComponents: (
+      | AppCommandComponent
+      | AppCommandSelectComponent
+    )[] = getAllCommandComponentsFromObj({
+      ...commandsComponents,
+      ...commandsSelectComponents,
+    });
 
     if (type === 1) return this.discordInteractionService.responseWithPong();
 
@@ -45,7 +52,10 @@ export class DiscordInteractionController {
         commands.find((integration) => integration.name === name)
           ?.controller_service_method || 'default';
 
-      return await this.discordInteractionService[serviceMethod](discord_usr);
+      return await this.discordInteractionService[serviceMethod](
+        discord_usr,
+        values || [],
+      );
     }
     if (type === 3) {
       const serviceMethod =
@@ -53,7 +63,10 @@ export class DiscordInteractionController {
           (integration) => integration.custom_id === custom_id,
         )?.controller_service_method || 'default';
 
-      return await this.discordInteractionService[serviceMethod](discord_usr);
+      return await this.discordInteractionService[serviceMethod](
+        discord_usr,
+        values || [],
+      );
     }
   }
 }
