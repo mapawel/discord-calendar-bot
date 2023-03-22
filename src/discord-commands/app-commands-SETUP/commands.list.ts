@@ -9,6 +9,7 @@ export const commands: AppCommand[] = [
     authenticated_guard_rule: 'isAuthenticated',
     role_guard_rules: [],
     controller_service_method: 'responseForMeeting',
+    content: 'Redirecting to the calendar...',
   },
   {
     name: Commands.AUTHENTICATE,
@@ -18,6 +19,7 @@ export const commands: AppCommand[] = [
     authenticated_guard_rule: 'notAuthenticated',
     role_guard_rules: [],
     controller_service_method: 'authenticate',
+    content: 'Start authentication with Auth0',
   },
   {
     name: Commands.BOT_MANAGE,
@@ -28,6 +30,7 @@ export const commands: AppCommand[] = [
     // role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
     role_guard_rules: [],
     controller_service_method: 'managingBot',
+    content: 'What do you want to do?',
   },
 ];
 
@@ -42,4 +45,5 @@ export type AppCommand = {
     | 'responseForMeeting'
     | 'authenticate'
     | 'managingBot';
+  content: string;
 };

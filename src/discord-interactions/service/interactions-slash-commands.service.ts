@@ -5,12 +5,18 @@ import { config } from 'dotenv';
 import { AppRoutes } from 'src/app-routes/app-routes.enum';
 import { commandsComponents } from 'src/discord-commands/app-commands-SETUP/commands-components.list';
 import { UsersService } from 'src/users/providers/users.service';
+import { commands } from 'src/discord-commands/app-commands-SETUP/commands.list';
+import { Commands } from 'src/discord-commands/app-commands-SETUP/commands.enum';
+import { ResponseComponentsProvider } from './response-components.provider';
 
 config();
 
 @Injectable()
 export class IntegrationSlashCommandsService {
-  constructor(private readonly usersService: UsersService) {}
+  constructor(
+    private readonly usersService: UsersService,
+    private readonly responseComponentsProvider: ResponseComponentsProvider,
+  ) {}
 
   responseWithPong() {
     return {
@@ -19,8 +25,11 @@ export class IntegrationSlashCommandsService {
   }
 
   async responseForMeeting() {
-    return this.generateIntegrationResponse({
-      content: 'Redirecting to the calendar...',
+    return this.responseComponentsProvider.generateIntegrationResponse({
+      content: this.responseComponentsProvider.findContent(
+        commands,
+        Commands.GET_MEETING,
+      ),
     });
   }
 
@@ -29,11 +38,14 @@ export class IntegrationSlashCommandsService {
 
     await this.usersService.createUserIfNotExisting(discordId, username);
 
-    return this.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateIntegrationResponse({
       components: [
         {
           type: 2,
-          label: 'Start authentication with Auth0',
+          label: this.responseComponentsProvider.findContent(
+            commands,
+            Commands.AUTHENTICATE,
+          ),
           style: 5,
           url: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${discordId}`,
         },
@@ -42,36 +54,18 @@ export class IntegrationSlashCommandsService {
   }
 
   async managingBot() {
-    return this.generateIntegrationResponse({
-      content: 'What do you want to do?',
+    return this.responseComponentsProvider.generateIntegrationResponse({
+      content: this.responseComponentsProvider.findContent(
+        commands,
+        Commands.BOT_MANAGE,
+      ),
       components: commandsComponents.managingBot,
     });
   }
 
   public async default(user: UserDto, values: string[]) {
-    return this.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateIntegrationResponse({
       content: 'No action implemented for this command yet.',
     });
-  }
-
-  private async generateIntegrationResponse({
-    content,
-    components,
-  }: {
-    content?: string;
-    components?: any[];
-  }) {
-    return {
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        content,
-        components: [
-          {
-            type: 1,
-            components,
-          },
-        ],
-      },
-    };
   }
 }
