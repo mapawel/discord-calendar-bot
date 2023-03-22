@@ -66,6 +66,8 @@ export class DiscordInteractionController {
       return await this.discordInteractionService[serviceMethod](
         discord_usr,
         values || [],
+        id,
+        token,
       );
     }
   }

@@ -10,9 +10,17 @@ import { UsersModule } from 'src/users/users.module';
 import { AppRoutes } from 'src/app-routes/app-routes.enum';
 import { WhitelistGuardService } from './guards/whitelist-guard.service';
 import { UserManagementModule } from 'src/user-management/user-management.module';
+import { AxiosModule } from 'src/axios/axios.module';
+import { StateModule } from 'src/app-state/state.module';
 
 @Module({
-  imports: [RolesModule, UsersModule, UserManagementModule],
+  imports: [
+    RolesModule,
+    UsersModule,
+    UserManagementModule,
+    AxiosModule,
+    StateModule,
+  ],
   controllers: [DiscordInteractionController],
   providers: [
     DiscordInteractionService,

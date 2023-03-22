@@ -9,6 +9,8 @@ import { UserManagementService } from 'src/user-management/providers/user-manage
 import { commandsSelectComponents } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
 import { UsersFromDiscordDTO } from 'src/user-management/dto/users-from-discord.dto';
 import { WhitelistedUserDto } from 'src/user-management/dto/whitelisted-user.dto';
+import { AxiosProvider } from 'src/axios/provider/axios.provider';
+import { StateService } from 'src/app-state/state.service';
 
 config();
 
@@ -17,6 +19,8 @@ export class DiscordInteractionService {
   constructor(
     private readonly usersService: UsersService,
     private readonly userManagementService: UserManagementService,
+    private readonly axiosProvider: AxiosProvider,
+    private readonly stateService: StateService,
   ) {}
 
   responseWithPong() {
@@ -84,7 +88,12 @@ export class DiscordInteractionService {
     };
   }
 
-  async addingUserToWhitelist(user: UserDto, values: string[]) {
+  async addingUserToWhitelist(
+    user: UserDto,
+    values: string[],
+    id: string,
+    token: string,
+  ) {
     const allUsers: UsersFromDiscordDTO[] =
       await this.userManagementService.getUsersFromDiscord();
     const existingUsers: WhitelistedUserDto[] =
@@ -104,6 +113,7 @@ export class DiscordInteractionService {
         },
       };
 
+    await this.stateService.saveThisAsSession(user.id, token);
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -128,19 +138,48 @@ export class DiscordInteractionService {
     };
   }
 
-  async addingUserToWhitelistCallback(user: UserDto, values: string[]) {
-    const [discordId] = values;
-    await this.userManagementService.addToWhitelistIdNotExisting(discordId);
+  async addingUserToWhitelistCallback(
+    user: UserDto,
+    values: string[],
+    id: string,
+    token: string,
+  ) {
+    try {
+      const [discordIdToAdd] = values;
+      await this.userManagementService.addToWhitelistIdNotExisting(
+        discordIdToAdd,
+      );
 
-    return {
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        content: 'User added!',
-      },
-    };
+      const lastMessageToken: string | undefined =
+        await this.stateService.loadTokenForDiscordId(user.id);
+
+      if (!lastMessageToken)
+        return {
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: `User ${discordIdToAdd} added!`,
+          },
+        };
+
+      await this.axiosProvider.instance({
+        method: 'PATCH',
+        url: `/webhooks/${process.env.APP_ID}/${lastMessageToken}/messages/@original`,
+        data: {
+          content: `User ${discordIdToAdd} added!`,
+          components: [],
+        },
+      });
+    } catch (err: any) {
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', err);
+    }
   }
 
-  async removingUserFromWhitelist(user: UserDto, values: string[]) {
+  async removingUserFromWhitelist(
+    user: UserDto,
+    values: string[],
+    id: string,
+    token: string,
+  ) {
     const usersToShow: WhitelistedUserDto[] =
       await this.userManagementService.getExistingUsers();
 
@@ -152,6 +191,7 @@ export class DiscordInteractionService {
         },
       };
 
+    await this.stateService.saveThisAsSession(user.id, token);
     return {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
@@ -177,15 +217,32 @@ export class DiscordInteractionService {
   }
 
   async removingUserFromWhitelistCallback(user: UserDto, values: string[]) {
-    const [discordId] = values;
-    await this.userManagementService.removeExistingUsers(discordId);
+    try {
+      const [discordIdToRemove] = values;
+      await this.userManagementService.removeExistingUsers(discordIdToRemove);
 
-    return {
-      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
-      data: {
-        content: 'User removed!',
-      },
-    };
+      const lastMessageToken: string | undefined =
+        await this.stateService.loadTokenForDiscordId(user.id);
+
+      if (!lastMessageToken)
+        return {
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+          data: {
+            content: `User id ${discordIdToRemove} removed!`,
+          },
+        };
+
+      await this.axiosProvider.instance({
+        method: 'PATCH',
+        url: `/webhooks/${process.env.APP_ID}/${lastMessageToken}/messages/@original`,
+        data: {
+          content: `User id ${discordIdToRemove} removed!`,
+          components: [],
+        },
+      });
+    } catch (err: any) {
+      console.log('>>>>>>>>>>>>>>>>>>>>>>>>>>>>', err);
+    }
   }
 
   async settingUserConnections(user: UserDto, values: string[]) {

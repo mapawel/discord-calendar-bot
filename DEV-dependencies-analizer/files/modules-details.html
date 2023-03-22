@@ -56,7 +56,9 @@
     "imports": [
       "RolesModule",
       "UsersModule",
-      "UserManagementModule"
+      "UserManagementModule",
+      "AxiosModule",
+      "StateModule"
     ],
     "providers": {
       "DiscordInteractionService": {
@@ -127,6 +129,22 @@
     "controllers": [],
     "exports": [
       "UserManagementService"
+    ]
+  },
+  {
+    "name": "StateModule",
+    "imports": [],
+    "providers": {
+      "StateService": {
+        "method": "standard"
+      },
+      "StateFileRepository": {
+        "method": "standard"
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "StateService"
     ]
   },
   {
