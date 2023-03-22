@@ -25,10 +25,7 @@ export class StateFileRepository {
 
   public async findOne(discordId: string): Promise<string | undefined> {
     try {
-      console.log('1 ----> ');
       if (!(await this.isExisting(discordId))) return undefined;
-      console.log('2 ----> ');
-
       const buffer = await readFile(
         join(this.pathToDBFiles(), `${discordId}.txt`),
       );

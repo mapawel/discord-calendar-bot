@@ -1,5 +1,6 @@
 import { Controller, Post, Body, UseGuards, UseFilters } from '@nestjs/common';
-import { DiscordInteractionService } from '../service/discord-interactions.service';
+import { IntegrationSlashCommandsService } from '../service/interactions-slash-commands.service';
+import { IntegrationComponentsService } from '../service/interactions-components.service';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
@@ -9,7 +10,6 @@ import { WhitelistGuard } from '../guards/whitelist.guard';
 import { commands } from '../../discord-commands/app-commands-SETUP/commands.list';
 import { commandsComponents } from '../../discord-commands/app-commands-SETUP/commands-components.list';
 import { commandsSelectComponents } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
-import { AppCommand } from '../../discord-commands/app-commands-SETUP/commands.list';
 import { AppCommandSelectComponent } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
 import { AppCommandComponent } from '../../discord-commands/app-commands-SETUP/commands-components.list';
 import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
@@ -17,7 +17,8 @@ import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
 @Controller()
 export class DiscordInteractionController {
   constructor(
-    private readonly discordInteractionService: DiscordInteractionService,
+    private readonly integrationSlashCommandsService: IntegrationSlashCommandsService,
+    private readonly integrationComponentsService: IntegrationComponentsService,
   ) {}
 
   @Post(AppRoutes.DISCORD_INTERACTIONS_METHOD)
@@ -45,14 +46,15 @@ export class DiscordInteractionController {
       ...commandsSelectComponents,
     });
 
-    if (type === 1) return this.discordInteractionService.responseWithPong();
+    if (type === 1)
+      return this.integrationSlashCommandsService.responseWithPong();
 
     if (type === 2) {
       const serviceMethod =
         commands.find((integration) => integration.name === name)
           ?.controller_service_method || 'default';
 
-      return await this.discordInteractionService[serviceMethod](
+      return await this.integrationSlashCommandsService[serviceMethod](
         discord_usr,
         values || [],
       );
@@ -63,10 +65,9 @@ export class DiscordInteractionController {
           (integration) => integration.custom_id === custom_id,
         )?.controller_service_method || 'default';
 
-      return await this.discordInteractionService[serviceMethod](
+      return await this.integrationComponentsService[serviceMethod](
         discord_usr,
         values || [],
-        id,
         token,
       );
     }

@@ -18,4 +18,8 @@ export class StateService {
   ): Promise<string | undefined> {
     return await this.stateFileRepository.findOne(discordId);
   }
+
+  public async removeTokenForDiscordId(discordId: string): Promise<boolean> {
+    return await this.stateFileRepository.removeOne(discordId);
+  }
 }

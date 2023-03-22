@@ -3,6 +3,8 @@ import { userDtoMapper } from '../dto/user-dto.mapper';
 import { UserDto } from '../dto/user.dto';
 import { User } from '../entity/User.entity';
 
+// TODO CATCH ERRORS!!!!
+
 @Injectable()
 export class UsersRepository {
   public async createUser(discordId: string, name: string): Promise<true> {

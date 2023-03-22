@@ -1,6 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { DiscordInteractionController } from './controller/discord-interactions.controller';
-import { DiscordInteractionService } from './service/discord-interactions.service';
+import { IntegrationSlashCommandsService } from './service/interactions-slash-commands.service';
+import { IntegrationComponentsService } from './service/interactions-components.service';
 import { MapDiscUserMiddleware } from './middlewares/map-disc-user.middleware';
 import { verifyKeyMiddleware } from 'discord-interactions';
 import { AuthenticatedGuardService } from './guards/authentcated-guard.service';
@@ -23,7 +24,8 @@ import { StateModule } from 'src/app-state/state.module';
   ],
   controllers: [DiscordInteractionController],
   providers: [
-    DiscordInteractionService,
+    IntegrationSlashCommandsService,
+    IntegrationComponentsService,
     AuthenticatedGuardService,
     RolesGuardService,
     WhitelistGuardService,
