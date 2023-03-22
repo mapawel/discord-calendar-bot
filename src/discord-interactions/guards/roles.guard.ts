@@ -1,11 +1,11 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { RolesGuardService } from './roles-guard.service';
-import { commands } from 'src/discord-commands/app-commands-SETUP/commands.list';
-import { commandsComponents } from 'src/discord-commands/app-commands-SETUP/commands-components.list';
-import { commandsSelectComponents } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
+import { commands } from '../../discord-commands/app-commands-SETUP/commands.list';
+import { commandsComponents } from '../../discord-commands/app-commands-SETUP/commands-components.list';
+import { commandsSelectComponents } from '../../discord-commands/app-commands-SETUP/commands-select-components.list';
 import { AppCommandComponent } from '../../discord-commands/app-commands-SETUP/commands-components.list';
-import { AppCommandSelectComponent } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
+import { AppCommandSelectComponent } from '../../discord-commands/app-commands-SETUP/commands-select-components.list';
 import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
 
 @Injectable()

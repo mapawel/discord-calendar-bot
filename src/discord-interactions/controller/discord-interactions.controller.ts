@@ -22,7 +22,7 @@ export class DiscordInteractionController {
   ) {}
 
   @Post(AppRoutes.DISCORD_INTERACTIONS_METHOD)
-  // @UseGuards(WhitelistGuard)
+  @UseGuards(WhitelistGuard)
   @UseGuards(RolesdGuard)
   @UseGuards(AuthenticatedGuard)
   @UseFilters(ForbiddenExceptionFilter)
@@ -31,7 +31,6 @@ export class DiscordInteractionController {
     body: MappedInteraction,
   ) {
     const {
-      id,
       token,
       type,
       data: { name, custom_id, values },

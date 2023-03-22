@@ -8,6 +8,7 @@ export const commands: AppCommand[] = [
     dm_permission: true,
     authenticated_guard_rule: 'isAuthenticated',
     role_guard_rules: [],
+    whitelisting_guard_rule: 'isWhitelisted',
     controller_service_method: 'responseForMeeting',
     content: 'Redirecting to the calendar...',
   },
@@ -18,6 +19,7 @@ export const commands: AppCommand[] = [
     dm_permission: true,
     authenticated_guard_rule: 'notAuthenticated',
     role_guard_rules: [],
+    whitelisting_guard_rule: 'isWhitelisted',
     controller_service_method: 'authenticate',
     content: 'Start authentication with Auth0',
   },
@@ -28,6 +30,7 @@ export const commands: AppCommand[] = [
     dm_permission: true,
     authenticated_guard_rule: 'isAuthenticated',
     // role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
+    whitelisting_guard_rule: 'notWhitelisted',
     role_guard_rules: [],
     controller_service_method: 'managingBot',
     content: 'What do you want to do?',
@@ -41,6 +44,7 @@ export type AppCommand = {
   dm_permission: boolean;
   authenticated_guard_rule: 'isAuthenticated' | 'notAuthenticated';
   role_guard_rules: ('Mentor' | 'Calendar-bot-admin')[]; // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
+  whitelisting_guard_rule: 'isWhitelisted' | 'notWhitelisted';
   controller_service_method:
     | 'responseForMeeting'
     | 'authenticate'

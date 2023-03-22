@@ -19,6 +19,8 @@ export const commandsSelectComponents: Record<
       max_value: 1,
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
+      whitelisting_guard_rule: 'notWhitelisted',
+
       controller_service_method: 'addingUserToWhitelistCallback',
     },
   ],
@@ -37,6 +39,7 @@ export const commandsSelectComponents: Record<
       max_value: 1,
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
+      whitelisting_guard_rule: 'notWhitelisted',
       controller_service_method: 'removingUserFromWhitelistCallback',
     },
   ],
@@ -51,6 +54,7 @@ export type AppCommandSelectComponent = {
   max_value: number;
   authenticated_guard_rule: 'isAuthenticated' | 'notAuthenticated';
   role_guard_rules: ('Mentor' | 'Calendar-bot-admin')[]; // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
+  whitelisting_guard_rule: 'isWhitelisted' | 'notWhitelisted';
   controller_service_method:
     | 'addingUserToWhitelist'
     | 'removingUserFromWhitelist'
