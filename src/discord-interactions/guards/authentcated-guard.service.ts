@@ -1,6 +1,6 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
 import { UserDto } from '../../users/dto/user.dto';
-import { Commands } from '../../discord-commands/app-commands-SETUP/commands.enum';
+import { Commands } from '../../app-SETUP/commands.enum';
 import { UsersService } from 'src/users/providers/users.service';
 
 @Injectable()
@@ -22,7 +22,8 @@ export class AuthenticatedGuardService {
     const user: UserDto | undefined = await this.usersService.getUserById(
       discord_usr.id,
     );
-    if (user?.authenticated) throw new ForbiddenException('User already authenticated!');
+    if (user?.authenticated)
+      throw new ForbiddenException('User already authenticated!');
     return true;
   }
 

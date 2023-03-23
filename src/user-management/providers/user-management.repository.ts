@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { WhitelistedUser } from '../entity/whitelisted-user.entity';
+import { WhitelistedUser } from '../entities/whitelisted-user.entity';
 import { WhitelistedUserDto } from '../dto/whitelisted-user.dto';
 import { whitelistedUserDtoMapper } from '../dto/whitelisted-user-dto.mapper';
 

@@ -3,6 +3,7 @@ import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { DiscordRoleDTO } from '../dto/Discord-role.dto';
 import { RolesRepository } from './roles.repository';
 import { AppRoleDTO } from '../dto/App-role.dto';
+import { usersManagementSettings } from 'src/app-SETUP/users-management.settings';
 
 @Injectable()
 export class RolesService {
@@ -37,8 +38,8 @@ export class RolesService {
     });
   }
 
-  private async getDBroles(): Promise<AppRoleDTO[]> {
-    return await this.rolesRepository.getDBroles();
+  public async getDBroles(roleNames: string[] = []): Promise<AppRoleDTO[]> {
+    return await this.rolesRepository.getDBroles(roleNames);
   }
 
   private async updateAllDBroles(): Promise<void> {
@@ -57,7 +58,7 @@ export class RolesService {
     }
   }
 
-  onModuleInit() {
-    this.updateAllDBroles();
+  async onModuleInit() {
+    await this.updateAllDBroles();
   }
 }

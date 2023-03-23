@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { config } from 'dotenv';
-import { commands } from '../app-commands-SETUP/commands.list';
+import { commands } from '../../app-SETUP/commands.list';
 
 config();
 

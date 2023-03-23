@@ -5,8 +5,8 @@ import { UserManagementService } from 'src/user-management/providers/user-manage
 import { UsersFromDiscordDTO } from 'src/user-management/dto/users-from-discord.dto';
 import { WhitelistedUserDto } from 'src/user-management/dto/whitelisted-user.dto';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
-import { AppCommand } from 'src/discord-commands/app-commands-SETUP/commands.list';
-import { Commands } from 'src/discord-commands/app-commands-SETUP/commands.enum';
+import { AppCommand } from 'src/app-SETUP/commands.list';
+import { Commands } from 'src/app-SETUP/commands.enum';
 
 config();
 

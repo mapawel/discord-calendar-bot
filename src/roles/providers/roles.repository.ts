@@ -13,8 +13,16 @@ export class RolesRepository {
     });
   }
 
-  public async getDBroles(): Promise<AppRoleDTO[]> {
-    const roles: Role[] = await Role.findAll();
+  public async getDBroles(roleNames: string[]): Promise<AppRoleDTO[]> {
+    const roles = await Role.findAll(
+      roleNames.length
+        ? {
+            where: {
+              name: roleNames,
+            },
+          }
+        : {},
+    );
     return roles.map((role) => appRoleMapper(role));
   }
 

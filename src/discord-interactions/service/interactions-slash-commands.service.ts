@@ -3,10 +3,10 @@ import { InteractionResponseType } from 'discord-interactions';
 import { UserDto } from '../../users/dto/user.dto';
 import { config } from 'dotenv';
 import { AppRoutes } from 'src/app-routes/app-routes.enum';
-import { commandsComponents } from 'src/discord-commands/app-commands-SETUP/commands-components.list';
+import { commandsComponents } from 'src/app-SETUP/commands-components.list';
 import { UsersService } from 'src/users/providers/users.service';
-import { commands } from 'src/discord-commands/app-commands-SETUP/commands.list';
-import { Commands } from 'src/discord-commands/app-commands-SETUP/commands.enum';
+import { commands } from 'src/app-SETUP/commands.list';
+import { Commands } from 'src/app-SETUP/commands.enum';
 import { ResponseComponentsProvider } from './response-components.provider';
 
 config();

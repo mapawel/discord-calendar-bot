@@ -7,11 +7,11 @@ import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter'
 import { AppRoutes } from '../../app-routes/app-routes.enum';
 import { RolesdGuard } from '../guards/roles.guard';
 import { WhitelistGuard } from '../guards/whitelist.guard';
-import { commands } from '../../discord-commands/app-commands-SETUP/commands.list';
-import { commandsComponents } from '../../discord-commands/app-commands-SETUP/commands-components.list';
-import { commandsSelectComponents } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
-import { AppCommandSelectComponent } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
-import { AppCommandComponent } from '../../discord-commands/app-commands-SETUP/commands-components.list';
+import { commands } from '../../app-SETUP/commands.list';
+import { commandsComponents } from '../../app-SETUP/commands-components.list';
+import { commandsSelectComponents } from 'src/app-SETUP/commands-select-components.list';
+import { AppCommandSelectComponent } from 'src/app-SETUP/commands-select-components.list';
+import { AppCommandComponent } from '../../app-SETUP/commands-components.list';
 import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
 
 @Controller()

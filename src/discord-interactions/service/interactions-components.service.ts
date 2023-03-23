@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { UserDto } from '../../users/dto/user.dto';
 import { config } from 'dotenv';
 import { UserManagementService } from 'src/user-management/providers/user-management.service';
-import { commandsSelectComponents } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
+import { commandsSelectComponents } from 'src/app-SETUP/commands-select-components.list';
 import { UsersFromDiscordDTO } from 'src/user-management/dto/users-from-discord.dto';
 import { WhitelistedUserDto } from 'src/user-management/dto/whitelisted-user.dto';
 import { StateService } from 'src/app-state/state.service';

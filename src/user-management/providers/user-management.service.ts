@@ -3,20 +3,28 @@ import { UserManagementRepository } from './user-management.repository';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { UsersFromDiscordDTO } from '../dto/users-from-discord.dto';
 import { WhitelistedUserDto } from '../dto/whitelisted-user.dto';
+import { RolesService } from 'src/roles/providers/roles.service';
 
 @Injectable()
 export class UserManagementService {
   constructor(
     private readonly userManagementRepository: UserManagementRepository,
     private readonly axiosProvider: AxiosProvider,
+    private readonly rolesService: RolesService,
   ) {}
-  async checkWhitelistedByDiscordId(discordId: string): Promise<boolean> {
+  public async checkWhitelistedByDiscordId(
+    discordId: string,
+  ): Promise<boolean> {
     return !!(await this.userManagementRepository.checkOnWhitelist(discordId));
   }
 
-  async getUsersFromDiscord(): Promise<UsersFromDiscordDTO[]> {
+  public async getUsersFromDiscord(
+    role?: string,
+  ): Promise<UsersFromDiscordDTO[]> {
     try {
-      const { data }: { data: { user: UsersFromDiscordDTO }[] } =
+      const {
+        data,
+      }: { data: { roles: string[]; user: UsersFromDiscordDTO }[] } =
         await this.axiosProvider.instance({
           method: 'GET',
           url: `https://discord.com/api/v10/guilds/${process.env.GUILD_ID}/members?limit=1000`,
@@ -24,7 +32,11 @@ export class UserManagementService {
 
       if (!data) throw new Error('No data from Discord trying to get users');
 
-      return data.map((item) => ({
+      const users: { roles: string[]; user: UsersFromDiscordDTO }[] = role
+        ? this.filterUsersByRole(data, role)
+        : data;
+
+      return users.map((item) => ({
         id: item.user.id,
         username: item.user.username,
       }));
@@ -33,7 +45,21 @@ export class UserManagementService {
     }
   }
 
-  async addToWhitelistIdNotExisting(discordId: string): Promise<boolean> {
+  private filterUsersByRole(
+    data: { roles: string[]; user: UsersFromDiscordDTO }[],
+    role: string,
+  ): {
+    roles: string[];
+    user: UsersFromDiscordDTO;
+  }[] {
+    return data.filter((item) => {
+      return item.roles.includes(role);
+    });
+  }
+
+  public async addToWhitelistIdNotExisting(
+    discordId: string,
+  ): Promise<boolean> {
     const isExisting: boolean = await this.checkWhitelistedByDiscordId(
       discordId,
     );
@@ -43,11 +69,11 @@ export class UserManagementService {
     return await this.userManagementRepository.addToWhitelist(discordId);
   }
 
-  async getExistingUsers(): Promise<WhitelistedUserDto[]> {
+  public async getExistingUsers(): Promise<WhitelistedUserDto[]> {
     return await this.userManagementRepository.getFromWhitelist();
   }
 
-  async removeExistingUsers(discordId: string): Promise<boolean> {
+  public async removeExistingUsers(discordId: string): Promise<boolean> {
     return await this.userManagementRepository.removeFromWhitelist(discordId);
   }
 }

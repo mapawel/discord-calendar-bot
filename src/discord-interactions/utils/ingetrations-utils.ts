@@ -1,5 +1,5 @@
-import { AppCommandSelectComponent } from 'src/discord-commands/app-commands-SETUP/commands-select-components.list';
-import { AppCommandComponent } from '../../discord-commands/app-commands-SETUP/commands-components.list';
+import { AppCommandSelectComponent } from 'src/app-SETUP/commands-select-components.list';
+import { AppCommandComponent } from '../../app-SETUP/commands-components.list';
 
 export function getAllCommandComponentsFromObj(
   commandsComponentsInObject: Record<
