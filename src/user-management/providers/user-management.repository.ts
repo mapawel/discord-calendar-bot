@@ -2,6 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { WhitelistedUser } from '../entities/whitelisted-user.entity';
 import { WhitelistedUserDto } from '../dto/whitelisted-user.dto';
 import { whitelistedUserDtoMapper } from '../dto/whitelisted-user-dto.mapper';
+import { MentorUser } from '../entities/mentor-user.entity';
 
 @Injectable()
 export class UserManagementRepository {
@@ -32,5 +33,24 @@ export class UserManagementRepository {
 
     await found.destroy();
     return true;
+  }
+
+  public async createOrUpdateMentors(discordIds: string[]): Promise<void> {
+    const foundMentors: MentorUser[] = await MentorUser.findAll({});
+    const newMentors: string[] = discordIds.filter(
+      (id) => !foundMentors.some((mentor) => mentor.discordId === id),
+    );
+    const mentorsToDelete: MentorUser[] = foundMentors.filter(
+      (mentor) => !discordIds.includes(mentor.discordId),
+    );
+
+    await MentorUser.bulkCreate(newMentors.map((discordId) => ({ discordId })));
+    await MentorUser.destroy({
+      where: {
+        discordId: mentorsToDelete.map((mentor) => mentor.discordId),
+      },
+    });
+
+    return;
   }
 }

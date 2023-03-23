@@ -42,7 +42,7 @@ export class RolesService {
     return await this.rolesRepository.getDBroles(roleNames);
   }
 
-  private async updateAllDBroles(): Promise<void> {
+  public async updateAllDBroles(): Promise<void> {
     try {
       const { data: roles }: { data: DiscordRoleDTO[] } =
         await this.axiosProvider.instance({
@@ -58,7 +58,5 @@ export class RolesService {
     }
   }
 
-  async onModuleInit() {
-    await this.updateAllDBroles();
-  }
+
 }

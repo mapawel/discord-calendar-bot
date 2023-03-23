@@ -4,6 +4,8 @@ import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { UsersFromDiscordDTO } from '../dto/users-from-discord.dto';
 import { WhitelistedUserDto } from '../dto/whitelisted-user.dto';
 import { RolesService } from 'src/roles/providers/roles.service';
+import { AppRoleDTO } from 'src/roles/dto/App-role.dto';
+import { usersManagementSettings } from 'src/app-SETUP/users-management.settings';
 
 @Injectable()
 export class UserManagementService {
@@ -19,7 +21,7 @@ export class UserManagementService {
   }
 
   public async getUsersFromDiscord(
-    role?: string,
+    roles?: string[],
   ): Promise<UsersFromDiscordDTO[]> {
     try {
       const {
@@ -32,9 +34,8 @@ export class UserManagementService {
 
       if (!data) throw new Error('No data from Discord trying to get users');
 
-      const users: { roles: string[]; user: UsersFromDiscordDTO }[] = role
-        ? this.filterUsersByRole(data, role)
-        : data;
+      const users: { roles: string[]; user: UsersFromDiscordDTO }[] =
+        roles?.length ? this.filterUsersByRole(data, roles) : data;
 
       return users.map((item) => ({
         id: item.user.id,
@@ -47,13 +48,13 @@ export class UserManagementService {
 
   private filterUsersByRole(
     data: { roles: string[]; user: UsersFromDiscordDTO }[],
-    role: string,
+    roles: string[],
   ): {
     roles: string[];
     user: UsersFromDiscordDTO;
   }[] {
     return data.filter((item) => {
-      return item.roles.includes(role);
+      return item.roles.some((role) => roles.includes(role));
     });
   }
 
@@ -75,5 +76,25 @@ export class UserManagementService {
 
   public async removeExistingUsers(discordId: string): Promise<boolean> {
     return await this.userManagementRepository.removeFromWhitelist(discordId);
+  }
+
+  async onModuleInit() {
+    await this.rolesService.updateAllDBroles();
+    const roleIdsEnableToMeetWith: AppRoleDTO[] =
+      await this.rolesService.getDBroles(
+        usersManagementSettings.rolesUsersCanMeetWith,
+      );
+
+    const usersEnableToMeetWith: UsersFromDiscordDTO[] =
+      await this.getUsersFromDiscord(
+        roleIdsEnableToMeetWith.map(
+          ({ discordid }: { discordid: string }) => discordid,
+        ),
+      );
+
+    await this.userManagementRepository.createOrUpdateMentors(
+      usersEnableToMeetWith.map(({ id }: { id: string }) => id),
+    );
+    //TODO add possibility to refresh mentors list from discord
   }
 }
