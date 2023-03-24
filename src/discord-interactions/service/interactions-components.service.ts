@@ -8,6 +8,7 @@ import { WhitelistedUserDto } from 'src/user-management/dto/whitelisted-user.dto
 import { StateService } from 'src/app-state/state.service';
 import { ResponseComponentsProvider } from './response-components.provider';
 import { MentorUser } from 'src/user-management/entities/mentor-user.entity';
+import { MentorUserDto } from 'src/user-management/dto/mentor-user.dto';
 
 config();
 
@@ -191,7 +192,7 @@ export class IntegrationComponentsService {
         content: `try again... starting from slash command`,
       });
 
-    const personsToMeet: MentorUser[] =
+    const personsToMeet: MentorUserDto[] =
       await this.userManagementService.getMentors();
 
     await this.responseComponentsProvider.updateEarlierIntegrationResponse({
@@ -199,6 +200,11 @@ export class IntegrationComponentsService {
       content: `Selected user id ${userToConnect}`,
     });
 
+    await this.stateService.saveDataAsSession(
+      user.id,
+      userToConnect,
+      'continuationUserBinding',
+    );
     await this.stateService.saveDataAsSession(
       user.id,
       token,
@@ -210,7 +216,7 @@ export class IntegrationComponentsService {
         (component) => ({
           ...component,
           options: personsToMeet.map((user) => ({
-            label: user.discordId,
+            label: user.username,
             value: user.discordId,
             description: user.discordId,
           })),
@@ -220,19 +226,34 @@ export class IntegrationComponentsService {
   }
 
   async connectingUserToMentorCallback2(user: UserDto, values: string[]) {
-    const [userToConnect] = values;
+    const [mentorToConnect] = values;
 
+    const userToBindId: string | undefined =
+      await this.stateService.loadDataForDiscordId(
+        user.id,
+        'continuationUserBinding',
+      );
     const lastMessageToken: string | undefined =
       await this.stateService.loadDataForDiscordId(
         user.id,
         'continuationUserTokens',
       );
 
-    if (!lastMessageToken)
+    if (!lastMessageToken || !userToBindId)
       return this.responseComponentsProvider.generateIntegrationResponse({
         content: `try again... starting from slash command`,
       });
 
+    //logic to bind
+    await this.userManagementService.bindUserToMentor(
+      userToBindId,
+      mentorToConnect,
+    );
+
+    await this.stateService.removeDataForDiscordId(
+      user.id,
+      'continuationUserBinding',
+    );
     await this.stateService.removeDataForDiscordId(
       user.id,
       'continuationUserTokens',

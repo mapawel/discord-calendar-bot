@@ -7,6 +7,7 @@ import { RolesService } from 'src/roles/providers/roles.service';
 import { AppRoleDTO } from 'src/roles/dto/App-role.dto';
 import { usersManagementSettings } from 'src/app-SETUP/users-management.settings';
 import { MentorUser } from '../entities/mentor-user.entity';
+import { MentorUserDto } from '../dto/mentor-user.dto';
 
 @Injectable()
 export class UserManagementService {
@@ -101,8 +102,18 @@ export class UserManagementService {
     return await this.userManagementRepository.removeFromWhitelist(discordId);
   }
 
-  public async getMentors(): Promise<MentorUser[]> {
+  public async getMentors(): Promise<MentorUserDto[]> {
     return await this.userManagementRepository.getMentors();
+  }
+
+  public async bindUserToMentor(
+    userDiscordId: string,
+    mentorDiscordId: string,
+  ): Promise<any> {
+    return await this.userManagementRepository.bindUserToMentor(
+      userDiscordId,
+      mentorDiscordId,
+    );
   }
 
   async onModuleInit() {
@@ -120,7 +131,7 @@ export class UserManagementService {
       );
 
     await this.userManagementRepository.createOrUpdateMentors(
-      usersEnableToMeetWith.map(({ id }: { id: string }) => id),
+      usersEnableToMeetWith,
     );
     //TODO add possibility to refresh mentors list from discord
   }

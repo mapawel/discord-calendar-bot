@@ -6,9 +6,9 @@ import { MentorUser } from './mentor-user.entity';
 export class WhitelistedUserMentor extends Model {
   @ForeignKey(() => WhitelistedUser)
   @Column
-  mentorId: number;
+  whitelistedUserId: string;
 
   @ForeignKey(() => MentorUser)
   @Column
-  whitelistedUserId: number;
+  mentorUserId: string;
 }

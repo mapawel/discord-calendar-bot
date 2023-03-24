@@ -13,6 +13,7 @@ import { WhitelistedUserMentor } from './whitelisted-user-mentor.entity';
 
 @Table
 export class WhitelistedUser extends Model {
+  @PrimaryKey
   @Unique({ name: 'discordId', msg: 'Discord ID must be unique' })
   @Column
   discordId: string;
