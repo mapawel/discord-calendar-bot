@@ -6,6 +6,7 @@ import { WhitelistedUserDto } from '../dto/whitelisted-user.dto';
 import { RolesService } from 'src/roles/providers/roles.service';
 import { AppRoleDTO } from 'src/roles/dto/App-role.dto';
 import { usersManagementSettings } from 'src/app-SETUP/users-management.settings';
+import { MentorUser } from '../entities/mentor-user.entity';
 
 @Injectable()
 export class UserManagementService {
@@ -18,6 +19,24 @@ export class UserManagementService {
     discordId: string,
   ): Promise<boolean> {
     return !!(await this.userManagementRepository.checkOnWhitelist(discordId));
+  }
+
+  public async getUserFromDiscord(
+    discordId: string,
+  ): Promise<UsersFromDiscordDTO> {
+    try {
+      const {
+        data: { user },
+      }: { data: { user: UsersFromDiscordDTO } } =
+        await this.axiosProvider.instance({
+          method: 'GET',
+          url: `/guilds/${process.env.GUILD_ID}/members/${discordId}`,
+        });
+
+      return user;
+    } catch (err: any) {
+      throw new Error(err);
+    }
   }
 
   public async getUsersFromDiscord(
@@ -60,6 +79,7 @@ export class UserManagementService {
 
   public async addToWhitelistIdNotExisting(
     discordId: string,
+    username: string,
   ): Promise<boolean> {
     const isExisting: boolean = await this.checkWhitelistedByDiscordId(
       discordId,
@@ -67,7 +87,10 @@ export class UserManagementService {
     if (isExisting) {
       return false;
     }
-    return await this.userManagementRepository.addToWhitelist(discordId);
+    return await this.userManagementRepository.addToWhitelist(
+      discordId,
+      username,
+    );
   }
 
   public async getExistingUsers(): Promise<WhitelistedUserDto[]> {
@@ -76,6 +99,10 @@ export class UserManagementService {
 
   public async removeExistingUsers(discordId: string): Promise<boolean> {
     return await this.userManagementRepository.removeFromWhitelist(discordId);
+  }
+
+  public async getMentors(): Promise<MentorUser[]> {
+    return await this.userManagementRepository.getMentors();
   }
 
   async onModuleInit() {

@@ -28,7 +28,7 @@ export class ResponseComponentsProvider {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       data: {
         content,
-        components: components
+        components: components?.length
           ? [
               {
                 type: 1,
@@ -43,9 +43,11 @@ export class ResponseComponentsProvider {
   public async updateEarlierIntegrationResponse({
     lastMessageToken,
     content,
+    components,
   }: {
     lastMessageToken: string;
     content: string;
+    components?: any[];
   }) {
     try {
       await this.axiosProvider.instance({
@@ -53,10 +55,19 @@ export class ResponseComponentsProvider {
         url: `/webhooks/${process.env.APP_ID}/${lastMessageToken}/messages/@original`,
         data: {
           content,
-          components: [],
+          components: components?.length
+            ? [
+                {
+                  type: 1,
+                  components,
+                },
+              ]
+            : [],
         },
       });
     } catch (err) {
+      console.log('err ----> ', JSON.stringify(err.response.data, null, 2));
+
       throw new Error(err.message);
     }
   }

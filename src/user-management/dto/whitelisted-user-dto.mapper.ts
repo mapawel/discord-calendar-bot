@@ -5,4 +5,5 @@ export const whitelistedUserDtoMapper = (
   whitelistedUser: WhitelistedUser,
 ): WhitelistedUserDto => ({
   discordId: whitelistedUser.discordId,
+  username: whitelistedUser.username,
 });

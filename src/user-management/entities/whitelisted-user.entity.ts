@@ -17,6 +17,9 @@ export class WhitelistedUser extends Model {
   @Column
   discordId: string;
 
+  @Column
+  username: string;
+
   @BelongsToMany(() => MentorUser, () => WhitelistedUserMentor)
   mentors: MentorUser[];
 }

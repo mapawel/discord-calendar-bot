@@ -15,8 +15,8 @@ export class UserManagementRepository {
     return found ? whitelistedUserDtoMapper(found) : undefined;
   }
 
-  async addToWhitelist(discordId: string): Promise<true> {
-    await WhitelistedUser.create({ discordId });
+  async addToWhitelist(discordId: string, username: string): Promise<true> {
+    await WhitelistedUser.create({ discordId, username });
     return true;
   }
 
@@ -35,6 +35,8 @@ export class UserManagementRepository {
     return true;
   }
 
+  // TODO to change here with usernames!
+  //TODO UserMentor MAPPER
   public async createOrUpdateMentors(discordIds: string[]): Promise<void> {
     const foundMentors: MentorUser[] = await MentorUser.findAll({});
     const newMentors: string[] = discordIds.filter(
@@ -52,5 +54,9 @@ export class UserManagementRepository {
     });
 
     return;
+  }
+
+  public async getMentors(): Promise<MentorUser[]> {
+    return await MentorUser.findAll({});
   }
 }
