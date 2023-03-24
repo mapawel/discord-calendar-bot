@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
-import { DiscordRoleDTO } from '../dto/Discord-role.dto';
 import { RolesRepository } from './roles.repository';
-import { AppRoleDTO } from '../dto/App-role.dto';
+import { RoleDTO } from '../dto/Role.dto';
 import { usersManagementSettings } from 'src/app-SETUP/users-management.settings';
 
 @Injectable()
@@ -28,23 +27,23 @@ export class RolesService {
   }
 
   public async translateRoleNamesToIds(roleNames: string[]): Promise<string[]> {
-    const roles: AppRoleDTO[] = await this.getDBroles();
+    const roles: RoleDTO[] = await this.getDBroles();
     return roleNames.map((roleName) => {
       const role = roles.find(
         ({ name }: { name: string }) => name === roleName,
       );
       if (!role) throw new Error('Role not found!');
-      return role.discordid;
+      return role.id;
     });
   }
 
-  public async getDBroles(roleNames: string[] = []): Promise<AppRoleDTO[]> {
+  public async getDBroles(roleNames: string[] = []): Promise<RoleDTO[]> {
     return await this.rolesRepository.getDBroles(roleNames);
   }
 
   public async updateAllDBroles(): Promise<void> {
     try {
-      const { data: roles }: { data: DiscordRoleDTO[] } =
+      const { data: roles }: { data: RoleDTO[] } =
         await this.axiosProvider.instance({
           method: 'GET',
           url: `/guilds/${process.env.GUILD_ID}/roles`,
@@ -57,6 +56,4 @@ export class RolesService {
       //TODO add a custom error
     }
   }
-
-
 }

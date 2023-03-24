@@ -1,14 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { UserDto } from '../../users/dto/user.dto';
+import { UserDTO } from '../../user-management/dto/User.dto';
 import { config } from 'dotenv';
 import { UserManagementService } from 'src/user-management/providers/user-management.service';
 import { commandsSelectComponents } from 'src/app-SETUP/commands-select-components.list';
-import { UsersFromDiscordDTO } from 'src/user-management/dto/users-from-discord.dto';
-import { WhitelistedUserDto } from 'src/user-management/dto/whitelisted-user.dto';
 import { StateService } from 'src/app-state/state.service';
 import { ResponseComponentsProvider } from './response-components.provider';
-import { MentorUser } from 'src/user-management/entities/mentor-user.entity';
-import { MentorUserDto } from 'src/user-management/dto/mentor-user.dto';
 
 config();
 
@@ -20,8 +16,8 @@ export class IntegrationComponentsService {
     private readonly responseComponentsProvider: ResponseComponentsProvider,
   ) {}
 
-  async addingUserToWhitelist(user: UserDto, values: string[], token: string) {
-    const usersToShow: UsersFromDiscordDTO[] =
+  async addingUserToWhitelist(user: UserDTO, values: string[], token: string) {
+    const usersToShow: UserDTO[] =
       await this.responseComponentsProvider.getUsersToShow();
 
     if (!usersToShow.length)
@@ -50,48 +46,48 @@ export class IntegrationComponentsService {
   }
 
   async addingUserToWhitelistCallback(
-    user: UserDto,
+    user: UserDTO,
     values: string[],
     token: string,
   ) {
-    const [discordIdToAdd] = values;
+    const [idToAdd] = values;
 
     const { username }: { username: string } =
-      await this.userManagementService.getUserFromDiscord(discordIdToAdd);
+      await this.userManagementService.getUserFromDiscord(idToAdd);
 
     await this.userManagementService.addToWhitelistIdNotExisting(
-      discordIdToAdd,
+      idToAdd,
       username,
     );
 
     const lastMessageToken: string | undefined =
-      await this.stateService.loadDataForDiscordId(
+      await this.stateService.loadDataForUserId(
         user.id,
         'continuationUserTokens',
       );
 
     if (!lastMessageToken)
       return this.responseComponentsProvider.generateIntegrationResponse({
-        content: `User ${discordIdToAdd} added!`,
+        content: `User ${idToAdd} added!`,
       });
 
     await this.responseComponentsProvider.updateEarlierIntegrationResponse({
       lastMessageToken,
-      content: `User ${discordIdToAdd} added!`,
+      content: `User ${idToAdd} added!`,
     });
 
-    await this.stateService.removeDataForDiscordId(
+    await this.stateService.removeDataForUserId(
       user.id,
       'continuationUserTokens',
     );
   }
 
   async removingUserFromWhitelist(
-    user: UserDto,
+    user: UserDTO,
     values: string[],
     token: string,
   ) {
-    const usersToShow: WhitelistedUserDto[] =
+    const usersToShow: UserDTO[] =
       await this.userManagementService.getExistingUsers();
 
     if (!usersToShow.length)
@@ -111,42 +107,42 @@ export class IntegrationComponentsService {
           ...component,
           options: usersToShow.map((user) => ({
             label: user.username,
-            value: user.discordId,
-            description: user.discordId,
+            value: user.id,
+            description: user.id,
           })),
         }),
       ),
     });
   }
 
-  async removingUserFromWhitelistCallback(user: UserDto, values: string[]) {
-    const [discordIdToRemove] = values;
-    await this.userManagementService.removeExistingUsers(discordIdToRemove);
+  async removingUserFromWhitelistCallback(user: UserDTO, values: string[]) {
+    const [idToRemove] = values;
+    await this.userManagementService.removeExistingUsers(idToRemove);
 
     const lastMessageToken: string | undefined =
-      await this.stateService.loadDataForDiscordId(
+      await this.stateService.loadDataForUserId(
         user.id,
         'continuationUserTokens',
       );
 
     if (!lastMessageToken)
       return this.responseComponentsProvider.generateIntegrationResponse({
-        content: `User id ${discordIdToRemove} removed!`,
+        content: `User id ${idToRemove} removed!`,
       });
 
     await this.responseComponentsProvider.updateEarlierIntegrationResponse({
       lastMessageToken,
-      content: `User id ${discordIdToRemove} removed!`,
+      content: `User id ${idToRemove} removed!`,
     });
 
-    await this.stateService.removeDataForDiscordId(
+    await this.stateService.removeDataForUserId(
       user.id,
       'continuationUserTokens',
     );
   }
 
-  async settingUserConnections(user: UserDto, values: string[], token: string) {
-    const usersToShow: WhitelistedUserDto[] =
+  async settingUserConnections(user: UserDTO, values: string[], token: string) {
+    const usersToShow: UserDTO[] =
       await this.userManagementService.getExistingUsers();
 
     if (!usersToShow.length)
@@ -165,8 +161,8 @@ export class IntegrationComponentsService {
         (component) => ({
           ...component,
           options: usersToShow.map((user) => ({
-            label: user.discordId,
-            value: user.discordId,
+            label: user.id,
+            value: user.id,
             description: user.username,
           })),
         }),
@@ -175,14 +171,14 @@ export class IntegrationComponentsService {
   }
 
   async connectingUserToMentorCallback(
-    user: UserDto,
+    user: UserDTO,
     values: string[],
     token: string,
   ) {
     const [userToConnect] = values;
 
     const lastMessageToken: string | undefined =
-      await this.stateService.loadDataForDiscordId(
+      await this.stateService.loadDataForUserId(
         user.id,
         'continuationUserTokens',
       );
@@ -192,7 +188,7 @@ export class IntegrationComponentsService {
         content: `try again... starting from slash command`,
       });
 
-    const personsToMeet: MentorUserDto[] =
+    const personsToMeet: UserDTO[] =
       await this.userManagementService.getMentors();
 
     await this.responseComponentsProvider.updateEarlierIntegrationResponse({
@@ -217,24 +213,24 @@ export class IntegrationComponentsService {
           ...component,
           options: personsToMeet.map((user) => ({
             label: user.username,
-            value: user.discordId,
-            description: user.discordId,
+            value: user.id,
+            description: user.id,
           })),
         }),
       ),
     });
   }
 
-  async connectingUserToMentorCallback2(user: UserDto, values: string[]) {
+  async connectingUserToMentorCallback2(user: UserDTO, values: string[]) {
     const [mentorToConnect] = values;
 
     const userToBindId: string | undefined =
-      await this.stateService.loadDataForDiscordId(
+      await this.stateService.loadDataForUserId(
         user.id,
         'continuationUserBinding',
       );
     const lastMessageToken: string | undefined =
-      await this.stateService.loadDataForDiscordId(
+      await this.stateService.loadDataForUserId(
         user.id,
         'continuationUserTokens',
       );
@@ -250,11 +246,11 @@ export class IntegrationComponentsService {
       mentorToConnect,
     );
 
-    await this.stateService.removeDataForDiscordId(
+    await this.stateService.removeDataForUserId(
       user.id,
       'continuationUserBinding',
     );
-    await this.stateService.removeDataForDiscordId(
+    await this.stateService.removeDataForUserId(
       user.id,
       'continuationUserTokens',
     );
@@ -266,7 +262,7 @@ export class IntegrationComponentsService {
     );
   }
 
-  public async default(user: UserDto, values: string[]) {
+  public async default(user: UserDTO, values: string[]) {
     return this.responseComponentsProvider.generateIntegrationResponse({
       content: 'No action implemented for this command yet.',
     });

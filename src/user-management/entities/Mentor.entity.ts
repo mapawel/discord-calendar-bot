@@ -6,11 +6,11 @@ import {
   BelongsToMany,
   PrimaryKey,
 } from 'sequelize-typescript';
-import { Mentor } from './Mentor.entity';
+import { WhitelistedUser } from './Whitelisted-user.entity';
 import { WhitelistedUserMentor } from './Whitelisted-user-mentor.entity';
 
 @Table
-export class WhitelistedUser extends Model {
+export class Mentor extends Model {
   @PrimaryKey
   @Unique({ name: 'id', msg: 'Discord ID must be unique' })
   @Column
@@ -19,6 +19,6 @@ export class WhitelistedUser extends Model {
   @Column
   username: string;
 
-  @BelongsToMany(() => Mentor, () => WhitelistedUserMentor)
-  mentors: Mentor[];
+  @BelongsToMany(() => WhitelistedUser, () => WhitelistedUserMentor)
+  users: WhitelistedUser[];
 }

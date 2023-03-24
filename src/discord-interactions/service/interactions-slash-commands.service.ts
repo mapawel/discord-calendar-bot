@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
-import { UserDto } from '../../users/dto/user.dto';
+import { UserDTO } from '../../user-management/dto/User.dto';
 import { config } from 'dotenv';
 import { AppRoutes } from 'src/app-routes/app-routes.enum';
 import { commandsComponents } from 'src/app-SETUP/commands-components.list';
@@ -33,10 +33,10 @@ export class IntegrationSlashCommandsService {
     });
   }
 
-  async authenticate(user: UserDto) {
-    const { id: discordId, username }: { id: string; username: string } = user;
+  async authenticate(user: UserDTO) {
+    const { id, username }: { id: string; username: string } = user;
 
-    await this.usersService.createUserIfNotExisting(discordId, username);
+    await this.usersService.createUserIfNotExisting(id, username);
 
     return this.responseComponentsProvider.generateIntegrationResponse({
       components: [
@@ -47,7 +47,7 @@ export class IntegrationSlashCommandsService {
             Commands.AUTHENTICATE,
           ),
           style: 5,
-          url: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${discordId}`,
+          url: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${id}`,
         },
       ],
     });
@@ -63,7 +63,7 @@ export class IntegrationSlashCommandsService {
     });
   }
 
-  public async default(user: UserDto, values: string[]) {
+  public async default(user: UserDTO, values: string[]) {
     return this.responseComponentsProvider.generateIntegrationResponse({
       content: 'No action implemented for this command yet.',
     });

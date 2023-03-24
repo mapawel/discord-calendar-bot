@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
-import { DiscordRoleDTO } from '../dto/Discord-role.dto';
-import { AppRoleDTO } from '../dto/App-role.dto';
+import { RoleDTO } from '../dto/Role.dto';
 import { Role } from '../entity/Role.entity';
-import { appRoleMapper } from '../dto/app-roles.mapper';
+import { RoleMapper } from '../dto/Role.mapper';
 
 @Injectable()
 export class RolesRepository {
@@ -13,7 +12,7 @@ export class RolesRepository {
     });
   }
 
-  public async getDBroles(roleNames: string[]): Promise<AppRoleDTO[]> {
+  public async getDBroles(roleNames: string[]): Promise<RoleDTO[]> {
     const roles = await Role.findAll(
       roleNames.length
         ? {
@@ -23,12 +22,12 @@ export class RolesRepository {
           }
         : {},
     );
-    return roles.map((role) => appRoleMapper(role));
+    return roles.map((role) => RoleMapper(role));
   }
 
-  public async createBulkBDRoles(roles: DiscordRoleDTO[]): Promise<void> {
+  public async createBulkBDRoles(roles: RoleDTO[]): Promise<void> {
     await Role.bulkCreate(
-      roles.map(({ id, name }: DiscordRoleDTO) => ({ roleId: id, name }), {
+      roles.map(({ id, name }: RoleDTO) => ({ id, name }), {
         updateOnDuplicate: ['name'],
       }),
     );

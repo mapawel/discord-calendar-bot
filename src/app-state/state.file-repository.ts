@@ -26,13 +26,13 @@ export class StateFileRepository {
   }
 
   public async findOne(
-    discordId: string,
+    id: string,
     folderName: string,
   ): Promise<string | undefined> {
     try {
-      if (!(await this.isExisting(discordId, folderName))) return undefined;
+      if (!(await this.isExisting(id, folderName))) return undefined;
       const buffer = await readFile(
-        join(this.pathToDBFiles(folderName), `${discordId}.txt`),
+        join(this.pathToDBFiles(folderName), `${id}.txt`),
       );
       return JSON.parse(buffer.toString());
     } catch (err: any) {
@@ -42,16 +42,16 @@ export class StateFileRepository {
   }
 
   public async createOne(
-    discordId: string,
+    id: string,
     prev_token: string,
     folderName: string,
   ): Promise<string> {
     try {
-      if (await this.isExisting(discordId, folderName))
-        throw new ConflictException(`File: ${discordId} already exists`);
+      if (await this.isExisting(id, folderName))
+        throw new ConflictException(`File: ${id} already exists`);
 
       await this.writeToFile(
-        this.filenameWhPath(discordId, folderName),
+        this.filenameWhPath(id, folderName),
         JSON.stringify(prev_token),
       );
 
@@ -63,20 +63,20 @@ export class StateFileRepository {
   }
 
   public async updateOne(
-    discordId: string,
+    id: string,
     prev_token: string,
     folderName: string,
   ): Promise<string> {
     try {
       const discrordIdToUpdate: string | undefined = await this.findOne(
-        discordId,
+        id,
         folderName,
       );
       if (!discrordIdToUpdate)
-        throw new NotFoundException(`File: ${discordId} not found`);
+        throw new NotFoundException(`File: ${id} not found`);
 
       await this.writeToFile(
-        this.filenameWhPath(discordId, folderName),
+        this.filenameWhPath(id, folderName),
         JSON.stringify(prev_token),
       );
       return prev_token;
@@ -86,13 +86,13 @@ export class StateFileRepository {
   }
 
   public async createOrUpdate(
-    discordId: string,
+    id: string,
     prev_token: string,
     folderName: string,
   ): Promise<string> {
     try {
       await this.writeToFile(
-        this.filenameWhPath(discordId, folderName),
+        this.filenameWhPath(id, folderName),
         JSON.stringify(prev_token),
       );
       return prev_token;
@@ -102,16 +102,16 @@ export class StateFileRepository {
   }
 
   public async removeOne(
-    discordId: string,
+    id: string,
     folderName: string,
   ): Promise<boolean> {
     try {
       const discrordIdToRemove: string | undefined = await this.findOne(
-        discordId,
+        id,
         folderName,
       );
       if (!discrordIdToRemove) return false;
-      await unlink(this.filenameWhPath(discordId, folderName));
+      await unlink(this.filenameWhPath(id, folderName));
       return true;
     } catch (err: any) {
       throw new Error('Error while removing the DB file');
@@ -119,17 +119,17 @@ export class StateFileRepository {
   }
 
   public async isExisting(
-    discordId: string,
+    id: string,
     folderName: string,
   ): Promise<boolean> {
     for (const file of await this.readDBFolder(folderName)) {
-      if (file === `${discordId}.txt`) return true;
+      if (file === `${id}.txt`) return true;
     }
     return false;
   }
 
-  private filenameWhPath(discordId: string, folderName: string): string {
-    return `${join(this.pathToDBFiles(folderName), `${discordId}`)}.txt`;
+  private filenameWhPath(id: string, folderName: string): string {
+    return `${join(this.pathToDBFiles(folderName), `${id}`)}.txt`;
   }
 
   private pathToDBFiles(folderName: string): string {

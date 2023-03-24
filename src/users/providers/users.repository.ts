@@ -1,16 +1,16 @@
 import { Injectable } from '@nestjs/common';
-import { userDtoMapper } from '../dto/user-dto.mapper';
-import { UserDto } from '../dto/user.dto';
+import { userDtoMapper } from '../dto/User-dto.mapper';
+import { UserDTO } from '../dto/User.dto';
 import { User } from '../entity/User.entity';
 
 // TODO CATCH ERRORS!!!!
 
 @Injectable()
 export class UsersRepository {
-  public async createUser(discordId: string, name: string): Promise<true> {
+  public async createUser(id: string, username: string): Promise<true> {
     await User.create({
-      discordId,
-      name,
+      id,
+      username,
     });
     return true;
   }
@@ -19,17 +19,14 @@ export class UsersRepository {
     id: string,
     authState: boolean,
   ): Promise<true> {
-    await User.update(
-      { authenticated: authState },
-      { where: { discordId: id } },
-    );
+    await User.update({ authenticated: authState }, { where: { id } });
     return true;
   }
 
-  public async getUserById(id: string): Promise<UserDto | undefined> {
+  public async getUserById(id: string): Promise<UserDTO | undefined> {
     const [foundUser] = await User.findAll({
       where: {
-        discordId: id,
+        id: id,
       },
     });
 

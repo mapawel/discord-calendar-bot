@@ -1,6 +1,6 @@
 import { Table, Column, Model, ForeignKey } from 'sequelize-typescript';
-import { WhitelistedUser } from './whitelisted-user.entity';
-import { MentorUser } from './mentor-user.entity';
+import { WhitelistedUser } from './Whitelisted-user.entity';
+import { Mentor } from './Mentor.entity';
 
 @Table
 export class WhitelistedUserMentor extends Model {
@@ -8,7 +8,7 @@ export class WhitelistedUserMentor extends Model {
   @Column
   whitelistedUserId: string;
 
-  @ForeignKey(() => MentorUser)
+  @ForeignKey(() => Mentor)
   @Column
   mentorUserId: string;
 }

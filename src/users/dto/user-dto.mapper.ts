@@ -1,8 +1,8 @@
 import { User } from '../entity/User.entity';
-import { UserDto } from './user.dto';
+import { UserDTO } from './User.dto';
 
-export const userDtoMapper = (user: User): UserDto => ({
+export const userDtoMapper = (user: User): UserDTO => ({
   id: user.id,
-  username: user.name,
+  username: user.username,
   authenticated: user.authenticated,
 });

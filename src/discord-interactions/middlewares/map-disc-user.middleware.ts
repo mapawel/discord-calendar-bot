@@ -4,13 +4,13 @@ import {
   InteractionWMemberDTO,
   InteractionWUserDTO,
 } from '../dto/interaction.dto';
-import { UserDto } from '../../users/dto/user.dto';
+import { UserDTO } from '../../users/dto/User.dto';
 
 @Injectable()
 export class MapDiscUserMiddleware implements NestMiddleware {
   use(req: Request, _res: Response, next: NextFunction) {
     const body: InteractionWMemberDTO | InteractionWUserDTO = req.body;
-    const appUser: UserDto = body.user || body.member?.user;
+    const appUser: UserDTO = body.user || body.member?.user;
 
     req.body.discord_usr = appUser;
 

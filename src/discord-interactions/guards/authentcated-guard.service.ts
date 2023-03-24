@@ -1,5 +1,5 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
-import { UserDto } from '../../users/dto/user.dto';
+import { UserDTO } from '../../users/dto/User.dto';
 import { Commands } from '../../app-SETUP/commands.enum';
 import { UsersService } from 'src/users/providers/users.service';
 
@@ -7,8 +7,8 @@ import { UsersService } from 'src/users/providers/users.service';
 export class AuthenticatedGuardService {
   constructor(private readonly usersService: UsersService) {}
 
-  async isAuthenticated(discord_usr: UserDto): Promise<true> {
-    const user: UserDto | undefined = await this.usersService.getUserById(
+  async isAuthenticated(discord_usr: UserDTO): Promise<true> {
+    const user: UserDTO | undefined = await this.usersService.getUserById(
       discord_usr.id,
     );
     if (!user?.authenticated)
@@ -18,8 +18,8 @@ export class AuthenticatedGuardService {
     return true;
   }
 
-  async notAuthenticated(discord_usr: UserDto): Promise<true> {
-    const user: UserDto | undefined = await this.usersService.getUserById(
+  async notAuthenticated(discord_usr: UserDTO): Promise<true> {
+    const user: UserDTO | undefined = await this.usersService.getUserById(
       discord_usr.id,
     );
     if (user?.authenticated)
@@ -27,7 +27,7 @@ export class AuthenticatedGuardService {
     return true;
   }
 
-  async default(discord_usr: UserDto): Promise<true> {
+  async default(discord_usr: UserDTO): Promise<true> {
     throw new ForbiddenException(
       'There is no suit authorization rule for this command! Contact the bot administrator to solve this issue.',
     );

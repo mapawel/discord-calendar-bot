@@ -2,8 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
 import { config } from 'dotenv';
 import { UserManagementService } from 'src/user-management/providers/user-management.service';
-import { UsersFromDiscordDTO } from 'src/user-management/dto/users-from-discord.dto';
-import { WhitelistedUserDto } from 'src/user-management/dto/whitelisted-user.dto';
+import { UserDTO } from '../../user-management/dto/User.dto';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { AppCommand } from 'src/app-SETUP/commands.list';
 import { Commands } from 'src/app-SETUP/commands.enum';
@@ -72,14 +71,12 @@ export class ResponseComponentsProvider {
     }
   }
 
-  public async getUsersToShow(): Promise<UsersFromDiscordDTO[]> {
-    const allUsers: UsersFromDiscordDTO[] =
+  public async getUsersToShow(): Promise<UserDTO[]> {
+    const allUsers: UserDTO[] =
       await this.userManagementService.getUsersFromDiscord();
-    const existingUsers: WhitelistedUserDto[] =
+    const existingUsers: UserDTO[] =
       await this.userManagementService.getExistingUsers();
-    const existingUsersIds: string[] = existingUsers.map(
-      ({ discordId }) => discordId,
-    );
+    const existingUsersIds: string[] = existingUsers.map(({ id }) => id);
     return allUsers.filter(
       ({ id }) => id !== process.env.APP_ID && !existingUsersIds.includes(id),
     );

@@ -5,24 +5,24 @@ export class StateService {
   constructor(private readonly stateFileRepository: StateFileRepository) {}
 
   public async saveDataAsSession(
-    discordId: string,
+    id: string,
     token: string,
     folderName: string,
   ): Promise<void> {
-    await this.stateFileRepository.createOrUpdate(discordId, token, folderName);
+    await this.stateFileRepository.createOrUpdate(id, token, folderName);
   }
 
-  public async loadDataForDiscordId(
-    discordId: string,
+  public async loadDataForUserId(
+    id: string,
     folderName: string,
   ): Promise<string | undefined> {
-    return await this.stateFileRepository.findOne(discordId, folderName);
+    return await this.stateFileRepository.findOne(id, folderName);
   }
 
-  public async removeDataForDiscordId(
-    discordId: string,
+  public async removeDataForUserId(
+    id: string,
     folderName: string,
   ): Promise<boolean> {
-    return await this.stateFileRepository.removeOne(discordId, folderName);
+    return await this.stateFileRepository.removeOne(id, folderName);
   }
 }

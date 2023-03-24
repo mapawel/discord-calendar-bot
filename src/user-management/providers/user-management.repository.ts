@@ -1,37 +1,32 @@
 import { Injectable } from '@nestjs/common';
-import { WhitelistedUser } from '../entities/whitelisted-user.entity';
-import { WhitelistedUserDto } from '../dto/whitelisted-user.dto';
-import { whitelistedUserDtoMapper } from '../dto/whitelisted-user-dto.mapper';
-import { MentorUser } from '../entities/mentor-user.entity';
-import { UsersFromDiscordDTO } from '../dto/users-from-discord.dto';
-import { MentorUserDto } from '../dto/mentor-user.dto';
-import { mentorUserDtoMapper } from '../dto/mentor-user-dto.mapper';
-import { WhitelistedUserMentor } from '../entities/whitelisted-user-mentor.entity';
+import { WhitelistedUser } from '../entities/Whitelisted-user.entity';
+import { UserDTOMapper } from '../dto/User-dto.mapper';
+import { Mentor } from '../entities/Mentor.entity';
+import { UserDTO } from '../dto/User.dto';
+import { WhitelistedUserMentor } from '../entities/Whitelisted-user-mentor.entity';
 
 @Injectable()
 export class UserManagementRepository {
-  async checkOnWhitelist(
-    discordId: string,
-  ): Promise<WhitelistedUserDto | undefined> {
+  async checkOnWhitelist(id: string): Promise<UserDTO | undefined> {
     const found: WhitelistedUser | null = await WhitelistedUser.findOne({
-      where: { discordId },
+      where: { id },
     });
-    return found ? whitelistedUserDtoMapper(found) : undefined;
+    return found ? UserDTOMapper(found) : undefined;
   }
 
-  async addToWhitelist(discordId: string, username: string): Promise<true> {
-    await WhitelistedUser.create({ discordId, username });
+  async addToWhitelist(id: string, username: string): Promise<true> {
+    await WhitelistedUser.create({ id, username });
     return true;
   }
 
-  async getFromWhitelist(): Promise<WhitelistedUserDto[]> {
+  async getFromWhitelist(): Promise<UserDTO[]> {
     const foundUsers: WhitelistedUser[] = await WhitelistedUser.findAll();
-    return foundUsers.map((user) => whitelistedUserDtoMapper(user));
+    return foundUsers.map((user) => UserDTOMapper(user));
   }
 
-  async removeFromWhitelist(discordId: string): Promise<boolean> {
+  async removeFromWhitelist(id: string): Promise<boolean> {
     const found: WhitelistedUser | null = await WhitelistedUser.findOne({
-      where: { discordId },
+      where: { id },
     });
     if (!found) return false;
 
@@ -39,28 +34,26 @@ export class UserManagementRepository {
     return true;
   }
 
-  public async createOrUpdateMentors(
-    users: UsersFromDiscordDTO[],
-  ): Promise<void> {
-    const discordIds: string[] = users.map((user) => user.id);
-    const foundMentorsIds: MentorUser[] = await MentorUser.findAll({});
-    const newMentors: UsersFromDiscordDTO[] = users.filter(
+  public async createOrUpdateMentors(users: UserDTO[]): Promise<void> {
+    const ids: string[] = users.map((user) => user.id);
+    const foundMentorsIds: Mentor[] = await Mentor.findAll({});
+    const newMentors: UserDTO[] = users.filter(
       ({ id }: { id: string }) =>
-        !foundMentorsIds.some((mentor) => mentor.discordId === id),
+        !foundMentorsIds.some((mentor) => mentor.id === id),
     );
-    const mentorsToDeleteIds: MentorUser[] = foundMentorsIds.filter(
-      (mentor) => !discordIds.includes(mentor.discordId),
+    const mentorsToDeleteIds: Mentor[] = foundMentorsIds.filter(
+      (mentor) => !ids.includes(mentor.id),
     );
 
-    await MentorUser.bulkCreate(
+    await Mentor.bulkCreate(
       newMentors.map((mentor) => ({
-        discordId: mentor.id,
+        id: mentor.id,
         username: mentor.username,
       })),
     );
-    await MentorUser.destroy({
+    await Mentor.destroy({
       where: {
-        discordId: mentorsToDeleteIds.map((mentor) => mentor.discordId),
+        id: mentorsToDeleteIds.map((mentor) => mentor.id),
       },
     });
 
@@ -68,16 +61,16 @@ export class UserManagementRepository {
   }
 
   public async bindUserToMentor(
-    userDiscordId: string,
-    mentorDiscordId: string,
+    userId: string,
+    mentorId: string,
   ): Promise<void> {
     try {
       const whitelistedUser: WhitelistedUser | null =
         await WhitelistedUser.findOne({
-          where: { discordId: userDiscordId },
+          where: { id: userId },
         });
-      const mentorUser: MentorUser | null = await MentorUser.findOne({
-        where: { discordId: mentorDiscordId },
+      const mentorUser: Mentor | null = await Mentor.findOne({
+        where: { id: mentorId },
       });
 
       if (!mentorUser || !whitelistedUser) {
@@ -87,18 +80,17 @@ export class UserManagementRepository {
       const found: WhitelistedUserMentor | null =
         await WhitelistedUserMentor.findOne({
           where: {
-            mentorUserId: mentorUser.discordId,
-            whitelistedUserId: whitelistedUser.discordId,
+            mentorUserId: mentorUser.id,
+            whitelistedUserId: whitelistedUser.id,
           },
         });
 
-
       if (found) {
-        await found.update({ mentorUserId: mentorUser.discordId });
+        await found.update({ mentorUserId: mentorUser.id });
       } else {
         await WhitelistedUserMentor.create({
-          mentorUserId: mentorUser.discordId,
-          whitelistedUserId: whitelistedUser.discordId,
+          mentorUserId: mentorUser.id,
+          whitelistedUserId: whitelistedUser.id,
         });
       }
     } catch (err: any) {
@@ -106,8 +98,8 @@ export class UserManagementRepository {
     }
   }
 
-  public async getMentors(): Promise<MentorUserDto[]> {
-    const mentorUsers: MentorUser[] = await MentorUser.findAll({});
-    return mentorUsers.map((mentor) => mentorUserDtoMapper(mentor));
+  public async getMentors(): Promise<UserDTO[]> {
+    const mentorUsers: Mentor[] = await Mentor.findAll({});
+    return mentorUsers.map((mentor) => UserDTOMapper(mentor));
   }
 }

@@ -1,25 +1,25 @@
 import { Injectable } from '@nestjs/common';
-import { UserDto } from '../dto/user.dto';
+import { UserDTO } from '../dto/User.dto';
 import { UsersRepository } from './users.repository';
 
 @Injectable()
 export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
-  public async createUser(discordId: string, name: string): Promise<true> {
-    return this.usersRepository.createUser(discordId, name);
+  public async createUser(id: string, name: string): Promise<true> {
+    return this.usersRepository.createUser(id, name);
   }
 
   public async createUserIfNotExisting(
-    discordId: string,
+    id: string,
     name: string,
   ): Promise<boolean> {
-    const foundUser: UserDto | undefined =
-      await this.usersRepository.getUserById(discordId);
+    const foundUser: UserDTO | undefined =
+      await this.usersRepository.getUserById(id);
     if (foundUser) {
       return false;
     }
-    return await this.usersRepository.createUser(discordId, name);
+    return await this.usersRepository.createUser(id, name);
   }
 
   public async updateUserAuthStatus(
@@ -29,7 +29,7 @@ export class UsersService {
     return await this.usersRepository.updateUserAuthStatus(id, authhStatus);
   }
 
-  public async getUserById(id: string): Promise<UserDto | undefined> {
+  public async getUserById(id: string): Promise<UserDTO | undefined> {
     return await this.usersRepository.getUserById(id);
   }
 }

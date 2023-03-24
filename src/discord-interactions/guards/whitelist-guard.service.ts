@@ -7,7 +7,7 @@ export class WhitelistGuardService {
 
   async isWhitelisted(id: string): Promise<boolean> {
     const isUser: boolean =
-      await this.userManagementService.checkWhitelistedByDiscordId(id);
+      await this.userManagementService.checkWhitelistedById(id);
     if (!isUser)
       throw new ForbiddenException(
         'User is not on users white list. Let Admin know about this fact.',

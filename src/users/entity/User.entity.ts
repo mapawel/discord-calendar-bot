@@ -10,12 +10,12 @@ import {
 @Table
 export class User extends Model {
   @PrimaryKey
-  @Unique({ name: 'discordId', msg: 'Discord ID must be unique' })
+  @Unique({ name: 'id', msg: 'Discord ID must be unique' })
   @Column
-  discordId: string;
+  id: string;
 
   @Column
-  name: string;
+  username: string;
 
   @Default(false)
   @Column

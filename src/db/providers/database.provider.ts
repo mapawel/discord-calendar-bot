@@ -1,9 +1,9 @@
 import { Sequelize } from 'sequelize-typescript';
 import { User } from '../../users/entity/User.entity';
 import { Role } from '../../roles/entity/Role.entity';
-import { WhitelistedUser } from '../../user-management/entities/whitelisted-user.entity';
-import { MentorUser } from 'src/user-management/entities/mentor-user.entity';
-import { WhitelistedUserMentor } from 'src/user-management/entities/whitelisted-user-mentor.entity';
+import { WhitelistedUser } from '../../user-management/entities/Whitelisted-user.entity';
+import { Mentor } from '../../user-management/entities/Mentor.entity';
+import { WhitelistedUserMentor } from '../../user-management/entities/Whitelisted-user-mentor.entity';
 import { join } from 'path';
 
 export const databaseProviders = [
@@ -18,7 +18,7 @@ export const databaseProviders = [
         User,
         Role,
         WhitelistedUser,
-        MentorUser,
+        Mentor,
         WhitelistedUserMentor,
       ]);
       await sequelize.sync();

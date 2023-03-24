@@ -1,4 +1,4 @@
-export class UsersFromDiscordDTO {
+export class UserDTO {
   id: string;
   username: string;
 }
