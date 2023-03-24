@@ -1,5 +1,5 @@
 import { Sequelize } from 'sequelize-typescript';
-import { User } from '../../users/entity/User.entity';
+import { UserWithAuth } from '../../users/entity/User-with-auth.entity';
 import { Role } from '../../roles/entity/Role.entity';
 import { WhitelistedUser } from '../../user-management/entities/Whitelisted-user.entity';
 import { Mentor } from '../../user-management/entities/Mentor.entity';
@@ -15,7 +15,7 @@ export const databaseProviders = [
         storage: join(process.cwd(), 'db', 'test.sqlite'),
       });
       sequelize.addModels([
-        User,
+        UserWithAuth,
         Role,
         WhitelistedUser,
         Mentor,

@@ -1,5 +1,4 @@
-// TODO - Add validation
-export class UserDTO {
+export class UserWithAuthDTO {
   id: string;
   username: string;
   authenticated: boolean;

@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { RolesRepository } from './roles.repository';
 import { RoleDTO } from '../dto/Role.dto';
-import { usersManagementSettings } from 'src/app-SETUP/users-management.settings';
+import { RolesException } from '../exception/Roles.exception';
 
 @Injectable()
 export class RolesService {
@@ -19,10 +19,9 @@ export class RolesService {
         method: 'GET',
         url: `/guilds/${process.env.GUILD_ID}/members/${userid}`,
       });
-
       return roles;
     } catch (err: any) {
-      throw new Error(err);
+      throw new RolesException(err?.message);
     }
   }
 
@@ -32,7 +31,7 @@ export class RolesService {
       const role = roles.find(
         ({ name }: { name: string }) => name === roleName,
       );
-      if (!role) throw new Error('Role not found!');
+      if (!role) throw new RolesException('Role not found!');
       return role.id;
     });
   }
@@ -41,7 +40,7 @@ export class RolesService {
     return await this.rolesRepository.getDBroles(roleNames);
   }
 
-  public async updateAllDBroles(): Promise<void> {
+  public async updateAllDBRoles(): Promise<void> {
     try {
       const { data: roles }: { data: RoleDTO[] } =
         await this.axiosProvider.instance({
@@ -52,8 +51,7 @@ export class RolesService {
       await this.rolesRepository.removeAllDBroles();
       await this.rolesRepository.createBulkBDRoles(roles);
     } catch (err: any) {
-      throw new Error(err);
-      //TODO add a custom error
+      throw new RolesException(err?.message);
     }
   }
 }

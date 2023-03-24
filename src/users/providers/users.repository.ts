@@ -1,35 +1,45 @@
 import { Injectable } from '@nestjs/common';
-import { userDtoMapper } from '../dto/User-dto.mapper';
-import { UserDTO } from '../dto/User.dto';
-import { User } from '../entity/User.entity';
-
-// TODO CATCH ERRORS!!!!
+import { UserWithAuthMapper } from '../dto/User-with-auth-dto.mapper';
+import { UserDTO } from 'src/user-management/dto/User.dto';
+import { UserWithAuthDTO } from '../dto/User-with-auth.dto';
+import { UserWithAuth } from '../entity/User-with-auth.entity';
+import { DBException } from 'src/db/exception/DB.exception';
 
 @Injectable()
 export class UsersRepository {
-  public async createUser(id: string, username: string): Promise<true> {
-    await User.create({
-      id,
-      username,
-    });
-    return true;
+  public async createUser(user: UserDTO): Promise<true> {
+    try {
+      await UserWithAuth.create({
+        id: user.id,
+        username: user.username,
+      });
+      return true;
+    } catch (err: any) {
+      throw new DBException(err?.message);
+    }
   }
 
   public async updateUserAuthStatus(
     id: string,
     authState: boolean,
   ): Promise<true> {
-    await User.update({ authenticated: authState }, { where: { id } });
-    return true;
+    try {
+      await UserWithAuth.update(
+        { authenticated: authState },
+        { where: { id } },
+      );
+      return true;
+    } catch (err: any) {
+      throw new DBException(err?.message);
+    }
   }
 
-  public async getUserById(id: string): Promise<UserDTO | undefined> {
-    const [foundUser] = await User.findAll({
-      where: {
-        id: id,
-      },
-    });
-
-    return foundUser ? userDtoMapper(foundUser) : undefined;
+  public async getUserById(id: string): Promise<UserWithAuthDTO | undefined> {
+    try {
+      const foundUser: UserWithAuth | null = await UserWithAuth.findByPk(id);
+      return foundUser ? UserWithAuthMapper(foundUser) : undefined;
+    } catch (err: any) {
+      throw new DBException(err?.message);
+    }
   }
 }

@@ -50,15 +50,12 @@ export class IntegrationComponentsService {
     values: string[],
     token: string,
   ) {
-    const [idToAdd] = values;
+    const [userId] = values;
 
-    const { username }: { username: string } =
-      await this.userManagementService.getUserFromDiscord(idToAdd);
+    const userToAdd: UserDTO =
+      await this.userManagementService.getUserFromDiscord(userId);
 
-    await this.userManagementService.addToWhitelistIdNotExisting(
-      idToAdd,
-      username,
-    );
+    await this.userManagementService.addToWhitelistNotExistingUser(userToAdd);
 
     const lastMessageToken: string | undefined =
       await this.stateService.loadDataForUserId(
@@ -68,12 +65,12 @@ export class IntegrationComponentsService {
 
     if (!lastMessageToken)
       return this.responseComponentsProvider.generateIntegrationResponse({
-        content: `User ${idToAdd} added!`,
+        content: `User ${userToAdd.username} added!`,
       });
 
     await this.responseComponentsProvider.updateEarlierIntegrationResponse({
       lastMessageToken,
-      content: `User ${idToAdd} added!`,
+      content: `User ${userToAdd.username} added!`,
     });
 
     await this.stateService.removeDataForUserId(
@@ -117,7 +114,9 @@ export class IntegrationComponentsService {
 
   async removingUserFromWhitelistCallback(user: UserDTO, values: string[]) {
     const [idToRemove] = values;
-    await this.userManagementService.removeExistingUsers(idToRemove);
+    await this.userManagementService.removeExistingUsersFromWhitelist(
+      idToRemove,
+    );
 
     const lastMessageToken: string | undefined =
       await this.stateService.loadDataForUserId(

@@ -5,6 +5,7 @@ import {
 } from '@nestjs/common';
 import { readFile, readdir, writeFile, unlink } from 'fs/promises';
 import { join } from 'path';
+import { StateFileException } from './exception/State-file.exception';
 
 @Injectable()
 export class StateFileRepository {
@@ -21,7 +22,7 @@ export class StateFileRepository {
       }
       return prev_tokens;
     } catch (err: any) {
-      throw new Error('Error while reading the DB files');
+      throw new StateFileException('Error while reading the DB files');
     }
   }
 
@@ -37,7 +38,9 @@ export class StateFileRepository {
       return JSON.parse(buffer.toString());
     } catch (err: any) {
       if (err instanceof NotFoundException) throw err;
-      throw new Error('Error while reading the DB file' + err.message);
+      throw new StateFileException(
+        'Error while reading the DB file' + err.message,
+      );
     }
   }
 
@@ -58,7 +61,7 @@ export class StateFileRepository {
       return prev_token;
     } catch (err: any) {
       if (err instanceof ConflictException) throw err;
-      throw new Error('Error while writing the DB file');
+      throw new StateFileException('Error while writing the DB file');
     }
   }
 
@@ -81,7 +84,7 @@ export class StateFileRepository {
       );
       return prev_token;
     } catch (err: any) {
-      throw new Error('Error while updaing the DB file');
+      throw new StateFileException('Error while updaing the DB file');
     }
   }
 
@@ -97,14 +100,11 @@ export class StateFileRepository {
       );
       return prev_token;
     } catch (err: any) {
-      throw new Error('Error while updaing the DB file');
+      throw new StateFileException('Error while updaing the DB file');
     }
   }
 
-  public async removeOne(
-    id: string,
-    folderName: string,
-  ): Promise<boolean> {
+  public async removeOne(id: string, folderName: string): Promise<boolean> {
     try {
       const discrordIdToRemove: string | undefined = await this.findOne(
         id,
@@ -114,14 +114,11 @@ export class StateFileRepository {
       await unlink(this.filenameWhPath(id, folderName));
       return true;
     } catch (err: any) {
-      throw new Error('Error while removing the DB file');
+      throw new StateFileException('Error while removing the DB file');
     }
   }
 
-  public async isExisting(
-    id: string,
-    folderName: string,
-  ): Promise<boolean> {
+  public async isExisting(id: string, folderName: string): Promise<boolean> {
     for (const file of await this.readDBFolder(folderName)) {
       if (file === `${id}.txt`) return true;
     }

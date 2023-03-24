@@ -4,60 +4,83 @@ import { UserDTOMapper } from '../dto/User-dto.mapper';
 import { Mentor } from '../entities/Mentor.entity';
 import { UserDTO } from '../dto/User.dto';
 import { WhitelistedUserMentor } from '../entities/Whitelisted-user-mentor.entity';
+import { DBException } from 'src/db/exception/DB.exception';
 
 @Injectable()
 export class UserManagementRepository {
-  async checkOnWhitelist(id: string): Promise<UserDTO | undefined> {
-    const found: WhitelistedUser | null = await WhitelistedUser.findOne({
-      where: { id },
-    });
-    return found ? UserDTOMapper(found) : undefined;
+  public async findByIdOnWhitelist(id: string): Promise<UserDTO | undefined> {
+    try {
+      const foundUser: WhitelistedUser | null = await WhitelistedUser.findByPk(
+        id,
+      );
+      return foundUser ? UserDTOMapper(foundUser) : undefined;
+    } catch (err: any) {
+      throw new DBException(err?.message);
+    }
   }
 
-  async addToWhitelist(id: string, username: string): Promise<true> {
-    await WhitelistedUser.create({ id, username });
-    return true;
+  public async addUserToWhitelist(user: UserDTO): Promise<true> {
+    try {
+      await WhitelistedUser.create({ id: user.id, username: user.username });
+      return true;
+    } catch (err: any) {
+      throw new DBException(err?.message);
+    }
   }
 
-  async getFromWhitelist(): Promise<UserDTO[]> {
-    const foundUsers: WhitelistedUser[] = await WhitelistedUser.findAll();
-    return foundUsers.map((user) => UserDTOMapper(user));
+  public async getUsersFromWhitelist(): Promise<UserDTO[]> {
+    try {
+      const foundUsers: WhitelistedUser[] = await WhitelistedUser.findAll();
+      return foundUsers.map((user) => UserDTOMapper(user));
+    } catch (err: any) {
+      throw new DBException(err?.message);
+    }
   }
 
-  async removeFromWhitelist(id: string): Promise<boolean> {
-    const found: WhitelistedUser | null = await WhitelistedUser.findOne({
-      where: { id },
-    });
-    if (!found) return false;
+  public async removeExistingUsersFromWhitelist(id: string): Promise<boolean> {
+    try {
+      const found: WhitelistedUser | null = await WhitelistedUser.findOne({
+        where: { id },
+      });
+      if (!found) return false;
 
-    await found.destroy();
-    return true;
+      await found.destroy();
+      return true;
+    } catch (err: any) {
+      throw new DBException(err?.message);
+    }
   }
 
-  public async createOrUpdateMentors(users: UserDTO[]): Promise<void> {
-    const ids: string[] = users.map((user) => user.id);
-    const foundMentorsIds: Mentor[] = await Mentor.findAll({});
-    const newMentors: UserDTO[] = users.filter(
-      ({ id }: { id: string }) =>
-        !foundMentorsIds.some((mentor) => mentor.id === id),
-    );
-    const mentorsToDeleteIds: Mentor[] = foundMentorsIds.filter(
-      (mentor) => !ids.includes(mentor.id),
-    );
+  public async createOrUpdateAllMentors(users: UserDTO[]): Promise<void> {
+    try {
+      const ids: string[] = users.map(({ id }: { id: string }) => id);
+      const foundMentorsIds: Mentor[] = await Mentor.findAll({});
+      const newMentors: UserDTO[] = users.filter(
+        ({ id }: { id: string }) =>
+          !foundMentorsIds.some((mentor) => mentor.id === id),
+      );
+      const mentorsToDeleteIds: Mentor[] = foundMentorsIds.filter(
+        (mentor) => !ids.includes(mentor.id),
+      );
 
-    await Mentor.bulkCreate(
-      newMentors.map((mentor) => ({
-        id: mentor.id,
-        username: mentor.username,
-      })),
-    );
-    await Mentor.destroy({
-      where: {
-        id: mentorsToDeleteIds.map((mentor) => mentor.id),
-      },
-    });
+      await Mentor.bulkCreate(
+        newMentors.map(
+          ({ id, username }: { id: string; username: string }) => ({
+            id,
+            username,
+          }),
+        ),
+      );
+      await Mentor.destroy({
+        where: {
+          id: mentorsToDeleteIds.map(({ id }: { id: string }) => id),
+        },
+      });
 
-    return;
+      return;
+    } catch (err: any) {
+      throw new DBException(err?.message);
+    }
   }
 
   public async bindUserToMentor(
@@ -99,7 +122,11 @@ export class UserManagementRepository {
   }
 
   public async getMentors(): Promise<UserDTO[]> {
-    const mentorUsers: Mentor[] = await Mentor.findAll({});
-    return mentorUsers.map((mentor) => UserDTOMapper(mentor));
+    try {
+      const mentorUsers: Mentor[] = await Mentor.findAll({});
+      return mentorUsers.map((mentor) => UserDTOMapper(mentor));
+    } catch (err: any) {
+      throw new DBException(err?.message);
+    }
   }
 }

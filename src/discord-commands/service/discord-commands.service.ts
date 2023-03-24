@@ -2,13 +2,13 @@ import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { config } from 'dotenv';
 import { commands } from '../../app-SETUP/commands.list';
+import { DiscordCommandsException } from '../exception/DiscordCommands.exception';
 
 config();
 
 @Injectable()
 export class DiscordCommandsService {
   constructor(private readonly axiosProvider: AxiosProvider) {}
-  //TODO ask SEBASTIAN about DI! I have access to the axiosProvider here if I import MODULE and it's not nesessary to import PROVIDER but I have to because I want to create CiscordCommandsService instance to fire init method
 
   public async commandsInit(commands: any[]) {
     // const existingCommands = await this.getExistingCommands();
@@ -64,8 +64,8 @@ export class DiscordCommandsService {
       });
 
       return response?.data;
-    } catch (err) {
-      throw new Error(err.message);
+    } catch (err: any) {
+      throw new DiscordCommandsException(err?.message);
     }
   }
 

@@ -34,9 +34,7 @@ export class IntegrationSlashCommandsService {
   }
 
   async authenticate(user: UserDTO) {
-    const { id, username }: { id: string; username: string } = user;
-
-    await this.usersService.createUserIfNotExisting(id, username);
+    await this.usersService.createUserIfNotExisting(user);
 
     return this.responseComponentsProvider.generateIntegrationResponse({
       components: [
@@ -47,7 +45,7 @@ export class IntegrationSlashCommandsService {
             Commands.AUTHENTICATE,
           ),
           style: 5,
-          url: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${id}`,
+          url: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${user.id}`,
         },
       ],
     });

@@ -8,7 +8,7 @@ import {
 } from 'sequelize-typescript';
 
 @Table
-export class User extends Model {
+export class UserWithAuth extends Model {
   @PrimaryKey
   @Unique({ name: 'id', msg: 'Discord ID must be unique' })
   @Column

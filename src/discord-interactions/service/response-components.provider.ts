@@ -6,6 +6,7 @@ import { UserDTO } from '../../user-management/dto/User.dto';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { AppCommand } from 'src/app-SETUP/commands.list';
 import { Commands } from 'src/app-SETUP/commands.enum';
+import { DiscordInteractionException } from '../exception/DiscordInteraction.exception';
 
 config();
 
@@ -64,10 +65,8 @@ export class ResponseComponentsProvider {
             : [],
         },
       });
-    } catch (err) {
-      console.log('err ----> ', JSON.stringify(err.response.data, null, 2));
-
-      throw new Error(err.message);
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message);
     }
   }
 
@@ -76,9 +75,12 @@ export class ResponseComponentsProvider {
       await this.userManagementService.getUsersFromDiscord();
     const existingUsers: UserDTO[] =
       await this.userManagementService.getExistingUsers();
-    const existingUsersIds: string[] = existingUsers.map(({ id }) => id);
+    const existingUsersIds: string[] = existingUsers.map(
+      ({ id }: { id: string }) => id,
+    );
     return allUsers.filter(
-      ({ id }) => id !== process.env.APP_ID && !existingUsersIds.includes(id),
+      ({ id }: { id: string }) =>
+        id !== process.env.APP_ID && !existingUsersIds.includes(id),
     );
   }
 

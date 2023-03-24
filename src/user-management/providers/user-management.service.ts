@@ -5,6 +5,7 @@ import { UserDTO } from '../dto/User.dto';
 import { RolesService } from '../../roles/providers/roles.service';
 import { RoleDTO } from '../../roles/dto/Role.dto';
 import { usersManagementSettings } from '../../app-SETUP/users-management.settings';
+import { UserManagementException } from '../exception/User-management.exception';
 
 @Injectable()
 export class UserManagementService {
@@ -14,7 +15,7 @@ export class UserManagementService {
     private readonly rolesService: RolesService,
   ) {}
   public async checkWhitelistedById(id: string): Promise<boolean> {
-    return !!(await this.userManagementRepository.checkOnWhitelist(id));
+    return !!(await this.userManagementRepository.findByIdOnWhitelist(id));
   }
 
   public async getUserFromDiscord(id: string): Promise<UserDTO> {
@@ -28,7 +29,7 @@ export class UserManagementService {
 
       return user;
     } catch (err: any) {
-      throw new Error(err);
+      throw new UserManagementException(err?.message);
     }
   }
 
@@ -40,18 +41,27 @@ export class UserManagementService {
           url: `https://discord.com/api/v10/guilds/${process.env.GUILD_ID}/members?limit=1000`,
         });
 
-      if (!data) throw new Error('No data from Discord trying to get users');
+      if (!data)
+        throw new UserManagementException(
+          'No data from Discord trying to get users',
+        );
 
       const users: { roles: string[]; user: UserDTO }[] = roles?.length
         ? this.filterUsersByRole(data, roles)
         : data;
 
-      return users.map((item) => ({
-        id: item.user.id,
-        username: item.user.username,
-      }));
+      return users.map(
+        ({
+          user: { id, username },
+        }: {
+          user: { id: string; username: string };
+        }) => ({
+          id,
+          username,
+        }),
+      );
     } catch (err: any) {
-      throw new Error(err.message);
+      throw new UserManagementException(err?.message);
     }
   }
 
@@ -67,23 +77,22 @@ export class UserManagementService {
     });
   }
 
-  public async addToWhitelistIdNotExisting(
-    id: string,
-    username: string,
-  ): Promise<boolean> {
-    const isExisting: boolean = await this.checkWhitelistedById(id);
+  public async addToWhitelistNotExistingUser(user: UserDTO): Promise<boolean> {
+    const isExisting: boolean = await this.checkWhitelistedById(user.id);
     if (isExisting) {
       return false;
     }
-    return await this.userManagementRepository.addToWhitelist(id, username);
+    return await this.userManagementRepository.addUserToWhitelist(user);
   }
 
   public async getExistingUsers(): Promise<UserDTO[]> {
-    return await this.userManagementRepository.getFromWhitelist();
+    return await this.userManagementRepository.getUsersFromWhitelist();
   }
 
-  public async removeExistingUsers(id: string): Promise<boolean> {
-    return await this.userManagementRepository.removeFromWhitelist(id);
+  public async removeExistingUsersFromWhitelist(id: string): Promise<boolean> {
+    return await this.userManagementRepository.removeExistingUsersFromWhitelist(
+      id,
+    );
   }
 
   public async getMentors(): Promise<UserDTO[]> {
@@ -101,7 +110,7 @@ export class UserManagementService {
   }
 
   async onModuleInit() {
-    await this.rolesService.updateAllDBroles();
+    await this.rolesService.updateAllDBRoles();
     const roleIdsEnableToMeetWith: RoleDTO[] =
       await this.rolesService.getDBroles(
         usersManagementSettings.rolesUsersCanMeetWith,
@@ -111,7 +120,7 @@ export class UserManagementService {
       roleIdsEnableToMeetWith.map(({ id }: { id: string }) => id),
     );
 
-    await this.userManagementRepository.createOrUpdateMentors(
+    await this.userManagementRepository.createOrUpdateAllMentors(
       usersEnableToMeetWith,
     );
     //TODO add possibility to refresh mentors list from discord

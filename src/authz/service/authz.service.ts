@@ -35,7 +35,7 @@ export class AuthzService {
   async getToken(code: string, state: string) {
     try {
       const { id } = await this.jwtService.verifyAsync(state);
-      const { data } = await axios({
+      await axios({
         method: 'POST',
         url: `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_TOKEN}`,
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -49,8 +49,6 @@ export class AuthzService {
       });
 
       await this.usersService.updateUserAuthStatus(id, true);
-
-      console.log('TOKENS---> ', data); // TODO to remove if not utilized
     } catch (err: any) {
       if (err instanceof JsonWebTokenError)
         throw new AuthServiceException(
