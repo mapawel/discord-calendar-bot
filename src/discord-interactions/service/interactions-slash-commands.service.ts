@@ -31,9 +31,7 @@ export class IntegrationSlashCommandsService {
     const foundUser: UserDTO | undefined =
       await this.userManagementService.getWhitelistedUserById(user.id);
 
-    const numberOfConnections = foundUser?.connections.length || 0;
-
-    if (numberOfConnections > 1) {
+    if (foundUser?.connections.length) {
       return this.responseComponentsProvider.generateIntegrationResponse({
         content: 'Choose a person to meet with:',
         components: foundUser?.connections.map((connectedUser) => ({
@@ -41,6 +39,10 @@ export class IntegrationSlashCommandsService {
           label: connectedUser.username,
           custom_id: CommandsComponents.MEETING_CALLBACK + connectedUser.id,
         })),
+      });
+    } else {
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        content: 'You have no contacts to meet with. Please contact an admin.',
       });
     }
   }

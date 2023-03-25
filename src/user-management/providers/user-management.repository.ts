@@ -14,7 +14,6 @@ export class UserManagementRepository {
         where: { id },
         include: [Mentor],
       });
-      console.log(' ----> ', foundUser ? UserDTOMapper(foundUser) : undefined);
       return foundUser ? UserDTOMapper(foundUser) : undefined;
     } catch (err: any) {
       throw new DBException(err?.message);
