@@ -34,8 +34,8 @@ export class AuthenticatedGuard implements CanActivate {
       type === 2
         ? commands.find((integration) => integration.name === name)
         : type === 3
-        ? allCommandsComponents.find(
-            (integration) => integration.custom_id === custom_id,
+        ? allCommandsComponents.find((integration) =>
+            custom_id?.includes(integration.custom_id),
           )
         : null;
 

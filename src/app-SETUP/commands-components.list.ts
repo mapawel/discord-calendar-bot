@@ -34,6 +34,18 @@ export const commandsComponents: Record<string, AppCommandComponent[]> = {
       controller_service_method: 'settingUserConnections',
     },
   ],
+  mentorToMeetWithButton: [
+    {
+      type: 2,
+      label: 'to popualte in code...',
+      style: 1,
+      custom_id: CommandsComponents.MEETING_CALLBACK,
+      authenticated_guard_rule: 'isAuthenticated',
+      role_guard_rules: [],
+      whitelisting_guard_rule: 'notWhitelisted',
+      controller_service_method: 'responseForMeetingCallback',
+    },
+  ],
 };
 
 export type AppCommandComponent = {
@@ -47,5 +59,6 @@ export type AppCommandComponent = {
   controller_service_method:
     | 'addingUserToWhitelist'
     | 'removingUserFromWhitelist'
-    | 'settingUserConnections';
+    | 'settingUserConnections'
+    | 'responseForMeetingCallback';
 };

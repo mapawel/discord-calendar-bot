@@ -16,6 +16,21 @@ export class IntegrationComponentsService {
     private readonly responseComponentsProvider: ResponseComponentsProvider,
   ) {}
 
+  // TODO - UserDTO split to AppUserDTO and DiscordUserDTO
+  async responseForMeetingCallback(
+    user: UserDTO,
+    values: string[],
+    token: string,
+    custom_id: string,
+  ) {
+    const userID = user.id;
+    const personToMeetId: string = custom_id.split(':')[1];
+    
+    return this.responseComponentsProvider.generateIntegrationResponse({
+      content: `Meeting: ${userID} ${personToMeetId}`,
+    });
+  }
+
   async addingUserToWhitelist(user: UserDTO, values: string[], token: string) {
     const usersToShow: UserDTO[] =
       await this.responseComponentsProvider.getUsersToShow();

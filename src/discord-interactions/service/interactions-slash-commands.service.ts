@@ -8,6 +8,8 @@ import { UsersService } from 'src/users/providers/users.service';
 import { commands } from 'src/app-SETUP/commands.list';
 import { Commands } from 'src/app-SETUP/commands.enum';
 import { ResponseComponentsProvider } from './response-components.provider';
+import { UserManagementService } from 'src/user-management/providers/user-management.service';
+import { CommandsComponents } from 'src/app-SETUP/commands-components.enum';
 
 config();
 
@@ -16,6 +18,7 @@ export class IntegrationSlashCommandsService {
   constructor(
     private readonly usersService: UsersService,
     private readonly responseComponentsProvider: ResponseComponentsProvider,
+    private readonly userManagementService: UserManagementService,
   ) {}
 
   responseWithPong() {
@@ -24,13 +27,22 @@ export class IntegrationSlashCommandsService {
     };
   }
 
-  async responseForMeeting() {
-    return this.responseComponentsProvider.generateIntegrationResponse({
-      content: this.responseComponentsProvider.findContent(
-        commands,
-        Commands.GET_MEETING,
-      ),
-    });
+  async responseForMeeting(user: UserDTO) {
+    const foundUser: UserDTO | undefined =
+      await this.userManagementService.getWhitelistedUserById(user.id);
+
+    const numberOfConnections = foundUser?.connections.length || 0;
+
+    if (numberOfConnections > 1) {
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        content: 'Choose a person to meet with:',
+        components: foundUser?.connections.map((connectedUser) => ({
+          ...commandsComponents.mentorToMeetWithButton[0],
+          label: connectedUser.username,
+          custom_id: CommandsComponents.MEETING_CALLBACK + connectedUser.id,
+        })),
+      });
+    }
   }
 
   async authenticate(user: UserDTO) {

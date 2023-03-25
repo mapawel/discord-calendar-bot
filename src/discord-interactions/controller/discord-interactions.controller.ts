@@ -60,14 +60,15 @@ export class DiscordInteractionController {
     }
     if (type === 3) {
       const serviceMethod =
-        allCommandsComponents.find(
-          (integration) => integration.custom_id === custom_id,
+        allCommandsComponents.find((integration) =>
+          custom_id?.includes(integration.custom_id),
         )?.controller_service_method || 'default';
 
       return await this.integrationComponentsService[serviceMethod](
         discord_usr,
         values || [],
         token,
+        custom_id || '',
       );
     }
   }

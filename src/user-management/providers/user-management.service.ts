@@ -6,6 +6,7 @@ import { RolesService } from '../../roles/providers/roles.service';
 import { RoleDTO } from '../../roles/dto/Role.dto';
 import { usersManagementSettings } from '../../app-SETUP/users-management.settings';
 import { UserManagementException } from '../exception/User-management.exception';
+import { UserWithAuthDTO } from 'src/users/dto/User-with-auth.dto';
 
 @Injectable()
 export class UserManagementService {
@@ -16,6 +17,12 @@ export class UserManagementService {
   ) {}
   public async checkWhitelistedById(id: string): Promise<boolean> {
     return !!(await this.userManagementRepository.findByIdOnWhitelist(id));
+  }
+
+  public async getWhitelistedUserById(
+    id: string,
+  ): Promise<UserDTO | undefined> {
+    return await this.userManagementRepository.findByIdOnWhitelist(id);
   }
 
   public async getUserFromDiscord(id: string): Promise<UserDTO> {
@@ -58,6 +65,7 @@ export class UserManagementService {
         }) => ({
           id,
           username,
+          connections: [], //QQQQ
         }),
       );
     } catch (err: any) {

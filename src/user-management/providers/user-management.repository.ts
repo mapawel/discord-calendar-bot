@@ -10,9 +10,11 @@ import { DBException } from 'src/db/exception/DB.exception';
 export class UserManagementRepository {
   public async findByIdOnWhitelist(id: string): Promise<UserDTO | undefined> {
     try {
-      const foundUser: WhitelistedUser | null = await WhitelistedUser.findByPk(
-        id,
-      );
+      const foundUser: WhitelistedUser | null = await WhitelistedUser.findOne({
+        where: { id },
+        include: [Mentor],
+      });
+      console.log(' ----> ', foundUser ? UserDTOMapper(foundUser) : undefined);
       return foundUser ? UserDTOMapper(foundUser) : undefined;
     } catch (err: any) {
       throw new DBException(err?.message);

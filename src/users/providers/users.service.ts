@@ -8,7 +8,7 @@ export class UsersService {
   constructor(private readonly usersRepository: UsersRepository) {}
 
   public async createUserIfNotExisting(user: UserDTO): Promise<boolean> {
-    const foundUser: UserDTO | undefined =
+    const foundUser: UserWithAuthDTO | undefined =
       await this.usersRepository.getUserById(user.id);
     if (foundUser) {
       return false;
