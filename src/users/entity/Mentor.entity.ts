@@ -6,8 +6,8 @@ import {
   BelongsToMany,
   PrimaryKey,
 } from 'sequelize-typescript';
-import { WhitelistedUser } from './Whitelisted-user.entity';
-import { WhitelistedUserMentor } from './Whitelisted-user-mentor.entity';
+// import { WhitelistedUser } from './Whitelisted-user.entity';
+// import { WhitelistedUserMentor } from './Whitelisted-user-mentor.entity';
 
 @Table
 export class Mentor extends Model {
@@ -19,6 +19,6 @@ export class Mentor extends Model {
   @Column
   username: string;
 
-  @BelongsToMany(() => WhitelistedUser, () => WhitelistedUserMentor)
-  users: WhitelistedUser[];
+  // @BelongsToMany(() => WhitelistedUser, () => WhitelistedUserMentor)
+  // users: WhitelistedUser[];
 }

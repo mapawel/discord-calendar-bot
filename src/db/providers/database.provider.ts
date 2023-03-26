@@ -1,10 +1,8 @@
-import { Sequelize } from 'sequelize-typescript';
-import { UserWithAuth } from '../../users/entity/User-with-auth.entity';
-import { Role } from '../../roles/entity/Role.entity';
-import { WhitelistedUser } from '../../user-management/entities/Whitelisted-user.entity';
-import { Mentor } from '../../user-management/entities/Mentor.entity';
-import { WhitelistedUserMentor } from '../../user-management/entities/Whitelisted-user-mentor.entity';
 import { join } from 'path';
+import { Sequelize } from 'sequelize-typescript';
+import { Role } from '../../roles/entity/Role.entity';
+import { AppUser } from 'src/users/entity/App-user.entity';
+import { Mentor } from 'src/users/entity/Mentor.entity';
 
 export const databaseProviders = [
   {
@@ -14,13 +12,7 @@ export const databaseProviders = [
         dialect: 'sqlite',
         storage: join(process.cwd(), 'db', 'test.sqlite'),
       });
-      sequelize.addModels([
-        UserWithAuth,
-        Role,
-        WhitelistedUser,
-        Mentor,
-        WhitelistedUserMentor,
-      ]);
+      sequelize.addModels([Role, AppUser, Mentor]);
       await sequelize.sync();
       return sequelize;
     },

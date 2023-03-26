@@ -3,7 +3,7 @@ import { WhitelistedUser } from './Whitelisted-user.entity';
 import { Mentor } from './Mentor.entity';
 
 @Table
-export class WhitelistedUserMentor extends Model {
+export class WhitelistedUserMentorTEMP extends Model {
   @ForeignKey(() => WhitelistedUser)
   @Column
   whitelistedUserId: string;

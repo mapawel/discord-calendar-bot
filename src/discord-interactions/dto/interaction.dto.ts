@@ -1,4 +1,4 @@
-import { UserDTO } from 'src/user-management/dto/User.dto';
+import { DiscordUserDTO } from './Discord-user.dto';
 
 class InteractionBase {
   type: number;
@@ -18,17 +18,17 @@ export class MappedInteraction {
     custom_id?: string;
     values?: string[];
   };
-  discord_usr: UserDTO;
+  discord_usr: DiscordUserDTO;
 }
 
 export class InteractionWUserDTO extends InteractionBase {
   member: undefined;
-  user: UserDTO;
+  user: DiscordUserDTO;
 }
 
 export class InteractionWMemberDTO extends InteractionBase {
   user: undefined;
   member: {
-    user: UserDTO;
+    user: DiscordUserDTO;
   };
 }

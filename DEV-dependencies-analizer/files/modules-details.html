@@ -56,7 +56,6 @@
     "imports": [
       "RolesModule",
       "UsersModule",
-      "UserManagementModule",
       "AxiosModule",
       "StateModule"
     ],
@@ -105,7 +104,10 @@
   },
   {
     "name": "UsersModule",
-    "imports": [],
+    "imports": [
+      "AxiosModule",
+      "RolesModule"
+    ],
     "providers": {
       "UsersService": {
         "method": "standard"
@@ -117,25 +119,6 @@
     "controllers": [],
     "exports": [
       "UsersService"
-    ]
-  },
-  {
-    "name": "UserManagementModule",
-    "imports": [
-      "AxiosModule",
-      "RolesModule"
-    ],
-    "providers": {
-      "UserManagementService": {
-        "method": "standard"
-      },
-      "UserManagementRepository": {
-        "method": "standard"
-      }
-    },
-    "controllers": [],
-    "exports": [
-      "UserManagementService"
     ]
   },
   {

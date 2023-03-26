@@ -1,14 +1,14 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
-import { UserManagementService } from 'src/user-management/providers/user-management.service';
+import { UsersService } from 'src/users/providers/users.service';
 
 @Injectable()
 export class WhitelistGuardService {
-  constructor(private readonly userManagementService: UserManagementService) {}
+  constructor(private readonly usersService: UsersService) {}
 
   async isWhitelisted(id: string): Promise<boolean> {
-    const isUser: boolean =
-      await this.userManagementService.checkWhitelistedById(id);
-    if (!isUser)
+    const isWhitelisted: boolean =
+      await this.usersService.checIfUserWhitelisted(id);
+    if (!isWhitelisted)
       throw new ForbiddenException(
         'User is not on users white list. Let Admin know about this fact.',
       );
