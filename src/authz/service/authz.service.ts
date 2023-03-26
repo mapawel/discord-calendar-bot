@@ -22,8 +22,8 @@ export class AuthzService {
 
     const querystring: URLSearchParams = new URLSearchParams({
       audience: `${process.env.AUTH0_AUDIENCE}`,
-      scope: 'openid profile email',
       response_type: 'code',
+      scope: 'openid profile email',
       client_id: `${process.env.AUTHZ_CLIENT_ID}`,
       state: signedId,
       redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
@@ -35,7 +35,7 @@ export class AuthzService {
   async getToken(code: string, state: string) {
     try {
       const { id } = await this.jwtService.verifyAsync(state);
-      await axios({
+      const { data } = await axios({
         method: 'POST',
         url: `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_TOKEN}`,
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -47,6 +47,19 @@ export class AuthzService {
           redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
         },
       });
+
+      console.log('data ----> ', data);
+
+      const { data: data2 } = await axios({
+        method: 'POST',
+        url: `${process.env.AUTHZ_API_URL}/userinfo`,
+        headers: {
+          'content-type': 'application/json',
+          Authorization: `Bearer ${data.access_token}`,
+        },
+      });
+
+      console.log('data2 ----> ', data2);
 
       await this.usersService.updateUserAuthStatus(id, true);
     } catch (err: any) {

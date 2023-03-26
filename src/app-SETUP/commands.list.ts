@@ -35,6 +35,17 @@ export const commands: AppCommand[] = [
     controller_service_method: 'managingBot',
     content: 'What do you want to do?',
   },
+  {
+    name: Commands.LOGGING_MANAGEMENT_AUTHZ_API,
+    type: 1,
+    description: 'Testing the logging management authz api',
+    dm_permission: true,
+    authenticated_guard_rule: 'isAuthenticated',
+    role_guard_rules: [],
+    whitelisting_guard_rule: 'notWhitelisted',
+    controller_service_method: 'loggonManagementAuthzApi',
+    content: '',
+  },
 ];
 
 export type AppCommand = {
@@ -48,6 +59,7 @@ export type AppCommand = {
   controller_service_method:
     | 'responseForMeeting'
     | 'authenticate'
-    | 'managingBot';
+    | 'managingBot'
+    | 'loggonManagementAuthzApi';
   content: string;
 };

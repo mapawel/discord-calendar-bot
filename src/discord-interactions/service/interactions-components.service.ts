@@ -25,7 +25,7 @@ export class IntegrationComponentsService {
   ) {
     const userID = user.id;
     const personToMeetId: string = custom_id.split(':')[1];
-    
+
     return this.responseComponentsProvider.generateIntegrationResponse({
       content: `Meeting: ${userID} ${personToMeetId}`,
     });
