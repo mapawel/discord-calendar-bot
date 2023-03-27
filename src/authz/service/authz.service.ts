@@ -8,7 +8,8 @@ import { JwtService } from '@nestjs/jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { UsersService } from 'src/users/providers/users.service';
 import { AppUserDTO } from 'src/users/dto/App-user.dto';
-
+import { RolesService } from 'src/roles/providers/roles.service';
+import { usersManagementSettings } from 'src/app-SETUP/users-management.settings';
 config();
 
 @Injectable()
@@ -16,13 +17,16 @@ export class AuthzService {
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
+    private readonly rolesService: RolesService,
   ) {}
 
   async buildRedirectLink(id: string): Promise<string> {
+    const isUserMeetingHost: boolean = await this.checkIfUserIsMeetingHost(id);
     const signedId = await this.jwtService.signAsync({ id });
 
     const querystring: URLSearchParams = new URLSearchParams({
       audience: `${process.env.AUTH0_AUDIENCE}`,
+      connection: isUserMeetingHost ? 'google-oauth2' : '',
       response_type: 'code',
       scope: 'openid profile email',
       client_id: `${process.env.AUTHZ_CLIENT_ID}`,
@@ -86,5 +90,14 @@ export class AuthzService {
         `Error while getting a token: ${err.message}`,
       );
     }
+  }
+
+  private async checkIfUserIsMeetingHost(dId: string): Promise<boolean> {
+    const userRoles: string[] = await this.rolesService.getUserRole(dId);
+    const rolesUsersCanMeetWith =
+      await this.rolesService.translateRoleNamesToIds(
+        usersManagementSettings.rolesUsersCanMeetWith,
+      );
+    return userRoles.some((role) => rolesUsersCanMeetWith.includes(role));
   }
 }
