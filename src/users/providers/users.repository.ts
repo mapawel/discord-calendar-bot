@@ -43,6 +43,8 @@ export class UsersRepository {
           authenticated: user.authenticated,
           IdP: user.IdP,
           whitelisted: user.whitelisted,
+          name: user.name,
+          picture: user.picture,
         },
         { where: { dId: user.dId } },
       );

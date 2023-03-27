@@ -71,33 +71,33 @@ export class IntegrationSlashCommandsService {
       console.log('!!!!! data2 ----> ', data2.identities[0].access_token);
 
       // BOOK A MEETING
-      // const { data: data3 } = await axios({
-      //   method: 'POST',
-      //   url: `https://www.googleapis.com/calendar/v3/calendars/79217e66718fdf78cb38c6409dc24d003b535cbfbe83cb51efcc2f590a62b52c@group.calendar.google.com/events`,
-      //   headers: {
-      //     'content-type': 'application/json',
-      //     Authorization: `Bearer ${data2.identities[0].access_token}`,
-      //   },
-      //   data: {
-      //     summary: 'Summary field2',
-      //     description: 'A description2.',
-      //     start: {
-      //       dateTime: '2023-03-27T16:30:00+02:00',
-      //     },
-      //     end: {
-      //       dateTime: '2023-03-27T16:45:00+02:00',
-      //     },
-      //     attendees: [{ email: 'lpage@example.com' }],
-      //     reminders: {
-      //       useDefault: false,
-      //       overrides: [
-      //         { method: 'email', minutes: 24 * 60 },
-      //         { method: 'popup', minutes: 10 },
-      //       ],
-      //     },
-      //   },
-      // });
-
+      const { data: data3 } = await axios({
+        method: 'POST',
+        url: `https://www.googleapis.com/calendar/v3/calendars/79217e66718fdf78cb38c6409dc24d003b535cbfbe83cb51efcc2f590a62b52c@group.calendar.google.com/events`,
+        headers: {
+          'content-type': 'application/json',
+          Authorization: `Bearer ${data2.identities[0].access_token}`,
+        },
+        data: {
+          summary: 'Summary field2',
+          description: 'A description2.',
+          start: {
+            dateTime: '2023-03-27T16:30:00+02:00',
+          },
+          end: {
+            dateTime: '2023-03-27T16:45:00+02:00',
+          },
+          attendees: [{ email: 'lpage@example.com' }],
+          reminders: {
+            useDefault: false,
+            overrides: [
+              { method: 'email', minutes: 24 * 60 },
+              { method: 'popup', minutes: 10 },
+            ],
+          },
+        },
+      });
+console.log('data3 ----> ', data3);
       // CHECK IF MENTOR IS FREE
       // const { data: data3 } = await axios({
       //   method: 'POST',

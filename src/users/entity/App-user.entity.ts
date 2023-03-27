@@ -33,6 +33,23 @@ export class AppUser extends Model {
   @Column
   whitelisted: boolean;
 
+  @Column
+  name: string;
+
+  @Column
+  picture: string;
+
   // @BelongsToMany(() => Mentor, () => WhitelistedUserMentor)
   // mentors: Mentor[];
 }
+
+// sub: 'google-oauth2|109400188660500895432',
+// given_name: 'Michał',
+// family_name: 'Pawłowski',
+// nickname: 'michalpawlowski2020',
+// name: 'Michał Pawłowski',
+// picture: 'https://lh3.googleusercontent.com/a/AGNmyxZY4RjiuRr8YU4A9uyNxJQGiTPqeYVtCjSmMhns=s96-c',
+// locale: 'pl',
+// updated_at: '2023-03-27T15:49:35.508Z',
+// email: 'michalpawlowski2020@gmail.com',
+// email_verified: true

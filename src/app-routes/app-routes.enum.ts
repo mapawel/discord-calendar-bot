@@ -7,4 +7,5 @@ export enum AppRoutes {
 export enum AuthzRoutes {
   AUTHZ_AUTHORIZE = '/authorize',
   AUTHZ_TOKEN = '/oauth/token',
+  GET_USET_INFO = '/userinfo',
 }

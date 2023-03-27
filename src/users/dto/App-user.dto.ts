@@ -6,5 +6,7 @@ export class AppUserDTO {
   authenticated: boolean;
   IdP: string;
   whitelisted: boolean;
+  name: string;
+  picture: string;
   // mentors: { id: string; username: string }[];
 }

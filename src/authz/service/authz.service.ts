@@ -7,6 +7,7 @@ import { AuthServiceException } from './exceptions/auth-service.exception';
 import { JwtService } from '@nestjs/jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { UsersService } from 'src/users/providers/users.service';
+import { AppUserDTO } from 'src/users/dto/App-user.dto';
 
 config();
 
@@ -48,20 +49,34 @@ export class AuthzService {
         },
       });
 
-      console.log('data ----> ', data);
-
-      const { data: data2 } = await axios({
+      const {
+        data: authUserData,
+      }: {
+        data: { sub: string; name: string; picture: string; email: string };
+      } = await axios({
         method: 'POST',
-        url: `${process.env.AUTHZ_API_URL}/userinfo`,
+        url: `${process.env.AUTHZ_API_URL}${AuthzRoutes.GET_USET_INFO}`,
         headers: {
           'content-type': 'application/json',
           Authorization: `Bearer ${data.access_token}`,
         },
       });
 
-      console.log('data2 ----> ', data2);
+      const verifiedUser: AppUserDTO | undefined =
+        await this.usersService.getUserByDId(id);
+      if (!verifiedUser) throw new AuthServiceException('User not found');
 
-      await this.usersService.updateUserAuthStatus(id, true);
+      const userWithFullData: AppUserDTO = {
+        ...verifiedUser,
+        name: authUserData.name,
+        picture: authUserData.picture,
+        authenticated: true,
+        IdP: authUserData.sub.split('|')[0],
+        aId: authUserData.sub.split('|')[1],
+        email: authUserData.email,
+      };
+
+      this.usersService.updateUser(userWithFullData);
     } catch (err: any) {
       if (err instanceof JsonWebTokenError)
         throw new AuthServiceException(

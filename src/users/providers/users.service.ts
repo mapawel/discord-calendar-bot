@@ -25,6 +25,10 @@ export class UsersService {
     return await this.usersRepository.createUser(user);
   }
 
+  public async updateUser(authUser: AppUserDTO): Promise<boolean> {
+    return await this.usersRepository.updateUser(authUser);
+  }
+
   public async updateUserAuthStatus(
     dId: string,
     authenticated: boolean,
