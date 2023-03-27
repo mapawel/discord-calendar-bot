@@ -1,16 +1,16 @@
 import { AppUser } from '../entity/App-user.entity';
 import { AppUserDTO } from './App-user.dto';
 
-// const mapUsersOrMentors = (
-//   array: { id: string; username: string }[],
-// ): {
-//   id: string;
-//   username: string;
-// }[] =>
-//   array.map(({ id, username }: { id: string; username: string }) => ({
-//     id,
-//     username,
-//   }));
+const mapUsersOrMentors = (
+  array: AppUser[],
+): {
+  dId: string;
+  username: string;
+}[] =>
+  array.map(({ dId, username }: { dId: string; username: string }) => ({
+    dId,
+    username,
+  }));
 
 export const AppUserMapper = (user: AppUser): AppUserDTO => ({
   dId: user.dId,
@@ -22,5 +22,5 @@ export const AppUserMapper = (user: AppUser): AppUserDTO => ({
   whitelisted: user.whitelisted,
   name: user.name,
   picture: user.picture,
-  // mentors: mapUsersOrMentors(user.mentors),
+  mentors: mapUsersOrMentors(user.mentors),
 });

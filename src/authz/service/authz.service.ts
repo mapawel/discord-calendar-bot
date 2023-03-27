@@ -10,6 +10,8 @@ import { UsersService } from 'src/users/providers/users.service';
 import { AppUserDTO } from 'src/users/dto/App-user.dto';
 import { RolesService } from 'src/roles/providers/roles.service';
 import { usersManagementSettings } from 'src/app-SETUP/users-management.settings';
+import { AuthzUserDTO } from 'src/discord-interactions/dto/Auth-user.dto';
+
 config();
 
 @Injectable()
@@ -53,11 +55,7 @@ export class AuthzService {
         },
       });
 
-      const {
-        data: authUserData,
-      }: {
-        data: { sub: string; name: string; picture: string; email: string };
-      } = await axios({
+      const { data: authUserData }: { data: AuthzUserDTO } = await axios({
         method: 'POST',
         url: `${process.env.AUTHZ_API_URL}${AuthzRoutes.GET_USET_INFO}`,
         headers: {
@@ -70,17 +68,12 @@ export class AuthzService {
         await this.usersService.getUserByDId(id);
       if (!verifiedUser) throw new AuthServiceException('User not found');
 
-      const userWithFullData: AppUserDTO = {
-        ...verifiedUser,
-        name: authUserData.name,
-        picture: authUserData.picture,
-        authenticated: true,
-        IdP: authUserData.sub.split('|')[0],
-        aId: authUserData.sub.split('|')[1],
-        email: authUserData.email,
-      };
+      const fullAppUser: AppUserDTO = this.getFullAppUser(
+        verifiedUser,
+        authUserData,
+      );
 
-      this.usersService.updateUser(userWithFullData);
+      this.usersService.updateUser(fullAppUser);
     } catch (err: any) {
       if (err instanceof JsonWebTokenError)
         throw new AuthServiceException(
@@ -99,5 +92,20 @@ export class AuthzService {
         usersManagementSettings.rolesUsersCanMeetWith,
       );
     return userRoles.some((role) => rolesUsersCanMeetWith.includes(role));
+  }
+
+  private getFullAppUser(
+    verifiedUser: AppUserDTO,
+    authUserData: AuthzUserDTO,
+  ): AppUserDTO {
+    return {
+      ...verifiedUser,
+      name: authUserData.name,
+      picture: authUserData.picture,
+      authenticated: true,
+      IdP: authUserData.sub.split('|')[0],
+      aId: authUserData.sub,
+      email: authUserData.email,
+    };
   }
 }

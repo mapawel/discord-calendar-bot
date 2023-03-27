@@ -168,10 +168,11 @@ export class IntegrationComponentsService {
   ) {
     const usersToShow: AppUserDTO[] = await this.usersService.getAllUsers();
 
-    if (!usersToShow.length)
-      return this.responseComponentsProvider.generateIntegrationResponse({
-        content: 'No users to connect with persons to meet.',
-      });
+    //TODO Add filter for the same user which is setting connections and BOT
+    // if (!usersToShow.length)
+    //   return this.responseComponentsProvider.generateIntegrationResponse({
+    //     content: 'No users to connect with persons to meet.',
+    //   });
 
     await this.stateService.saveDataAsSession(
       discordUser.id,
@@ -212,7 +213,7 @@ export class IntegrationComponentsService {
       });
 
     const personsToMeet: AppUserDTO[] = await this.usersService.getAllUsers();
-    // TODO teke users from discord with mentor role
+    // TODO take users from discord with persont-to-meet role
 
     await this.responseComponentsProvider.updateEarlierIntegrationResponse({
       lastMessageToken,
@@ -261,16 +262,16 @@ export class IntegrationComponentsService {
         'continuationUserTokens',
       );
 
+    console.log(' userToBindId----> ', userToBindId);
+    console.log(' mentorToConnect----> ', mentorToConnect);
+
     if (!lastMessageToken || !userToBindId)
       return this.responseComponentsProvider.generateIntegrationResponse({
         content: `try again... starting from slash command`,
       });
 
     //logic to bind
-    // await this.usersService.bindUserToMentor(
-    //   userToBindId,
-    //   mentorToConnect,
-    // );
+    await this.usersService.bindUsers(userToBindId, mentorToConnect);
 
     await this.stateService.removeDataForUserId(
       discordUser.id,

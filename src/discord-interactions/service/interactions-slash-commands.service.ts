@@ -28,20 +28,22 @@ export class IntegrationSlashCommandsService {
 
   async loggonManagementAuthzApi(discordUser: DiscordUserDTO) {
     try {
-      // GET TOKEN FROM AUTHZ MANAGEMENT TO CALL FOR TOKEN FOR GOOGLE
-      const { data } = await axios({
-        method: 'POST',
-        url: 'https://discord-calendar-bot-by-dd.eu.auth0.com/oauth/token',
-        headers: { 'content-type': 'application/json' },
-        data: {
-          client_id: process.env.AUTHZ_CLIENT_ID,
-          client_secret: process.env.AUTHZ_SECRET,
-          audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
-          grant_type: 'client_credentials',
-        },
-      });
+      console.log(await this.usersService.getUserByDId('1084210621903540376'));
 
-      console.log('data1 ----> ', data);
+      // GET TOKEN FROM AUTHZ MANAGEMENT TO CALL FOR TOKEN FOR GOOGLE
+      // const { data } = await axios({
+      //   method: 'POST',
+      //   url: 'https://discord-calendar-bot-by-dd.eu.auth0.com/oauth/token',
+      //   headers: { 'content-type': 'application/json' },
+      //   data: {
+      //     client_id: process.env.AUTHZ_CLIENT_ID,
+      //     client_secret: process.env.AUTHZ_SECRET,
+      //     audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
+      //     grant_type: 'client_credentials',
+      //   },
+      // });
+
+      // console.log('data1 ----> ', data);
 
       // GET A USER ID FOR MENTOR?
       // const { data: data2 } = await axios({
@@ -59,45 +61,45 @@ export class IntegrationSlashCommandsService {
       // console.log('!!!!! data2 ----> ', data2);
 
       // GET TOKEN FOR GOOGLW FROM AUTHZ
-      const { data: data2 } = await axios({
-        method: 'GET',
-        url: `https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/users/google-oauth2|109400188660500895432`,
-        headers: {
-          'content-type': 'application/json',
-          Authorization: `Bearer ${data.access_token}`,
-        },
-      });
+      // const { data: data2 } = await axios({
+      //   method: 'GET',
+      //   url: `https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/users/google-oauth2|109400188660500895432`,
+      //   headers: {
+      //     'content-type': 'application/json',
+      //     Authorization: `Bearer ${data.access_token}`,
+      //   },
+      // });
 
-      console.log('!!!!! data2 ----> ', data2.identities[0].access_token);
+      // console.log('!!!!! data2 ----> ', data2.identities[0].access_token);
 
       // BOOK A MEETING
-      const { data: data3 } = await axios({
-        method: 'POST',
-        url: `https://www.googleapis.com/calendar/v3/calendars/79217e66718fdf78cb38c6409dc24d003b535cbfbe83cb51efcc2f590a62b52c@group.calendar.google.com/events`,
-        headers: {
-          'content-type': 'application/json',
-          Authorization: `Bearer ${data2.identities[0].access_token}`,
-        },
-        data: {
-          summary: 'Summary field2',
-          description: 'A description2.',
-          start: {
-            dateTime: '2023-03-27T16:30:00+02:00',
-          },
-          end: {
-            dateTime: '2023-03-27T16:45:00+02:00',
-          },
-          attendees: [{ email: 'lpage@example.com' }],
-          reminders: {
-            useDefault: false,
-            overrides: [
-              { method: 'email', minutes: 24 * 60 },
-              { method: 'popup', minutes: 10 },
-            ],
-          },
-        },
-      });
-console.log('data3 ----> ', data3);
+      // const { data: data3 } = await axios({
+      //   method: 'POST',
+      //   url: `https://www.googleapis.com/calendar/v3/calendars/79217e66718fdf78cb38c6409dc24d003b535cbfbe83cb51efcc2f590a62b52c@group.calendar.google.com/events`,
+      //   headers: {
+      //     'content-type': 'application/json',
+      //     Authorization: `Bearer ${data2.identities[0].access_token}`,
+      //   },
+      //   data: {
+      //     summary: 'Summary field2',
+      //     description: 'A description2.',
+      //     start: {
+      //       dateTime: '2023-03-27T16:30:00+02:00',
+      //     },
+      //     end: {
+      //       dateTime: '2023-03-27T16:45:00+02:00',
+      //     },
+      //     attendees: [{ email: 'lpage@example.com' }],
+      //     reminders: {
+      //       useDefault: false,
+      //       overrides: [
+      //         { method: 'email', minutes: 24 * 60 },
+      //         { method: 'popup', minutes: 10 },
+      //       ],
+      //     },
+      //   },
+      // });
+      // console.log('data3 ----> ', data3);
       // CHECK IF MENTOR IS FREE
       // const { data: data3 } = await axios({
       //   method: 'POST',

@@ -4,8 +4,6 @@ import { AppUserDTO } from '../dto/App-user.dto';
 import { UsersRepository } from './users.repository';
 import { RolesService } from 'src/roles/providers/roles.service';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
-// import { RoleDTO } from 'src/roles/dto/Role.dto';
-// import { usersManagementSettings } from 'src/app-SETUP/users-management.settings';
 
 @Injectable()
 export class UsersService {
@@ -125,12 +123,12 @@ export class UsersService {
     return await this.usersRepository.getAllWhitelistedUsers();
   }
 
-  // public async bindUserToMentor(
-  //   userId: string,
-  //   mentorId: string,
-  // ): Promise<any> {
-  //   return await this.usersRepository.bindUserToMentor(userId, mentorId);
-  // }
+  public async bindUsers(
+    sourceUserDId: string,
+    targetUserDId: string,
+  ): Promise<any> {
+    return await this.usersRepository.bindUsers(sourceUserDId, targetUserDId);
+  }
 
   async onModuleInit() {
     await this.rolesService.updateAllDBRoles();

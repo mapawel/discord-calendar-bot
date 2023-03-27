@@ -2,7 +2,7 @@ import { join } from 'path';
 import { Sequelize } from 'sequelize-typescript';
 import { Role } from '../../roles/entity/Role.entity';
 import { AppUser } from 'src/users/entity/App-user.entity';
-import { Mentor } from 'src/users/entity/Mentor.entity';
+import { AppUsersRelated } from 'src/users/entity/App-users-related.entity';
 
 export const databaseProviders = [
   {
@@ -12,7 +12,7 @@ export const databaseProviders = [
         dialect: 'sqlite',
         storage: join(process.cwd(), 'db', 'test.sqlite'),
       });
-      sequelize.addModels([Role, AppUser, Mentor]);
+      sequelize.addModels([Role, AppUser, AppUsersRelated]);
       await sequelize.sync();
       return sequelize;
     },

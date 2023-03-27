@@ -4,6 +4,7 @@ import { AppUserDTO } from '../dto/App-user.dto';
 import { AppUserMapper } from '../dto/App-user.mapper';
 import { DiscordUserDTO } from 'src/discord-interactions/dto/Discord-user.dto';
 import { DBException } from 'src/db/exception/DB.exception';
+import { AppUsersRelated } from '../entity/App-users-related.entity';
 
 @Injectable()
 export class UsersRepository {
@@ -14,12 +15,19 @@ export class UsersRepository {
     try {
       const found: AppUser | null = await AppUser.findOne({
         where: { [by]: param },
+        include: [
+          {
+            model: AppUser,
+            as: 'mentors',
+          },
+        ],
       });
       return found ? AppUserMapper(found) : undefined;
     } catch (err: any) {
       throw new DBException(err?.message);
     }
   }
+  //TODO the same include where it's needed
 
   public async createUser(user: DiscordUserDTO): Promise<true> {
     try {
@@ -145,50 +153,45 @@ export class UsersRepository {
     }
   }
 
-  // public async bindUserToMentor(
-  //   userId: string,
-  //   mentorId: string,
-  // ): Promise<void> {
-  //   try {
-  //     const whitelistedUser: WhitelistedUser | null =
-  //       await WhitelistedUser.findOne({
-  //         where: { id: userId },
-  //       });
-  //     const mentorUser: Mentor | null = await Mentor.findOne({
-  //       where: { id: mentorId },
-  //     });
+  public async bindUsers(
+    sourceUserDId: string,
+    targetUserDId: string,
+  ): Promise<void> {
+    try {
+      const sourceUser: AppUserDTO | undefined = await this.getFirstUserByParam(
+        'dId',
+        sourceUserDId,
+      );
+      const targetUser: AppUserDTO | undefined = await this.getFirstUserByParam(
+        'dId',
+        targetUserDId,
+      );
 
-  //     if (!mentorUser || !whitelistedUser) {
-  //       throw new Error('User or mentor not found');
-  //     }
+      if (!sourceUser || !targetUser) {
+        throw new Error(
+          'Al least one of passed users to connect for meetings not found',
+        );
+      }
 
-  //     const found: WhitelistedUserMentor | null =
-  //       await WhitelistedUserMentor.findOne({
-  //         where: {
-  //           mentorUserId: mentorUser.id,
-  //           whitelistedUserId: whitelistedUser.id,
-  //         },
-  //       });
+      const found: AppUsersRelated | null = await AppUsersRelated.findOne({
+        where: {
+          sourceUserId: sourceUser.dId,
+          targetUserId: targetUser.dId,
+        },
+      });
 
-  //     if (found) {
-  //       await found.update({ mentorUserId: mentorUser.id });
-  //     } else {
-  //       await WhitelistedUserMentor.create({
-  //         mentorUserId: mentorUser.id,
-  //         whitelistedUserId: whitelistedUser.id,
-  //       });
-  //     }
-  //   } catch (err: any) {
-  //     console.log('err  ----> ', err);
-  //   }
-  // }
-
-  // public async getMentors(): Promise<UserDTO[]> {
-  //   try {
-  //     const mentorUsers: Mentor[] = await Mentor.findAll({});
-  //     return mentorUsers.map((mentor) => UserDTOMapper(mentor));
-  //   } catch (err: any) {
-  //     throw new DBException(err?.message);
-  //   }
-  // }
+      if (found) {
+        await found.update({ targetUserId: targetUser.dId });
+      } else {
+        await AppUsersRelated.create({
+          sourceUserId: sourceUser.dId,
+          targetUserId: targetUser.dId,
+        });
+      }
+    } catch (err: any) {
+      console.log('err  ----> ', err);
+      throw new Error(err?.message);
+    }
+  }
+  sourceUserId: string;
 }

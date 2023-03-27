@@ -5,10 +5,13 @@ import {
   Default,
   Unique,
   PrimaryKey,
+  BelongsToMany,
 } from 'sequelize-typescript';
+import { AppUsersRelated } from './App-users-related.entity';
 
 @Table
 export class AppUser extends Model {
+  @PrimaryKey
   @Unique({ name: 'id', msg: 'Discord ID must be unique' })
   @Column
   dId: string;
@@ -39,17 +42,19 @@ export class AppUser extends Model {
   @Column
   picture: string;
 
-  // @BelongsToMany(() => Mentor, () => WhitelistedUserMentor)
-  // mentors: Mentor[];
-}
+  @BelongsToMany(
+    () => AppUser,
+    () => AppUsersRelated,
+    'sourceUserId',
+    'targetUserId',
+  )
+  mentors: AppUser[];
 
-// sub: 'google-oauth2|109400188660500895432',
-// given_name: 'Michał',
-// family_name: 'Pawłowski',
-// nickname: 'michalpawlowski2020',
-// name: 'Michał Pawłowski',
-// picture: 'https://lh3.googleusercontent.com/a/AGNmyxZY4RjiuRr8YU4A9uyNxJQGiTPqeYVtCjSmMhns=s96-c',
-// locale: 'pl',
-// updated_at: '2023-03-27T15:49:35.508Z',
-// email: 'michalpawlowski2020@gmail.com',
-// email_verified: true
+  @BelongsToMany(
+    () => AppUser,
+    () => AppUsersRelated,
+    'targetUserId',
+    'sourceUserId',
+  )
+  students: AppUser[];
+}
