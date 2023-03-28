@@ -16,6 +16,6 @@ import { RolesModule } from 'src/roles/roles.module';
     PassportModule.register({ defaultStrategy: 'jwt' }),
   ],
   providers: [JwtStrategy, AuthzService],
-  exports: [PassportModule],
+  exports: [PassportModule, AuthzService],
 })
 export class AuthzModule {}

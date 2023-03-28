@@ -56,6 +56,7 @@ export class DiscordInteractionController {
       return await this.integrationSlashCommandsService[serviceMethod](
         discord_usr,
         values || [],
+        token,
       );
     }
     if (type === 3) {

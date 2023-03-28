@@ -67,29 +67,8 @@ export class ResponseComponentsProvider {
         },
       });
     } catch (err: any) {
+      console.log('JSON ----> ', JSON.stringify(err, null, 2));
       throw new DiscordInteractionException(err?.message);
     }
-  }
-
-  public async getUsersToShow(): Promise<DiscordUserDTO[]> {
-    // TODO to refactor to speed it up!
-    const allUsers: DiscordUserDTO[] =
-      await this.usersService.getUsersFromDiscord();
-    const alreadyWhitelistedUsers: AppUserDTO[] =
-      await this.usersService.getAllWhitelistedUsers();
-    const existingUsersDids: string[] = alreadyWhitelistedUsers.map(
-      ({ dId }: { dId: string }) => dId,
-    );
-    return allUsers.filter(
-      ({ id }: { id: string }) =>
-        id !== process.env.APP_ID && !existingUsersDids.includes(id),
-    );
-  }
-
-  public findContent(
-    array: AppCommand[],
-    objName: Commands,
-  ): string | undefined {
-    return array.find((obj) => obj.name === objName)?.content;
   }
 }

@@ -2,47 +2,12 @@ import { Injectable } from '@nestjs/common';
 import axios from 'axios';
 import { config } from 'dotenv';
 import { settings } from 'src/app-SETUP/settings';
-import { MeetingDTO } from '../dto/Meeting.dto';
+import { Meeting } from './Meeting/interface/Meeting.interface';
 
 config();
 // TODO tyy catch
 @Injectable()
 export class CalendarService {
-  public async getTokenForAuthManagment(): Promise<string> {
-    const {
-      data: { access_token },
-    }: { data: { access_token: string } } = await axios({
-      method: 'POST',
-      url: 'https://discord-calendar-bot-by-dd.eu.auth0.com/oauth/token',
-      headers: { 'content-type': 'application/json' },
-      data: {
-        client_id: process.env.AUTHZ_CLIENT_ID,
-        client_secret: process.env.AUTHZ_SECRET,
-        audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
-        grant_type: 'client_credentials',
-      },
-    });
-    return access_token;
-  }
-
-  public async getTokenForGoogle(
-    authManagementToken: string,
-    hostAuthId: string,
-  ): Promise<string> {
-    const {
-      data: { identities },
-    }: { data: { identities: { access_token: string }[] } } = await axios({
-      method: 'GET',
-      url: `https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/users/${hostAuthId}`,
-      headers: {
-        'content-type': 'application/json',
-        Authorization: `Bearer ${authManagementToken}`,
-      },
-    });
-
-    return identities[0].access_token;
-  }
-
   public async bookMeeting({
     googleToken,
     calendarId,
@@ -50,7 +15,7 @@ export class CalendarService {
   }: {
     googleToken: string;
     calendarId: string;
-    meeting: MeetingDTO;
+    meeting: Meeting;
   }) {
     try {
       const {
@@ -60,7 +25,7 @@ export class CalendarService {
         hostEmail,
         start,
         end,
-      }: MeetingDTO = meeting;
+      }: Meeting = meeting;
 
       const { data: data3 } = await axios({
         method: 'POST',

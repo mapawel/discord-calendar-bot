@@ -22,7 +22,7 @@ export class AuthzService {
     private readonly rolesService: RolesService,
   ) {}
 
-  async buildRedirectLink(id: string): Promise<string> {
+  public async buildRedirectLink(id: string): Promise<string> {
     const isUserMeetingHost: boolean = await this.checkIfUserIsMeetingHost(id);
     const signedId = await this.jwtService.signAsync({ id });
 
@@ -39,7 +39,7 @@ export class AuthzService {
     return `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_AUTHORIZE}?${querystring}`;
   }
 
-  async getToken(code: string, state: string) {
+  public async getToken(code: string, state: string) {
     try {
       const { id } = await this.jwtService.verifyAsync(state);
       const { data } = await axios({
@@ -83,6 +83,41 @@ export class AuthzService {
         `Error while getting a token: ${err.message}`,
       );
     }
+  }
+
+  public async getTokenForAuthManagment(): Promise<string> {
+    const {
+      data: { access_token },
+    }: { data: { access_token: string } } = await axios({
+      method: 'POST',
+      url: 'https://discord-calendar-bot-by-dd.eu.auth0.com/oauth/token',
+      headers: { 'content-type': 'application/json' },
+      data: {
+        client_id: process.env.AUTHZ_CLIENT_ID,
+        client_secret: process.env.AUTHZ_SECRET,
+        audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
+        grant_type: 'client_credentials',
+      },
+    });
+    return access_token;
+  }
+
+  public async getTokenForGoogle(
+    authManagementToken: string,
+    hostAuthId: string,
+  ): Promise<string> {
+    const {
+      data: { identities },
+    }: { data: { identities: { access_token: string }[] } } = await axios({
+      method: 'GET',
+      url: `https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/users/${hostAuthId}`,
+      headers: {
+        'content-type': 'application/json',
+        Authorization: `Bearer ${authManagementToken}`,
+      },
+    });
+
+    return identities[0].access_token;
   }
 
   private async checkIfUserIsMeetingHost(dId: string): Promise<boolean> {

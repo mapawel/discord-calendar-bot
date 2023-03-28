@@ -6,17 +6,20 @@ import { MapDiscUserMiddleware } from './middlewares/map-disc-user.middleware';
 import { verifyKeyMiddleware } from 'discord-interactions';
 import { AuthenticatedGuardService } from './guards/authentcated-guard.service';
 import { RolesGuardService } from './guards/roles-guard.service';
-import { RolesModule } from 'src/roles/roles.module';
-import { UsersModule } from 'src/users/users.module';
-import { AppRoutes } from 'src/app-routes/app-routes.enum';
+import { RolesModule } from '../roles/roles.module';
+import { UsersModule } from '../users/users.module';
+import { AppRoutes } from '../app-routes/app-routes.enum';
 import { WhitelistGuardService } from './guards/whitelist-guard.service';
-import { AxiosModule } from 'src/axios/axios.module';
-import { StateModule } from 'src/app-state/state.module';
+import { AxiosModule } from '../axios/axios.module';
+import { StateModule } from '../app-state/state.module';
 import { ResponseComponentsProvider } from './service/response-components.provider';
+import { ResponseComponentsHelperService } from './service/response-components-helper.service';
 import { CalendarService } from './service/Calendar.service';
+import { AuthzModule } from '../authz/authz.module';
+import { MeetingService } from './service/Meeting/Meeting.service';
 
 @Module({
-  imports: [RolesModule, UsersModule, AxiosModule, StateModule],
+  imports: [RolesModule, UsersModule, AxiosModule, StateModule, AuthzModule],
   controllers: [DiscordInteractionController],
   providers: [
     IntegrationSlashCommandsService,
@@ -26,6 +29,8 @@ import { CalendarService } from './service/Calendar.service';
     WhitelistGuardService,
     ResponseComponentsProvider,
     CalendarService,
+    MeetingService,
+    ResponseComponentsHelperService,
   ],
 })
 export class DiscordInteractionsModule implements NestModule {

@@ -85,11 +85,76 @@ export const commandsSelectComponents: Record<
       controller_service_method: 'connectingUserToMentorCallback2',
     },
   ],
+  meetingDetailsTopics: [
+    {
+      type: 3,
+      custom_id: CommandsSelectComponents.MEETING_DETAILS_TOPIC,
+      options: [
+        {
+          label: 'Fast code check by mentor',
+          value: 'code-check',
+          description: 'Ask mentor to leave feedback as to you code.',
+        },
+        {
+          label: 'Regular Code Review',
+          value: 'code-review',
+          description: 'Ask for a code review.',
+        },
+        {
+          label: 'General help',
+          value: 'general-help',
+          description: 'Ask about issues not related to your code.',
+        },
+        {
+          label: 'My CV and job search',
+          value: 'career',
+          description: 'Ask about issues connected to your career.',
+        },
+      ],
+      placeholder: 'topic...',
+      min_value: 1,
+      max_value: 1,
+      authenticated_guard_rule: 'isAuthenticated',
+      role_guard_rules: [],
+      whitelisting_guard_rule: 'isWhitelisted',
+      controller_service_method: 'meetingDetailsTopicCallback',
+    },
+  ],
+  meetingDetailsDuration: [
+    {
+      type: 3,
+      custom_id: CommandsSelectComponents.MEETING_DETAILS_DURATION,
+      options: [
+        {
+          label: '15 minutes',
+          value: 15 * 60 * 1000,
+          description: 'Just fast, small issues...',
+        },
+        {
+          label: '30 minutes',
+          value: 30 * 60 * 1000,
+          description: 'Usuly one topic.',
+        },
+        {
+          label: '1 hour',
+          value: 60 * 60 * 1000,
+          description: 'Wide range of topics.',
+        },
+      ],
+      placeholder: 'duration...',
+      min_value: 1,
+      max_value: 1,
+      authenticated_guard_rule: 'isAuthenticated',
+      role_guard_rules: [],
+      whitelisting_guard_rule: 'isWhitelisted',
+      controller_service_method: 'meetingDetailsDurationCallback',
+    },
+  ],
 };
 
 export type AppCommandSelectComponent = {
   type: 3;
-  options: { value: string; label: string; description: string }[];
+  options: { value: string | number; label: string; description: string }[];
   custom_id: CommandsSelectComponents;
   placeholder: string;
   min_value: number;
@@ -104,5 +169,7 @@ export type AppCommandSelectComponent = {
     | 'removingUserFromWhitelistCallback'
     | 'settingUserConnections'
     | 'connectingUserToMentorCallback'
-    | 'connectingUserToMentorCallback2';
+    | 'connectingUserToMentorCallback2'
+    | 'meetingDetailsTopicCallback'
+    | 'meetingDetailsDurationCallback';
 };
