@@ -6,6 +6,7 @@ import { UsersService } from '../../users/providers/users.service';
 import { commandsSelectComponents } from 'src/app-SETUP/commands-select-components.list';
 import { StateService } from '../../app-state/state.service';
 import { ResponseComponentsProvider } from './response-components.provider';
+import { CalendarService } from './Calendar.service';
 
 config();
 
@@ -15,6 +16,7 @@ export class IntegrationComponentsService {
     private readonly usersService: UsersService,
     private readonly stateService: StateService,
     private readonly responseComponentsProvider: ResponseComponentsProvider,
+    private readonly calendarService: CalendarService,
   ) {}
 
   // TODO - UserDTO split to AppUserDTO and DiscordUserDTO
@@ -24,11 +26,55 @@ export class IntegrationComponentsService {
     token: string,
     custom_id: string,
   ) {
-    const userID = discordUser.id;
-    const personToMeetId: string = custom_id.split(':')[1];
+    const userDID = discordUser.id;
+    const hostDId: string = custom_id.split(':')[1];
+
+    const [user, host]: (AppUserDTO | undefined)[] = await Promise.all(
+      [userDID, hostDId].map((dId) => this.usersService.getUserByDId(dId)),
+    );
+
+    if (!user || !host) {
+      throw Error('User or host not found');
+    }
+    if (!host.aId) {
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        content:
+          "Host didn't auth the app and connect his calander yet. Let him know about this fact to book a meeting!",
+      });
+    }
+
+    const authManagementToken: string =
+      await this.calendarService.getTokenForAuthManagment();
+
+    const googleToken: string = await this.calendarService.getTokenForGoogle(
+      authManagementToken,
+      host.aId,
+    );
+
+    const calendarId: string = await this.calendarService.getMentorsCalendarId(
+      googleToken,
+    );
+    console.log(
+      'new Date().toString() ----> ',
+      new Date().toISOString().toString(),
+    );
+    const meeting = {
+      start: new Date().toISOString().toString(),
+      end: new Date(Date.now() + 3600000).toISOString().toString(),
+      summary: `Meeting with ${user.name} (${user.username})`,
+      description: `Meeting with ${user.name}`,
+      guestEmail: user.email,
+      hostEmail: host.email,
+    };
+
+    await this.calendarService.bookMeeting({
+      googleToken,
+      calendarId,
+      meeting,
+    });
 
     return this.responseComponentsProvider.generateIntegrationResponse({
-      content: `Meeting: ${userID} ${personToMeetId}`,
+      content: `Meeting: ${user.name} ${host.name}`,
     });
   }
 

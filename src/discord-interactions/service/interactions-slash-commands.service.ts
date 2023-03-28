@@ -129,22 +129,22 @@ export class IntegrationSlashCommandsService {
 
   async responseForMeeting(discordUser: DiscordUserDTO) {
     const foundUser: AppUserDTO | undefined =
-      await this.usersService.getWhitelistedUser(discordUser.id);
+      await this.usersService.getUserByDId(discordUser.id);
 
-    // if (foundUser?.connections.length) {
-    //   return this.responseComponentsProvider.generateIntegrationResponse({
-    //     content: 'Choose a person to meet with:',
-    //     components: foundUser?.connections.map((connectedUser) => ({
-    //       ...commandsComponents.mentorToMeetWithButton[0],
-    //       label: connectedUser.username,
-    //       custom_id: CommandsComponents.MEETING_CALLBACK + connectedUser.id,
-    //     })),
-    //   });
-    // } else {
-    return this.responseComponentsProvider.generateIntegrationResponse({
-      content: 'You have no contacts to meet with. Please contact an admin.',
-    });
-    // }
+    if (foundUser?.mentors.length) {
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        content: 'Choose a person to meet with:',
+        components: foundUser?.mentors.map((connectedUser) => ({
+          ...commandsComponents.mentorToMeetWithButton[0],
+          label: connectedUser.username,
+          custom_id: CommandsComponents.MEETING_CALLBACK + connectedUser.dId,
+        })),
+      });
+    } else {
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        content: 'You have no contacts to meet with. Please contact an admin.',
+      });
+    }
   }
 
   async authenticate(discordUser: DiscordUserDTO) {

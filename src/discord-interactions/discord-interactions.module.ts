@@ -13,6 +13,7 @@ import { WhitelistGuardService } from './guards/whitelist-guard.service';
 import { AxiosModule } from 'src/axios/axios.module';
 import { StateModule } from 'src/app-state/state.module';
 import { ResponseComponentsProvider } from './service/response-components.provider';
+import { CalendarService } from './service/Calendar.service';
 
 @Module({
   imports: [RolesModule, UsersModule, AxiosModule, StateModule],
@@ -24,6 +25,7 @@ import { ResponseComponentsProvider } from './service/response-components.provid
     RolesGuardService,
     WhitelistGuardService,
     ResponseComponentsProvider,
+    CalendarService,
   ],
 })
 export class DiscordInteractionsModule implements NestModule {

@@ -9,7 +9,7 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 import { UsersService } from 'src/users/providers/users.service';
 import { AppUserDTO } from 'src/users/dto/App-user.dto';
 import { RolesService } from 'src/roles/providers/roles.service';
-import { usersManagementSettings } from 'src/app-SETUP/users-management.settings';
+import { settings } from 'src/app-SETUP/settings';
 import { AuthzUserDTO } from 'src/discord-interactions/dto/Auth-user.dto';
 
 config();
@@ -89,7 +89,7 @@ export class AuthzService {
     const userRoles: string[] = await this.rolesService.getUserRole(dId);
     const rolesUsersCanMeetWith =
       await this.rolesService.translateRoleNamesToIds(
-        usersManagementSettings.rolesUsersCanMeetWith,
+        settings.rolesUsersCanMeetWith,
       );
     return userRoles.some((role) => rolesUsersCanMeetWith.includes(role));
   }
