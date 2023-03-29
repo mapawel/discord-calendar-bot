@@ -14,7 +14,6 @@ import { AxiosModule } from '../axios/axios.module';
 import { StateModule } from '../app-state/state.module';
 import { ResponseComponentsProvider } from './service/response-components.provider';
 import { ResponseComponentsHelperService } from './service/response-components-helper.service';
-import { CalendarService } from './service/Calendar.service';
 import { AuthzModule } from '../authz/authz.module';
 import { MeetingService } from './service/Meeting/Meeting.service';
 
@@ -28,7 +27,6 @@ import { MeetingService } from './service/Meeting/Meeting.service';
     RolesGuardService,
     WhitelistGuardService,
     ResponseComponentsProvider,
-    CalendarService,
     MeetingService,
     ResponseComponentsHelperService,
   ],

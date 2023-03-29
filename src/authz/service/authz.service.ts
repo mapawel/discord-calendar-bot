@@ -16,6 +16,8 @@ config();
 
 @Injectable()
 export class AuthzService {
+  private authManagementToken: string;
+
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
@@ -85,27 +87,9 @@ export class AuthzService {
     }
   }
 
-  public async getTokenForAuthManagment(): Promise<string> {
-    const {
-      data: { access_token },
-    }: { data: { access_token: string } } = await axios({
-      method: 'POST',
-      url: 'https://discord-calendar-bot-by-dd.eu.auth0.com/oauth/token',
-      headers: { 'content-type': 'application/json' },
-      data: {
-        client_id: process.env.AUTHZ_CLIENT_ID,
-        client_secret: process.env.AUTHZ_SECRET,
-        audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
-        grant_type: 'client_credentials',
-      },
-    });
-    return access_token;
-  }
-
-  public async getTokenForGoogle(
-    authManagementToken: string,
-    hostAuthId: string,
-  ): Promise<string> {
+  public async getTokenForGoogle(hostAuthId: string): Promise<string> {
+    if (!this.authManagementToken)
+      this.authManagementToken = await this.getTokenForAuthManagment();
     const {
       data: { identities },
     }: { data: { identities: { access_token: string }[] } } = await axios({
@@ -113,7 +97,7 @@ export class AuthzService {
       url: `https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/users/${hostAuthId}`,
       headers: {
         'content-type': 'application/json',
-        Authorization: `Bearer ${authManagementToken}`,
+        Authorization: `Bearer ${this.authManagementToken}`,
       },
     });
 
@@ -142,5 +126,22 @@ export class AuthzService {
       aId: authUserData.sub,
       email: authUserData.email,
     };
+  }
+
+  private async getTokenForAuthManagment(): Promise<string> {
+    const {
+      data: { access_token },
+    }: { data: { access_token: string } } = await axios({
+      method: 'POST',
+      url: 'https://discord-calendar-bot-by-dd.eu.auth0.com/oauth/token',
+      headers: { 'content-type': 'application/json' },
+      data: {
+        client_id: process.env.AUTHZ_CLIENT_ID,
+        client_secret: process.env.AUTHZ_SECRET,
+        audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
+        grant_type: 'client_credentials',
+      },
+    });
+    return access_token;
   }
 }

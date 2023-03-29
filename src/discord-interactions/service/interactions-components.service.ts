@@ -6,12 +6,11 @@ import { UsersService } from '../../users/providers/users.service';
 import { commandsSelectComponents } from 'src/app-SETUP/commands-select-components.list';
 import { StateService } from '../../app-state/state.service';
 import { ResponseComponentsProvider } from './response-components.provider';
-import { CalendarService } from './Calendar.service';
-import { AuthzService } from 'src/authz/service/authz.service';
+import { Calendar } from '../Calendar/Calendar';
 import { ResponseComponentsHelperService } from './response-components-helper.service';
 import { MeetingService } from './Meeting/Meeting.service';
 import { Meeting } from './Meeting/interface/Meeting.interface';
-
+import { AuthzService } from 'src/authz/service/authz.service';
 config();
 
 @Injectable()
@@ -21,9 +20,9 @@ export class IntegrationComponentsService {
     private readonly stateService: StateService,
     private readonly responseComponentsProvider: ResponseComponentsProvider,
     private readonly responseComponentsHelperService: ResponseComponentsHelperService,
-    private readonly calendarService: CalendarService,
-    private readonly meetingService: MeetingService,
     private readonly authzService: AuthzService,
+    // private readonly calendarService: CalendarService,
+    private readonly meetingService: MeetingService,
   ) {}
 
   // TODO - UserDTO split to AppUserDTO and DiscordUserDTO
@@ -45,36 +44,10 @@ export class IntegrationComponentsService {
       });
     //TODO - necessary slash commands should reset continuationUserTokens
 
-    const {
-      user,
-      host,
-      errorResponse,
-    }: {
-      user: AppUserDTO;
-      host: AppUserDTO;
-      errorResponse: string | undefined;
-    } = await this.meetingService.takeAndValidateUserAndHost({
-      userDId: discordUser.id,
-      hostDId: custom_id.split(':')[1],
-    });
-
-    if (errorResponse) {
-      return this.responseComponentsProvider.generateIntegrationResponse({
-        content:
-          "Host didn't auth the app and connect his calander yet. Let him know about this fact to book a meeting!",
-      });
-    }
-
     const meetingData: Partial<Meeting> =
       this.meetingService.rebuildMeetingData({
-        userDId: user.dId,
-        hostDId: host.dId,
-        summary: `Meeting with ${user.username}`,
-        description: `Meeting with ${user.username} (${
-          user.name
-        }) created ${new Date().toISOString()}`,
-        guestEmail: user.email,
-        hostEmail: host.email,
+        userDId: discordUser.id,
+        hostDId: custom_id.split(':')[1],
       });
 
     await this.stateService.saveDataAsSession(
@@ -85,7 +58,7 @@ export class IntegrationComponentsService {
 
     await this.responseComponentsProvider.updateEarlierIntegrationResponse({
       lastMessageToken,
-      content: `Creating a meeting with ${host.username}...`,
+      content: `Creating a meeting...`,
     });
 
     await this.stateService.saveDataAsSession(
@@ -155,33 +128,64 @@ export class IntegrationComponentsService {
         discordUser.id,
         'continuationUserTokens',
       );
-
-    if (!lastMessageToken)
+    const prevMeetingData: string | undefined =
+      await this.stateService.loadDataForUserId(
+        discordUser.id,
+        'continuationBuildingMeeting',
+      );
+    if (!lastMessageToken || !prevMeetingData)
       return this.responseComponentsProvider.generateIntegrationResponse({
         content: `try again... starting from slash command`,
       });
-    // const authManagementToken: string =
-    //   await this.authzService.getTokenForAuthManagment();
-    // const googleToken: string = await this.authzService.getTokenForGoogle(
-    //   authManagementToken,
-    //   host.aId,
-    // );
-    // const calendarId: string = await this.calendarService.getMentorsCalendarId(
-    //   googleToken,
-    // );
-    // const meeting = {
+
+    const { userDId, hostDId } = JSON.parse(prevMeetingData);
+    const {
+      user,
+      host,
+      errorResponse,
+    }: {
+      user: AppUserDTO;
+      host: AppUserDTO;
+      errorResponse: string | undefined;
+    } = await this.meetingService.takeAndValidateUserAndHost({
+      userDId,
+      hostDId,
+    });
+    if (errorResponse) {
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        content:
+          "Host didn't auth the app and connect his calander yet. Let him know about this fact to book a meeting!",
+      });
+    }
+
+    const meetingData: Partial<Meeting> =
+      this.meetingService.rebuildMeetingData({
+        userDId,
+        hostDId,
+        summary: `Meeting with ${user.username}`,
+        description: `Meeting with ${user.username} (${
+          user.name
+        }) created ${new Date().toISOString()}`,
+        guestEmail: user.email,
+        hostEmail: host.email,
+      });
+
+    await this.stateService.saveDataAsSession(
+      discordUser.id,
+      JSON.stringify(meetingData),
+      'continuationBuildingMeeting',
+    );
+
+    const calendar: Calendar = new Calendar(this.authzService);
+    await calendar.calendarInit(host.aId);
+
+
+    // const possibleMeetingWindows =
+    //   this.calendarService.checkFreeBusy(calendarId);
+
     //   start: new Date().toISOString().toString(),
     //   end: new Date(Date.now() + 3600000).toISOString().toString(),
-    //   summary: `Meeting with ${user.name} (${user.username})`,
-    //   description: `Meeting with ${user.name}`,
-    //   guestEmail: user.email,
-    //   hostEmail: host.email,
-    // };
-    // await this.calendarService.bookMeeting({
-    //   googleToken,
-    //   calendarId,
-    //   meeting,
-    // });
+
     return this.responseComponentsProvider.updateEarlierIntegrationResponse({
       lastMessageToken,
       content: 'Meeting booked!',
