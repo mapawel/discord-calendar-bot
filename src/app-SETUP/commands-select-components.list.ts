@@ -150,6 +150,26 @@ export const commandsSelectComponents: Record<
       controller_service_method: 'meetingDetailsDurationCallback',
     },
   ],
+  meetingDetailsTime: [
+    {
+      type: 3,
+      custom_id: CommandsSelectComponents.MEETING_DETAILS_TIME,
+      options: [
+        {
+          label: 'to replace in app code',
+          value: 'to replace in app code',
+          description: 'to replace in app code',
+        },
+      ],
+      placeholder: 'free hours...',
+      min_value: 1,
+      max_value: 1,
+      authenticated_guard_rule: 'isAuthenticated',
+      role_guard_rules: [],
+      whitelisting_guard_rule: 'isWhitelisted',
+      controller_service_method: 'meetingDetailsTimeCallback',
+    },
+  ],
 };
 
 export type AppCommandSelectComponent = {
@@ -171,5 +191,6 @@ export type AppCommandSelectComponent = {
     | 'connectingUserToMentorCallback'
     | 'connectingUserToMentorCallback2'
     | 'meetingDetailsTopicCallback'
-    | 'meetingDetailsDurationCallback';
+    | 'meetingDetailsDurationCallback'
+    | 'meetingDetailsTimeCallback';
 };

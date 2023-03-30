@@ -31,6 +31,7 @@ export class DiscordInteractionController {
     body: MappedInteraction,
   ) {
     const {
+      id,
       token,
       type,
       data: { name, custom_id, values },
@@ -70,6 +71,7 @@ export class DiscordInteractionController {
         values || [],
         token,
         custom_id || '',
+        id,
       );
     }
   }

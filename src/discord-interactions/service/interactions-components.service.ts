@@ -11,6 +11,7 @@ import { ResponseComponentsHelperService } from './response-components-helper.se
 import { MeetingService } from '../Meeting/Meeting.service';
 import { Meeting } from '../Meeting/interface/Meeting.interface';
 import { AuthzService } from '../../authz/service/authz.service';
+import { FreeBusyRanges } from '../Calendar/types/Free-busy-ranges.type';
 
 config();
 
@@ -112,6 +113,10 @@ export class IntegrationComponentsService {
       'continuationUserTokens',
     );
 
+    await this.responseComponentsProvider.updateEarlierIntegrationResponse({
+      lastMessageToken,
+      content: `OK`,
+    });
     return this.responseComponentsProvider.generateIntegrationResponse({
       content: `Choose meeting duration:`,
       components: commandsSelectComponents.meetingDetailsDuration,
@@ -123,6 +128,7 @@ export class IntegrationComponentsService {
     values: string[],
     token: string,
     custom_id: string,
+    id: string,
   ) {
     const lastMessageToken: string | undefined =
       await this.stateService.loadDataForUserId(
@@ -138,6 +144,12 @@ export class IntegrationComponentsService {
       return this.responseComponentsProvider.generateIntegrationResponse({
         content: `try again... starting from slash command`,
       });
+
+    await this.stateService.saveDataAsSession(
+      discordUser.id,
+      token,
+      'continuationUserTokens',
+    );
 
     const { userDId, hostDId } = JSON.parse(prevMeetingData);
     const {
@@ -163,6 +175,7 @@ export class IntegrationComponentsService {
       this.meetingService.rebuildMeetingData({
         userDId,
         hostDId,
+        hostAId: host.aId,
         summary: `Meeting with ${user.username}`,
         description: `Meeting with ${user.username} (${
           user.name
@@ -182,17 +195,100 @@ export class IntegrationComponentsService {
     const calendar: Calendar = new Calendar(this.authzService);
     await calendar.calendarInit(host.aId);
 
-    console.log(await calendar.getMeetingTimeProposals(durationMs));
+    const meetingTimeProposals: FreeBusyRanges =
+      await calendar.getMeetingTimeProposals(durationMs);
 
-    // const possibleMeetingWindows =
-    //   this.calendarService.checkFreeBusy(calendarId);
-
-    //   start: new Date().toISOString().toString(),
-    //   end: new Date(Date.now() + 3600000).toISOString().toString(),
-
-    return this.responseComponentsProvider.updateEarlierIntegrationResponse({
+    await this.responseComponentsProvider.updateEarlierIntegrationResponse({
       lastMessageToken,
-      content: 'Meeting booked!',
+      content: `OK`,
+    });
+
+    const split = (objArr: any[]) => {
+      const arr = [];
+      for (let i = 0; i < objArr.length; i += 24) {
+        arr.push(objArr.slice(i, i + 24));
+      }
+      return arr;
+    };
+
+    const splitted = split(meetingTimeProposals);
+    console.log('splitted', splitted);
+
+    return await this.responseComponentsProvider.generateIntegrationResponseMultiline(
+      {
+        content: 'Choose your time:',
+        componentsArrays: splitted.slice(0, 5).map((set: any[], i) =>
+          commandsSelectComponents.meetingDetailsTime.map((component) => ({
+            ...component,
+            custom_id: `${component.custom_id}:${i}`,
+            options: set.map(
+              ({ start, end }: { start: string; end: string }) => {
+                const startD = new Date(start);
+                const endD = new Date(end);
+                return {
+                  label: `${startD.toDateString()}, ${startD.toLocaleTimeString(
+                    undefined,
+                    { timeStyle: 'short' },
+                  )} - ${endD.toDateString()}, ${endD.toLocaleTimeString(
+                    undefined,
+                    {
+                      timeStyle: 'short',
+                    },
+                  )}`,
+                  value: `${start.toString()}/${end.toString()}`,
+                };
+              },
+            ),
+          })),
+        ),
+      },
+    );
+  }
+
+  async meetingDetailsTimeCallback(
+    discordUser: DiscordUserDTO,
+    values: string[],
+    token: string,
+  ) {
+    const start: string = values[0].split('/')[0];
+    const end: string = values[0].split('/')[1];
+
+    const lastMessageToken: string | undefined =
+      await this.stateService.loadDataForUserId(
+        discordUser.id,
+        'continuationUserTokens',
+      );
+    const prevMeetingData: string | undefined =
+      await this.stateService.loadDataForUserId(
+        discordUser.id,
+        'continuationBuildingMeeting',
+      );
+
+    if (!lastMessageToken || !prevMeetingData)
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        content: `try again... starting from slash command`,
+      });
+
+    const meetingData: Partial<Meeting> =
+      this.meetingService.rebuildMeetingData(
+        {
+          start,
+          end,
+        },
+        JSON.parse(prevMeetingData),
+      );
+
+    const calendar: Calendar = new Calendar(this.authzService);
+    await calendar.calendarInit(JSON.parse(prevMeetingData).hostAId);
+    await calendar.bookMeeting(meetingData as Meeting);
+
+    await this.responseComponentsProvider.updateEarlierIntegrationResponse({
+      lastMessageToken,
+      content: `OK`,
+    });
+
+    return this.responseComponentsProvider.generateIntegrationResponse({
+      content: 'OK',
     });
   }
 
@@ -425,9 +521,6 @@ export class IntegrationComponentsService {
         discordUser.id,
         'continuationUserTokens',
       );
-
-    console.log(' userToBindId----> ', userToBindId);
-    console.log(' mentorToConnect----> ', mentorToConnect);
 
     if (!lastMessageToken || !userToBindId)
       return this.responseComponentsProvider.generateIntegrationResponse({

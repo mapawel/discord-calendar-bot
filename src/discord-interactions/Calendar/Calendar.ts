@@ -17,7 +17,7 @@ export class Calendar {
     this.calendarId = await this.getMentorsCalendarId();
   }
 
-  private async getMeetingWindows(daysRangeNo = 7): Promise<FreeBusyRanges> {
+  private async getMeetingWindows(daysRangeNo = 4): Promise<FreeBusyRanges> {
     // : '2023-03-30T10:00:00+02:00'
     try {
       const timeMin = new Date().toISOString().toString();
@@ -79,7 +79,7 @@ export class Calendar {
     return meetingTimeProposalsTimes.flat();
   }
 
-  public async bookMeeting({ meeting }: { meeting: Meeting }) {
+  public async bookMeeting(meeting: Meeting) {
     try {
       const {
         summary,
@@ -101,7 +101,6 @@ export class Calendar {
           summary,
           description,
           start: {
-            // dateTime: '2023-03-29T16:30:00+02:00',
             dateTime: start,
           },
           end: {

@@ -18,6 +18,27 @@ export class ResponseComponentsProvider {
     private readonly axiosProvider: AxiosProvider,
   ) {}
 
+  public generateIntegrationResponseMultiline({
+    content,
+    componentsArrays,
+  }: {
+    content?: string;
+    componentsArrays?: any[][];
+  }) {
+    return {
+      type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+      data: {
+        content,
+        components: componentsArrays?.length
+          ? componentsArrays.map((components: any) => ({
+              type: 1,
+              components,
+            }))
+          : [],
+      },
+    };
+  }
+
   public generateIntegrationResponse({
     content,
     components,
@@ -71,4 +92,40 @@ export class ResponseComponentsProvider {
       throw new DiscordInteractionException(err?.message);
     }
   }
+
+  // public async generateRESTIntegrationResponse({
+  //   id,
+  //   token,
+  //   content,
+  //   components,
+  // }: {
+  //   id: string;
+  //   token: string;
+  //   content: string;
+  //   components?: any[];
+  // }) {
+  //   try {
+  //     await this.axiosProvider.instance({
+  //       method: 'POST',
+  //       url: `/interactions/${id}/${token}/callback`,
+  //       data: {
+  //         type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
+  //         data: {
+  //           content,
+  //           components: components?.length
+  //             ? [
+  //                 {
+  //                   type: 1,
+  //                   components,
+  //                 },
+  //               ]
+  //             : [],
+  //         },
+  //       },
+  //     });
+  //   } catch (err: any) {
+  //     console.log('JSON ----> ', JSON.stringify(err, null, 2));
+  //     throw new DiscordInteractionException(err?.message);
+  //   }
+  // }
 }
