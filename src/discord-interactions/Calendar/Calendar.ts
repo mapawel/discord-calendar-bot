@@ -90,7 +90,7 @@ export class Calendar {
         end,
       }: Meeting = meeting;
 
-      const { data: data3 } = await axios({
+      const { data } = await axios({
         method: 'POST',
         url: `https://www.googleapis.com/calendar/v3/calendars/${this.calendarId}/events`,
         headers: {
@@ -116,7 +116,6 @@ export class Calendar {
           },
         },
       });
-      console.log('book meeting result ----> ', data3);
     } catch (error: any) {
       throw new Error(error?.message);
     }

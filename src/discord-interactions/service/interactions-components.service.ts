@@ -23,11 +23,9 @@ export class IntegrationComponentsService {
     private readonly responseComponentsProvider: ResponseComponentsProvider,
     private readonly responseComponentsHelperService: ResponseComponentsHelperService,
     private readonly authzService: AuthzService,
-    // private readonly calendarService: CalendarService,
     private readonly meetingService: MeetingService,
   ) {}
 
-  // TODO - UserDTO split to AppUserDTO and DiscordUserDTO
   async meetingBookingCallback(
     discordUser: DiscordUserDTO,
     values: string[],
@@ -44,7 +42,6 @@ export class IntegrationComponentsService {
       return this.responseComponentsProvider.generateIntegrationResponse({
         content: `try again... starting from slash command`,
       });
-    //TODO - necessary slash commands should reset continuationUserTokens
 
     const meetingData: Partial<Meeting> =
       this.meetingService.rebuildMeetingData({
@@ -79,7 +76,6 @@ export class IntegrationComponentsService {
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
-    custom_id: string,
   ) {
     const lastMessageToken: string | undefined =
       await this.stateService.loadDataForUserId(
@@ -98,9 +94,12 @@ export class IntegrationComponentsService {
       });
 
     const meetingData: Partial<Meeting> =
-      this.meetingService.rebuildMeetingData(JSON.parse(prevMeetingData), {
-        topic: values[0],
-      });
+      this.meetingService.rebuildMeetingData(
+        {
+          topic: values[0],
+        },
+        JSON.parse(prevMeetingData),
+      );
 
     await this.stateService.saveDataAsSession(
       discordUser.id,
@@ -127,8 +126,6 @@ export class IntegrationComponentsService {
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
-    custom_id: string,
-    id: string,
   ) {
     const lastMessageToken: string | undefined =
       await this.stateService.loadDataForUserId(
@@ -171,18 +168,23 @@ export class IntegrationComponentsService {
       });
     }
 
+    const prevMeetingDataObj: Partial<Meeting> = JSON.parse(prevMeetingData);
+
     const meetingData: Partial<Meeting> =
-      this.meetingService.rebuildMeetingData({
-        userDId,
-        hostDId,
-        hostAId: host.aId,
-        summary: `Meeting with ${user.username}`,
-        description: `Meeting with ${user.username} (${
-          user.name
-        }) created ${new Date().toISOString()}`,
-        guestEmail: user.email,
-        hostEmail: host.email,
-      });
+      this.meetingService.rebuildMeetingData(
+        {
+          userDId,
+          hostDId,
+          hostAId: host.aId,
+          summary: `Meeting with ${user.username}`,
+          description: `Meeting with ${user.username} (${
+            user.name
+          }) created ${new Date().toISOString()}: ${prevMeetingDataObj.topic}`,
+          guestEmail: user.email,
+          hostEmail: host.email,
+        },
+        prevMeetingDataObj,
+      );
 
     await this.stateService.saveDataAsSession(
       discordUser.id,
@@ -248,7 +250,6 @@ export class IntegrationComponentsService {
   async meetingDetailsTimeCallback(
     discordUser: DiscordUserDTO,
     values: string[],
-    token: string,
   ) {
     const start: string = values[0].split('/')[0];
     const end: string = values[0].split('/')[1];
@@ -282,13 +283,24 @@ export class IntegrationComponentsService {
     await calendar.calendarInit(JSON.parse(prevMeetingData).hostAId);
     await calendar.bookMeeting(meetingData as Meeting);
 
+    await Promise.all([
+      this.stateService.removeDataForUserId(
+        discordUser.id,
+        'continuationUserTokens',
+      ),
+      this.stateService.removeDataForUserId(
+        discordUser.id,
+        'continuationBuildingMeeting',
+      ),
+    ]);
+
     await this.responseComponentsProvider.updateEarlierIntegrationResponse({
       lastMessageToken,
       content: `OK`,
     });
 
     return this.responseComponentsProvider.generateIntegrationResponse({
-      content: 'OK',
+      content: `Your meeting is booked for ${meetingData.start} - ${meetingData.end}`,
     });
   }
 
@@ -328,7 +340,6 @@ export class IntegrationComponentsService {
   async addingUserToWhitelistCallback(
     discordUser: DiscordUserDTO,
     values: string[],
-    token: string,
   ) {
     const [userId] = values;
 
@@ -428,12 +439,6 @@ export class IntegrationComponentsService {
   ) {
     const usersToShow: AppUserDTO[] = await this.usersService.getAllUsers();
 
-    //TODO Add filter for the same user which is setting connections and BOT
-    // if (!usersToShow.length)
-    //   return this.responseComponentsProvider.generateIntegrationResponse({
-    //     content: 'No users to connect with persons to meet.',
-    //   });
-
     await this.stateService.saveDataAsSession(
       discordUser.id,
       token,
@@ -527,9 +532,7 @@ export class IntegrationComponentsService {
         content: `try again... starting from slash command`,
       });
 
-    //logic to bind
     await this.usersService.bindUsers(userToBindId, mentorToConnect);
-
     await this.stateService.removeDataForUserId(
       discordUser.id,
       'continuationUserBinding',
@@ -546,7 +549,7 @@ export class IntegrationComponentsService {
     );
   }
 
-  public async default(discordUser: DiscordUserDTO, values: string[]) {
+  public async default() {
     return this.responseComponentsProvider.generateIntegrationResponse({
       content: 'No action implemented for this command yet.',
     });

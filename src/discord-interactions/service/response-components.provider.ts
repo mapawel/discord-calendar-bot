@@ -2,11 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
 import { config } from 'dotenv';
 import { UsersService } from 'src/users/providers/users.service';
-import { AppUserDTO } from 'src/users/dto/App-user.dto';
-import { DiscordUserDTO } from '../dto/Discord-user.dto';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
-import { AppCommand } from 'src/app-SETUP/commands.list';
-import { Commands } from 'src/app-SETUP/commands.enum';
 import { DiscordInteractionException } from '../exception/DiscordInteraction.exception';
 
 config();
