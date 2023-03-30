@@ -15,7 +15,7 @@ import { StateModule } from '../app-state/state.module';
 import { ResponseComponentsProvider } from './service/response-components.provider';
 import { ResponseComponentsHelperService } from './service/response-components-helper.service';
 import { AuthzModule } from '../authz/authz.module';
-import { MeetingService } from './service/Meeting/Meeting.service';
+import { MeetingService } from './Meeting/Meeting.service';
 
 @Module({
   imports: [RolesModule, UsersModule, AxiosModule, StateModule, AuthzModule],

@@ -3,6 +3,7 @@ import { config } from 'dotenv';
 import { settings } from 'src/app-SETUP/settings';
 import { Meeting } from '../Meeting/interface/Meeting.interface';
 import { AuthzService } from 'src/authz/service/authz.service';
+import { FreeBusyRanges } from './types/Free-busy-ranges.type';
 
 config();
 
@@ -14,6 +15,68 @@ export class Calendar {
   public async calendarInit(hostAuthId: string) {
     this.googleToken = await this.authzService.getTokenForGoogle(hostAuthId);
     this.calendarId = await this.getMentorsCalendarId();
+  }
+
+  private async getMeetingWindows(daysRangeNo = 7): Promise<FreeBusyRanges> {
+    // : '2023-03-30T10:00:00+02:00'
+    try {
+      const timeMin = new Date().toISOString().toString();
+      const timeMax = new Date(Date.now() + daysRangeNo * 24 * 60 * 60 * 1000)
+        .toISOString()
+        .toString();
+      const busyTimeRanges: {
+        start: string;
+        end: string;
+      }[] = await this.checkFreeBusy(timeMin, timeMax);
+
+      const freeTimeWindows: FreeBusyRanges = busyTimeRanges.flatMap(
+        ({ start, end }, i, arr) => {
+          const l = arr.length;
+          if (i === l - 1) return [];
+          return [
+            {
+              start: end,
+              end: arr[i + 1].start,
+            },
+          ];
+        },
+      );
+      return freeTimeWindows;
+    } catch (error: any) {
+      throw new Error(error?.message);
+    }
+  }
+
+  public async getMeetingTimeProposals(
+    durationMs: number,
+    resolutionFactor: 0.5 | 1 = 0.5,
+  ): Promise<FreeBusyRanges> {
+    const minimalResolutionMs = 15 * 60 * 1000;
+    const finalResolutionMs: number =
+      durationMs * resolutionFactor <= minimalResolutionMs
+        ? minimalResolutionMs
+        : durationMs * resolutionFactor;
+
+    const meetingTimeProposalsTimes = (await this.getMeetingWindows()).map(
+      ({ start, end }) => {
+        const meetingTimeProposals: FreeBusyRanges = [];
+        const startRangeTime = new Date(start);
+        const endRangeTima = new Date(end);
+
+        while (
+          startRangeTime.getTime() + durationMs <=
+          endRangeTima.getTime()
+        ) {
+          meetingTimeProposals.push({
+            start: new Date(startRangeTime.getTime()).toISOString(),
+            end: new Date(startRangeTime.getTime() + durationMs).toISOString(),
+          });
+          startRangeTime.setTime(startRangeTime.getTime() + finalResolutionMs);
+        }
+        return meetingTimeProposals;
+      },
+    );
+    return meetingTimeProposalsTimes.flat();
   }
 
   public async bookMeeting({ meeting }: { meeting: Meeting }) {
@@ -60,9 +123,18 @@ export class Calendar {
     }
   }
 
-  public async checkFreeBusy() {
+  public async checkFreeBusy(
+    timeMin: string,
+    timeMax: string,
+  ): Promise<FreeBusyRanges> {
     try {
-      const { data: data3 } = await axios({
+      const {
+        data: { calendars },
+      }: {
+        data: {
+          calendars: Record<string, { busy: FreeBusyRanges }>;
+        };
+      } = await axios({
         method: 'POST',
         url: `https://www.googleapis.com/calendar/v3/freeBusy`,
         headers: {
@@ -70,8 +142,8 @@ export class Calendar {
           Authorization: `Bearer ${this.googleToken}`,
         },
         data: {
-          timeMin: '2023-03-30T10:00:00+02:00',
-          timeMax: '2023-03-30T20:00:00+02:00',
+          timeMin,
+          timeMax,
           timeZone: 'UTX+02:00',
           // groupExpansionMax: integer,
           // calendarExpansionMax: integer,
@@ -82,7 +154,7 @@ export class Calendar {
           ],
         },
       });
-      console.log('data3 ----> ', JSON.stringify(data3, null, 2));
+      return calendars?.[this.calendarId]?.busy;
     } catch (error: any) {
       throw new Error(error?.message);
     }

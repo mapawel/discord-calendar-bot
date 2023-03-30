@@ -1,16 +1,17 @@
 import { config } from 'dotenv';
 import { Injectable } from '@nestjs/common';
 import { DiscordUserDTO } from '../dto/Discord-user.dto';
-import { AppUserDTO } from 'src/users/dto/App-user.dto';
+import { AppUserDTO } from '../../users/dto/App-user.dto';
 import { UsersService } from '../../users/providers/users.service';
 import { commandsSelectComponents } from 'src/app-SETUP/commands-select-components.list';
 import { StateService } from '../../app-state/state.service';
 import { ResponseComponentsProvider } from './response-components.provider';
 import { Calendar } from '../Calendar/Calendar';
 import { ResponseComponentsHelperService } from './response-components-helper.service';
-import { MeetingService } from './Meeting/Meeting.service';
-import { Meeting } from './Meeting/interface/Meeting.interface';
-import { AuthzService } from 'src/authz/service/authz.service';
+import { MeetingService } from '../Meeting/Meeting.service';
+import { Meeting } from '../Meeting/interface/Meeting.interface';
+import { AuthzService } from '../../authz/service/authz.service';
+
 config();
 
 @Injectable()
@@ -176,9 +177,12 @@ export class IntegrationComponentsService {
       'continuationBuildingMeeting',
     );
 
+    const durationMs = Number(values[0]);
+
     const calendar: Calendar = new Calendar(this.authzService);
     await calendar.calendarInit(host.aId);
 
+    console.log(await calendar.getMeetingTimeProposals(durationMs));
 
     // const possibleMeetingWindows =
     //   this.calendarService.checkFreeBusy(calendarId);
