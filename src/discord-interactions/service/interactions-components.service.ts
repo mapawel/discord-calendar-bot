@@ -6,12 +6,11 @@ import { UsersService } from '../../users/providers/users.service';
 import { commandsSelectComponents } from 'src/app-SETUP/commands-select-components.list';
 import { StateService } from '../../app-state/state.service';
 import { ResponseComponentsProvider } from './response-components.provider';
-import { Calendar } from '../Calendar/Calendar';
+import { CalendarService } from '../Calendar-service/Calendar.service';
 import { ResponseComponentsHelperService } from './response-components-helper.service';
 import { MeetingService } from '../Meeting/Meeting.service';
 import { Meeting } from '../Meeting/interface/Meeting.interface';
-import { AuthzService } from '../../authz/service/authz.service';
-import { FreeBusyRanges } from '../Calendar/types/Free-busy-ranges.type';
+import { FreeBusyRanges } from '../Calendar-service/types/Free-busy-ranges.type';
 
 config();
 
@@ -22,8 +21,8 @@ export class IntegrationComponentsService {
     private readonly stateService: StateService,
     private readonly responseComponentsProvider: ResponseComponentsProvider,
     private readonly responseComponentsHelperService: ResponseComponentsHelperService,
-    private readonly authzService: AuthzService,
     private readonly meetingService: MeetingService,
+    private readonly calendarService: CalendarService,
   ) {}
 
   async meetingBookingCallback(
@@ -54,6 +53,16 @@ export class IntegrationComponentsService {
       JSON.stringify(meetingData),
       'continuationBuildingMeeting',
     );
+
+    const host: AppUserDTO | undefined = await this.usersService.getUserByDId(
+      custom_id.split(':')[1],
+    );
+    if (!host)
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        content: `try again... starting from slash command`,
+      });
+    // NOT WAITING FOR IT !!
+    this.calendarService.getTokens(host.dId, host.aId);
 
     await this.responseComponentsProvider.updateEarlierIntegrationResponse({
       lastMessageToken,
@@ -139,7 +148,7 @@ export class IntegrationComponentsService {
       );
     if (!lastMessageToken || !prevMeetingData)
       return this.responseComponentsProvider.generateIntegrationResponse({
-        content: `try again... starting from slash command`,
+        content: `try again... starting from slash command????`,
       });
 
     await this.stateService.saveDataAsSession(
@@ -194,11 +203,17 @@ export class IntegrationComponentsService {
 
     const durationMs = Number(values[0]);
 
-    const calendar: Calendar = new Calendar(this.authzService);
-    await calendar.calendarInit(host.aId);
+    const {
+      data: meetingTimeProposals,
+      error,
+    }: { data: FreeBusyRanges; error: string } =
+      await this.calendarService.getMeetingTimeProposals(hostDId, durationMs);
 
-    const meetingTimeProposals: FreeBusyRanges =
-      await calendar.getMeetingTimeProposals(durationMs);
+    if (error) {
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        content: error,
+      });
+    }
 
     await this.responseComponentsProvider.updateEarlierIntegrationResponse({
       lastMessageToken,
@@ -270,18 +285,27 @@ export class IntegrationComponentsService {
         content: `try again... starting from slash command`,
       });
 
+    const prevMeetingDataObj: Partial<Meeting> = JSON.parse(prevMeetingData);
+
     const meetingData: Partial<Meeting> =
       this.meetingService.rebuildMeetingData(
         {
           start,
           end,
         },
-        JSON.parse(prevMeetingData),
+        prevMeetingDataObj,
       );
 
-    const calendar: Calendar = new Calendar(this.authzService);
-    await calendar.calendarInit(JSON.parse(prevMeetingData).hostAId);
-    await calendar.bookMeeting(meetingData as Meeting);
+    const { error }: { error: string } = await this.calendarService.bookMeeting(
+      prevMeetingDataObj.hostDId as string,
+      meetingData as Meeting,
+    );
+
+    if (error) {
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        content: error,
+      });
+    }
 
     await Promise.all([
       this.stateService.removeDataForUserId(
@@ -300,7 +324,7 @@ export class IntegrationComponentsService {
     });
 
     return this.responseComponentsProvider.generateIntegrationResponse({
-      content: `Your meeting is booked for ${meetingData.start} - ${meetingData.end}`,
+      content: `Your meeting is booked!`,
     });
   }
 
