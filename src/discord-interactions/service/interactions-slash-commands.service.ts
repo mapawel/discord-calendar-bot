@@ -11,7 +11,6 @@ import { Commands } from 'src/app-SETUP/commands.enum';
 import { ResponseComponentsProvider } from './response-components.provider';
 import { CommandsComponents } from 'src/app-SETUP/commands-components.enum';
 import { ResponseComponentsHelperService } from './response-components-helper.service';
-import { StateService } from 'src/app-state/state.service';
 
 config();
 
@@ -19,7 +18,6 @@ config();
 export class IntegrationSlashCommandsService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly stateService: StateService,
     private readonly responseComponentsProvider: ResponseComponentsProvider,
     private readonly responseComponentsHelperService: ResponseComponentsHelperService,
   ) {}
@@ -34,18 +32,18 @@ export class IntegrationSlashCommandsService {
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
+    custom_id: string,
+    id: string,
   ) {
     const foundUser: AppUserDTO | undefined =
       await this.usersService.getUserByDId(discordUser.id);
 
-    await this.stateService.saveDataAsSession(
-      discordUser.id,
-      token,
-      'continuationUserTokens',
-    );
-
+    //TODO only mentors can meet with mentees
     if (foundUser?.mentors.length) {
       return this.responseComponentsProvider.generateIntegrationResponse({
+        id,
+        token,
+        type: 4,
         content: 'Choose a person to meet with:',
         components: foundUser?.mentors.map((connectedUser) => ({
           ...commandsComponents.mentorToMeetWithButton[0],
@@ -55,15 +53,27 @@ export class IntegrationSlashCommandsService {
       });
     } else {
       return this.responseComponentsProvider.generateIntegrationResponse({
+        id,
+        token,
+        type: 4,
         content: 'You have no contacts to meet with. Please contact an admin.',
       });
     }
   }
 
-  async authenticate(discordUser: DiscordUserDTO) {
+  async authenticate(
+    discordUser: DiscordUserDTO,
+    values: string[],
+    token: string,
+    custom_id: string,
+    id: string,
+  ) {
     await this.usersService.createUserIfNotExisting(discordUser);
 
     return this.responseComponentsProvider.generateIntegrationResponse({
+      id,
+      token,
+      type: 4,
       components: [
         {
           type: 2,
@@ -78,8 +88,17 @@ export class IntegrationSlashCommandsService {
     });
   }
 
-  async managingBot() {
+  async managingBot(
+    discordUser: DiscordUserDTO,
+    values: string[],
+    token: string,
+    custom_id: string,
+    id: string,
+  ) {
     return this.responseComponentsProvider.generateIntegrationResponse({
+      id,
+      token,
+      type: 4,
       content: this.responseComponentsHelperService.findContent(
         commands,
         Commands.BOT_MANAGE,
@@ -88,8 +107,17 @@ export class IntegrationSlashCommandsService {
     });
   }
 
-  public async default(discordUser: DiscordUserDTO, values: string[]) {
+  public async default(
+    discordUser: DiscordUserDTO,
+    values: string[],
+    token: string,
+    custom_id: string,
+    id: string,
+  ) {
     return this.responseComponentsProvider.generateIntegrationResponse({
+      id,
+      token,
+      type: 4,
       content: 'No action implemented for this command yet.',
     });
   }

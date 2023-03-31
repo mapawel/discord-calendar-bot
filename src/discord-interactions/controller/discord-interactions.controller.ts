@@ -31,6 +31,7 @@ export class DiscordInteractionController {
     body: MappedInteraction,
   ) {
     const {
+      id,
       token,
       type,
       data: { name, custom_id, values },
@@ -57,6 +58,8 @@ export class DiscordInteractionController {
         discord_usr,
         values || [],
         token,
+        custom_id || '',
+        id,
       );
     }
     if (type === 3) {
@@ -70,6 +73,7 @@ export class DiscordInteractionController {
         values || [],
         token,
         custom_id || '',
+        id,
       );
     }
   }

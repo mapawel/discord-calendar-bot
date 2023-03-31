@@ -17,6 +17,8 @@ import { ResponseComponentsHelperService } from './service/response-components-h
 import { AuthzModule } from '../authz/authz.module';
 import { MeetingService } from './Meeting/Meeting.service';
 import { CalendarService } from './Calendar-service/Calendar.service';
+import { InteractionsGetMeetingService } from './service/interactions-get-meeting.service';
+import { InteractionsBotManagingService } from './service/interactions-bot-managing.service';
 
 @Module({
   imports: [RolesModule, UsersModule, AxiosModule, StateModule, AuthzModule],
@@ -31,6 +33,8 @@ import { CalendarService } from './Calendar-service/Calendar.service';
     MeetingService,
     ResponseComponentsHelperService,
     CalendarService,
+    InteractionsGetMeetingService,
+    InteractionsBotManagingService,
   ],
 })
 export class DiscordInteractionsModule implements NestModule {
