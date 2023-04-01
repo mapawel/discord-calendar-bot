@@ -27,7 +27,7 @@ export class IntegrationSlashCommandsService {
     };
   }
 
-  async responseForMeeting(
+  async responseForMeetingInit(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,

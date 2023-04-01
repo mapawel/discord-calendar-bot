@@ -43,7 +43,7 @@ export const commandsComponents: Record<string, AppCommandComponent[]> = {
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: [],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'meetingBookingCallback',
+      controller_service_method: 'meetingChooseMentorCallback',
     },
   ],
 };
@@ -60,5 +60,5 @@ export type AppCommandComponent = {
     | 'addingUserToWhitelist'
     | 'removingUserFromWhitelist'
     | 'settingUserConnections'
-    | 'meetingBookingCallback';
+    | 'meetingChooseMentorCallback';
 };

@@ -11,7 +11,7 @@ export const databaseProviders = [
     useFactory: async () => {
       const sequelize = new Sequelize({
         dialect: 'sqlite',
-        storage: join(process.cwd(), 'db', 'calendar-bot-db.sqlite'),
+        storage: join(process.cwd(), 'db', 'calendar-bot.sqlite'),
       });
       sequelize.addModels([Role, AppUser, AppUsersRelated, Calendar]);
       await sequelize.sync();

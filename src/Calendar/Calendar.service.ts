@@ -17,7 +17,10 @@ export class CalendarService {
     private readonly axiosProvider: AxiosProvider,
   ) {}
 
-  public async getTokens(dId: string, hostAuthId: string): Promise<void> {
+  public async getAndSaveHostTokens(
+    dId: string,
+    hostAuthId: string,
+  ): Promise<void> {
     try {
       const currentCalendar = await CalendarEntity.findOne({
         where: { dId },

@@ -9,7 +9,7 @@ export const commands: AppCommand[] = [
     authenticated_guard_rule: 'isAuthenticated',
     role_guard_rules: [],
     whitelisting_guard_rule: 'isWhitelisted',
-    controller_service_method: 'responseForMeeting',
+    controller_service_method: 'responseForMeetingInit',
     content: 'Redirecting to the calendar...',
   },
   {
@@ -46,7 +46,7 @@ export type AppCommand = {
   role_guard_rules: ('Mentor' | 'Calendar-bot-admin')[]; // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
   whitelisting_guard_rule: 'isWhitelisted' | 'notWhitelisted';
   controller_service_method:
-    | 'responseForMeeting'
+    | 'responseForMeetingInit'
     | 'authenticate'
     | 'managingBot';
   content: string;

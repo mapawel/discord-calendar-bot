@@ -15,14 +15,14 @@ export class IntegrationComponentsService {
     private readonly interactionsBotManagingService: InteractionsBotManagingService,
   ) {}
 
-  async meetingBookingCallback(
+  async meetingChooseMentorCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
     custom_id: string,
     id: string,
   ) {
-    return this.interactionsGetMeetingService.meetingBookingCallback(
+    return this.interactionsGetMeetingService.meetingChooseMentorCallback(
       discordUser,
       values,
       token,

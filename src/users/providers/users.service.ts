@@ -117,7 +117,7 @@ export class UsersService {
     userDId: string;
     hostDId: string;
   }) {
-    let errorResponse: string | undefined;
+    let error: string | undefined;
     const [user, host]: (AppUserDTO | undefined)[] = await Promise.all(
       [userDId, hostDId].map((dId) => this.getUserByDId(dId)),
     );
@@ -127,10 +127,10 @@ export class UsersService {
     }
 
     if (!host.aId)
-      errorResponse =
+      error =
         "Host didn't auth the app and connect his calander yet. Let him know about this fact to book a meeting!";
 
-    return { user, host, errorResponse };
+    return { user, host, error };
   }
 
   private filterUsersByRole(
