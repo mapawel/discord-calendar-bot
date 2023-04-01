@@ -57,7 +57,7 @@ export class DiscordCommandsService {
     url?: string;
   }): Promise<any> {
     try {
-      const response = await this.axiosProvider.instance({
+      const response = await this.axiosProvider.axiosDiscordAPI({
         method,
         url: `applications/${process.env.APP_ID}/commands${url}`,
         data,

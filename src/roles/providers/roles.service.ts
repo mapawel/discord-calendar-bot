@@ -15,10 +15,11 @@ export class RolesService {
     try {
       const {
         data: { roles },
-      }: { data: { roles: string[] } } = await this.axiosProvider.instance({
-        method: 'GET',
-        url: `/guilds/${process.env.GUILD_ID}/members/${userid}`,
-      });
+      }: { data: { roles: string[] } } =
+        await this.axiosProvider.axiosDiscordAPI({
+          method: 'GET',
+          url: `/guilds/${process.env.GUILD_ID}/members/${userid}`,
+        });
       return roles;
     } catch (err: any) {
       throw new RolesException(err?.message);
@@ -43,7 +44,7 @@ export class RolesService {
   public async updateAllDBRoles(): Promise<void> {
     try {
       const { data: roles }: { data: RoleDTO[] } =
-        await this.axiosProvider.instance({
+        await this.axiosProvider.axiosDiscordAPI({
           method: 'GET',
           url: `/guilds/${process.env.GUILD_ID}/roles`,
         });

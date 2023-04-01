@@ -26,7 +26,7 @@ export class ResponseComponentsProvider {
     componentsArrays?: any[][];
   }) {
     try {
-      await this.axiosProvider.instance({
+      await this.axiosProvider.axiosDiscordAPI({
         method: 'POST',
         url: `/interactions/${id}/${token}/callback`,
         data: {
@@ -63,7 +63,7 @@ export class ResponseComponentsProvider {
     components?: any[];
   }) {
     try {
-      await this.axiosProvider.instance({
+      await this.axiosProvider.axiosDiscordAPI({
         method: 'POST',
         url: `/interactions/${id}/${token}/callback`,
         data: {

@@ -52,12 +52,11 @@ export class UsersService {
     try {
       const {
         data: { user },
-      }: { data: { user: DiscordUserDTO } } = await this.axiosProvider.instance(
-        {
+      }: { data: { user: DiscordUserDTO } } =
+        await this.axiosProvider.axiosDiscordAPI({
           method: 'GET',
           url: `/guilds/${process.env.GUILD_ID}/members/${dId}`,
-        },
-      );
+        });
 
       return user;
     } catch (err: any) {
@@ -71,7 +70,7 @@ export class UsersService {
   ): Promise<DiscordUserDTO[]> {
     try {
       const { data }: { data: { roles: string[]; user: DiscordUserDTO }[] } =
-        await this.axiosProvider.instance({
+        await this.axiosProvider.axiosDiscordAPI({
           method: 'GET',
           url: `https://discord.com/api/v10/guilds/${process.env.GUILD_ID}/members?limit=1000`,
         });

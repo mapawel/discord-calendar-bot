@@ -1,4 +1,3 @@
-import axios from 'axios';
 import { config } from 'dotenv';
 import { settings } from 'src/app-SETUP/settings';
 import { Meeting } from '../Meeting/interface/Meeting.interface';
@@ -6,12 +5,16 @@ import { AuthzService } from 'src/authz/service/authz.service';
 import { FreeBusyRanges } from './types/Free-busy-ranges.type';
 import { Calendar as CalendarEntity } from './entity/Calendar.entity';
 import { Injectable } from '@nestjs/common';
+import { AxiosProvider } from 'src/axios/provider/axios.provider';
 
 config();
 
 @Injectable()
 export class CalendarService {
-  constructor(private readonly authzService: AuthzService) {}
+  constructor(
+    private readonly authzService: AuthzService,
+    private readonly axiosProvider: AxiosProvider,
+  ) {}
 
   public async getTokens(dId: string, hostAuthId: string): Promise<void> {
     const currentCalendar = await CalendarEntity.findOne({
@@ -88,11 +91,10 @@ export class CalendarService {
         end,
       }: Meeting = meeting;
 
-      await axios({
+      await this.axiosProvider.axiosGoogleAPI({
         method: 'POST',
-        url: `https://www.googleapis.com/calendar/v3/calendars/${calendarId}/events`,
+        url: `/calendars/${calendarId}/events`,
         headers: {
-          'content-type': 'application/json',
           Authorization: `Bearer ${googleToken}`,
         },
         data: {
@@ -127,14 +129,14 @@ export class CalendarService {
     try {
       const {
         data: { items },
-      }: { data: { items: { summary: string; id: string }[] } } = await axios({
-        method: 'GET',
-        url: `https://www.googleapis.com/calendar/v3/users/me/calendarList`,
-        headers: {
-          'content-type': 'application/json',
-          Authorization: `Bearer ${googleToken}`,
-        },
-      });
+      }: { data: { items: { summary: string; id: string }[] } } =
+        await this.axiosProvider.axiosGoogleAPI({
+          method: 'GET',
+          url: `/users/me/calendarList`,
+          headers: {
+            Authorization: `Bearer ${googleToken}`,
+          },
+        });
 
       const mentorCalendar = items.find(
         ({ summary }: { summary: string }) =>
@@ -204,11 +206,10 @@ export class CalendarService {
         data: {
           calendars: Record<string, { busy: FreeBusyRanges }>;
         };
-      } = await axios({
+      } = await this.axiosProvider.axiosGoogleAPI({
         method: 'POST',
-        url: `https://www.googleapis.com/calendar/v3/freeBusy`,
+        url: `/freeBusy`,
         headers: {
-          'content-type': 'application/json',
           Authorization: `Bearer ${googleToken}`,
         },
         data: {

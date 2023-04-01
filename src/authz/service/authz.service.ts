@@ -1,27 +1,27 @@
 import { Injectable } from '@nestjs/common';
-import axios from 'axios';
 import { config } from 'dotenv';
-import { AppRoutes } from 'src/app-routes/app-routes.enum';
-import { AuthzRoutes } from 'src/app-routes/app-routes.enum';
+import { AppRoutes } from '../../app-routes/app-routes.enum';
+import { AuthzRoutes } from '../../app-routes/app-routes.enum';
 import { AuthServiceException } from './exceptions/auth-service.exception';
 import { JwtService } from '@nestjs/jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';
-import { UsersService } from 'src/users/providers/users.service';
-import { AppUserDTO } from 'src/users/dto/App-user.dto';
-import { RolesService } from 'src/roles/providers/roles.service';
-import { settings } from 'src/app-SETUP/settings';
-import { AuthzUserDTO } from 'src/discord-interactions/dto/Auth-user.dto';
+import { UsersService } from '../../users/providers/users.service';
+import { AppUserDTO } from '../../users/dto/App-user.dto';
+import { RolesService } from '../../roles/providers/roles.service';
+import { settings } from '../../app-SETUP/settings';
+import { AuthzUserDTO } from '../../discord-interactions/dto/Auth-user.dto';
+import { AxiosProvider } from '../../axios/provider/axios.provider';
 
 config();
 
 @Injectable()
 export class AuthzService {
-  private authManagementToken: string;
-
+  private authManagementToken: string | undefined;
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
     private readonly rolesService: RolesService,
+    private readonly axiosProvider: AxiosProvider,
   ) {}
 
   public async buildRedirectLink(id: string): Promise<string> {
@@ -44,9 +44,9 @@ export class AuthzService {
   public async getToken(code: string, state: string) {
     try {
       const { id } = await this.jwtService.verifyAsync(state);
-      const { data } = await axios({
+      const { data } = await this.axiosProvider.axiosAuthzAPI({
         method: 'POST',
-        url: `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_TOKEN}`,
+        url: `${AuthzRoutes.AUTHZ_TOKEN}`,
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         data: {
           grant_type: 'authorization_code',
@@ -57,14 +57,14 @@ export class AuthzService {
         },
       });
 
-      const { data: authUserData }: { data: AuthzUserDTO } = await axios({
-        method: 'POST',
-        url: `${process.env.AUTHZ_API_URL}${AuthzRoutes.GET_USET_INFO}`,
-        headers: {
-          'content-type': 'application/json',
-          Authorization: `Bearer ${data.access_token}`,
-        },
-      });
+      const { data: authUserData }: { data: AuthzUserDTO } =
+        await this.axiosProvider.axiosAuthzAPI({
+          method: 'POST',
+          url: `${AuthzRoutes.GET_USET_INFO}`,
+          headers: {
+            Authorization: `Bearer ${data.access_token}`,
+          },
+        });
 
       const verifiedUser: AppUserDTO | undefined =
         await this.usersService.getUserByDId(id);
@@ -92,14 +92,14 @@ export class AuthzService {
       this.authManagementToken = await this.getTokenForAuthManagment();
     const {
       data: { identities },
-    }: { data: { identities: { access_token: string }[] } } = await axios({
-      method: 'GET',
-      url: `https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/users/${hostAuthId}`,
-      headers: {
-        'content-type': 'application/json',
-        Authorization: `Bearer ${this.authManagementToken}`,
-      },
-    });
+    }: { data: { identities: { access_token: string }[] } } =
+      await this.axiosProvider.axiosAuthzAPI({
+        method: 'GET',
+        url: `/api/v2/users/${hostAuthId}`,
+        headers: {
+          Authorization: `Bearer ${this.authManagementToken}`,
+        },
+      });
 
     return identities[0].access_token;
   }
@@ -131,17 +131,17 @@ export class AuthzService {
   private async getTokenForAuthManagment(): Promise<string> {
     const {
       data: { access_token },
-    }: { data: { access_token: string } } = await axios({
-      method: 'POST',
-      url: 'https://discord-calendar-bot-by-dd.eu.auth0.com/oauth/token',
-      headers: { 'content-type': 'application/json' },
-      data: {
-        client_id: process.env.AUTHZ_CLIENT_ID,
-        client_secret: process.env.AUTHZ_SECRET,
-        audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
-        grant_type: 'client_credentials',
-      },
-    });
+    }: { data: { access_token: string } } =
+      await this.axiosProvider.axiosAuthzAPI({
+        method: 'POST',
+        url: '/oauth/token',
+        data: {
+          client_id: process.env.AUTHZ_CLIENT_ID,
+          client_secret: process.env.AUTHZ_SECRET,
+          audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
+          grant_type: 'client_credentials',
+        },
+      });
     return access_token;
   }
 }

@@ -6,6 +6,7 @@ import { AuthzController } from './controllers/authz.controller';
 import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/users/users.module';
 import { RolesModule } from 'src/roles/roles.module';
+import { AxiosModule } from 'src/axios/axios.module';
 
 @Module({
   controllers: [AuthzController],
@@ -14,6 +15,7 @@ import { RolesModule } from 'src/roles/roles.module';
     UsersModule,
     RolesModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
+    AxiosModule,
   ],
   providers: [JwtStrategy, AuthzService],
   exports: [PassportModule, AuthzService],
