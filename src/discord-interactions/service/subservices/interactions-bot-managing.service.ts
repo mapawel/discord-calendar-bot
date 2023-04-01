@@ -43,11 +43,7 @@ export class InteractionsBotManagingService {
       components: commandsSelectComponents.managingBotSelectAdding.map(
         (component) => ({
           ...component,
-          options: usersToShow.map((user) => ({
-            label: user.username,
-            value: user.id,
-            description: user.id,
-          })),
+          options: this.mapUsersToSelectOptions(usersToShow),
         }),
       ),
     });
@@ -101,11 +97,7 @@ export class InteractionsBotManagingService {
       components: commandsSelectComponents.managingBotSelectRemoving.map(
         (component) => ({
           ...component,
-          options: usersToShow.map((user) => ({
-            label: user.username,
-            value: user.dId,
-            description: user.dId,
-          })),
+          options: this.mapUsersToSelectOptions(usersToShow),
         }),
       ),
     });
@@ -146,11 +138,7 @@ export class InteractionsBotManagingService {
       components: commandsSelectComponents.managingBotSelectUserToConnect.map(
         (component) => ({
           ...component,
-          options: usersToShow.map((user) => ({
-            label: user.dId,
-            value: user.dId,
-            description: user.username,
-          })),
+          options: this.mapUsersToSelectOptions(usersToShow),
         }),
       ),
     });
@@ -181,11 +169,7 @@ export class InteractionsBotManagingService {
       components: commandsSelectComponents.managingBotSelectMentorToConnect.map(
         (component) => ({
           ...component,
-          options: personsToMeet.map((user) => ({
-            label: user.username,
-            value: user.dId,
-            description: user.dId,
-          })),
+          options: this.mapUsersToSelectOptions(personsToMeet),
         }),
       ),
     });
@@ -225,5 +209,27 @@ export class InteractionsBotManagingService {
       type: 7,
       content: `User connected to selected metor!`,
     });
+  }
+
+  private isAppUser(
+    users: AppUserDTO[] | DiscordUserDTO[],
+  ): users is AppUserDTO[] {
+    return (users[0] as AppUserDTO).dId !== undefined;
+  }
+
+  private mapUsersToSelectOptions(users: DiscordUserDTO[] | AppUserDTO[]) {
+    if (this.isAppUser(users)) {
+      return users.map((user) => ({
+        label: user.username,
+        value: user.dId,
+        description: user.dId,
+      }));
+    } else {
+      return users.map((user) => ({
+        label: user.username,
+        value: user.id,
+        description: user.id,
+      }));
+    }
   }
 }
