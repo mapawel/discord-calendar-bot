@@ -15,7 +15,6 @@ config();
 
 @Injectable()
 export class AuthzService {
-  private authManagementToken: string | undefined;
   constructor(
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
@@ -32,10 +31,13 @@ export class AuthzService {
       audience: `${process.env.AUTH0_AUDIENCE}`,
       connection: isUserMeetingHost ? 'google-oauth2' : '',
       response_type: 'code',
-      scope: 'openid profile email',
       client_id: `${process.env.AUTHZ_CLIENT_ID}`,
       state: signedId,
       redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
+      scope: 'openid profile email',
+      // connection_scope: 'https://www.googleapis.com/auth/calendar',
+      access_type: 'offline',
+      approval_prompt: 'force',
     });
 
     return `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_AUTHORIZE}?${querystring}`;
@@ -89,8 +91,7 @@ export class AuthzService {
 
   public async getTokenForGoogle(hostAuthId: string): Promise<string> {
     try {
-      if (!this.authManagementToken)
-        this.authManagementToken = await this.getTokenForAuthManagment();
+      const authManagementToken: string = await this.getTokenForAuthManagment();
       const {
         data: { identities },
       }: { data: { identities: { access_token: string }[] } } =
@@ -98,10 +99,10 @@ export class AuthzService {
           method: 'GET',
           url: `/api/v2/users/${hostAuthId}`,
           headers: {
-            Authorization: `Bearer ${this.authManagementToken}`,
+            Authorization: `Bearer ${authManagementToken}`,
           },
         });
-
+      console.log('id ----> ', identities);
       return identities[0].access_token;
     } catch (err: any) {
       throw new AuthServiceException(err?.message);

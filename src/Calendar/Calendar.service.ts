@@ -25,8 +25,14 @@ export class CalendarService {
       const currentCalendar = await CalendarEntity.findOne({
         where: { dId },
       });
-      if (currentCalendar) return;
 
+      if (
+        Date.now() <
+        currentCalendar?.updatedAt.getTime() + settings.googleTokenMaxLifetimeMs
+      )
+        return;
+
+      console.log(' >>>>>>>>>>>>>>>>>>>>>>>>> ----> REFRESHING TOKENS');
       const googleToken = await this.authzService.getTokenForGoogle(hostAuthId);
       const calendarId = await this.getMentorsCalendarId(googleToken);
       await CalendarEntity.create({ dId, googleToken, calendarId });
@@ -34,7 +40,7 @@ export class CalendarService {
       throw new CalendarException(err?.message);
     }
   }
-
+// ya29.a0Ael9sCPg9ZqIMvwqYGMhk6IShN-gb9EzU8FEAeWdAbm3d-uGYqsPH6HF0LwfW2hAVN0oGiGVZfMmNkYB2-hE5sXG3ZsJfc9tynQm1-Pn8pNUtjpZspE6zRJK4Frg5_jlGZhFpO_makSo8t_o0VJFXLLuGfIKfQaCgYKAXcSARISFQF4udJh3jo52ndy7W0P_UHsQo_WtQ0165
   public async getMeetingTimeProposals(
     hostDId: string,
     durationMs: number,
@@ -55,7 +61,7 @@ export class CalendarService {
           ? minimalResolutionMs
           : durationMs * resolutionFactor;
 
-      const meetingTimeProposalsTimes = (
+      const meetingTimeProposalsTimes: FreeBusyRanges[] = (
         await this.getMeetingWindows(hostDId)
       ).map(({ start, end }) => {
         const meetingTimeProposals: FreeBusyRanges = [];
