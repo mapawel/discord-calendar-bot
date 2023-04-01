@@ -163,8 +163,13 @@ export class UsersService {
   public async bindUsers(
     sourceUserDId: string,
     targetUserDId: string,
-  ): Promise<any> {
-    return await this.usersRepository.bindUsers(sourceUserDId, targetUserDId);
+    maxMentors?: number,
+  ): Promise<{ error: string }> {
+    return await this.usersRepository.bindUsers(
+      sourceUserDId,
+      targetUserDId,
+      maxMentors,
+    );
   }
 
   public async getUsersToShow(): Promise<DiscordUserDTO[]> {

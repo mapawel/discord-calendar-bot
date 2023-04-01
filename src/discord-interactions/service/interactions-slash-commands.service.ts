@@ -37,7 +37,6 @@ export class IntegrationSlashCommandsService {
     const foundUser: AppUserDTO | undefined =
       await this.usersService.getUserByDId(discordUser.id);
 
-    //TODO only mentors can meet with mentees
     if (foundUser?.mentors.length) {
       return this.responseComponentsProvider.generateIntegrationResponse({
         id,

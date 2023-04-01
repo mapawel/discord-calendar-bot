@@ -198,7 +198,19 @@ export class InteractionsBotManagingService {
         content: `try again... starting from slash command`,
       });
 
-    await this.usersService.bindUsers(userToBindId, mentorToConnect);
+    const { error } = await this.usersService.bindUsers(
+      userToBindId,
+      mentorToConnect,
+      3,
+    );
+    if (error)
+      return this.responseComponentsProvider.generateIntegrationResponse({
+        id,
+        token,
+        type: 7,
+        content: `error: ${error}`,
+      });
+
     await this.stateService.removeDataForUserId(
       discordUser.id,
       'continuationUserBinding',

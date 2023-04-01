@@ -155,7 +155,8 @@ export class UsersRepository {
   public async bindUsers(
     sourceUserDId: string,
     targetUserDId: string,
-  ): Promise<void> {
+    maxMentors?: number,
+  ): Promise<{ error: string }> {
     try {
       const sourceUser: AppUserDTO | undefined = await this.getFirstUserByParam(
         'dId',
@@ -172,6 +173,9 @@ export class UsersRepository {
         );
       }
 
+      if (maxMentors && sourceUser.mentors.length >= maxMentors)
+        return { error: 'Max mentors reached' };
+
       const found: AppUsersRelated | null = await AppUsersRelated.findOne({
         where: {
           sourceUserId: sourceUser.dId,
@@ -187,6 +191,7 @@ export class UsersRepository {
           targetUserId: targetUser.dId,
         });
       }
+      return { error: '' };
     } catch (err: any) {
       throw new DBException(err?.message);
     }
