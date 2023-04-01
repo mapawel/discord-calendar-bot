@@ -1,4 +1,4 @@
-import { CommandsSelectComponents } from './commands-select-components.enum';
+import { CommandsSelectComponents } from '../enums/commands-select-components.enum';
 
 export const commandsSelectComponents: Record<
   string,

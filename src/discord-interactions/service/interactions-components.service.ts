@@ -2,8 +2,8 @@ import { config } from 'dotenv';
 import { Injectable } from '@nestjs/common';
 import { DiscordUserDTO } from '../dto/Discord-user.dto';
 import { ResponseComponentsProvider } from './response-components.provider';
-import { InteractionsGetMeetingService } from './interactions-get-meeting.service';
-import { InteractionsBotManagingService } from './interactions-bot-managing.service';
+import { InteractionsGetMeetingService } from './subservices/interactions-get-meeting.service';
+import { InteractionsBotManagingService } from './subservices/interactions-bot-managing.service';
 
 config();
 

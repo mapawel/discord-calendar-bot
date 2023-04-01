@@ -1,8 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { config } from 'dotenv';
-import { commands } from '../../app-SETUP/commands.list';
-import { DiscordCommandsException } from '../exception/DiscordCommands.exception';
+import { commands } from 'src/app-SETUP/lists/commands.list';
+import { DiscordCommandsException } from '../exception/Discord-commands.exception';
 
 config();
 

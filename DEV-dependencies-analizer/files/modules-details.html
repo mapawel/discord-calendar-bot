@@ -58,7 +58,7 @@
       "UsersModule",
       "AxiosModule",
       "StateModule",
-      "AuthzModule"
+      "CalendarModule"
     ],
     "providers": {
       "IntegrationSlashCommandsService": {
@@ -80,12 +80,6 @@
         "method": "standard"
       },
       "MeetingService": {
-        "method": "standard"
-      },
-      "ResponseComponentsHelperService": {
-        "method": "standard"
-      },
-      "CalendarService": {
         "method": "standard"
       },
       "InteractionsGetMeetingService": {
@@ -151,6 +145,22 @@
     "controllers": [],
     "exports": [
       "StateService"
+    ]
+  },
+  {
+    "name": "CalendarModule",
+    "imports": [
+      "AuthzModule",
+      "AxiosModule"
+    ],
+    "providers": {
+      "CalendarService": {
+        "method": "standard"
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "CalendarService"
     ]
   },
   {

@@ -1,11 +1,12 @@
 import { config } from 'dotenv';
 import { settings } from 'src/app-SETUP/settings';
-import { Meeting } from '../Meeting/interface/Meeting.interface';
+import { Meeting } from '../discord-interactions/Meeting/interface/Meeting.interface';
 import { AuthzService } from 'src/authz/service/authz.service';
 import { FreeBusyRanges } from './types/Free-busy-ranges.type';
 import { Calendar as CalendarEntity } from './entity/Calendar.entity';
 import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
+import { CalendarException } from './exception/Calendar.exception';
 
 config();
 
@@ -17,14 +18,18 @@ export class CalendarService {
   ) {}
 
   public async getTokens(dId: string, hostAuthId: string): Promise<void> {
-    const currentCalendar = await CalendarEntity.findOne({
-      where: { dId },
-    });
-    if (currentCalendar) return;
+    try {
+      const currentCalendar = await CalendarEntity.findOne({
+        where: { dId },
+      });
+      if (currentCalendar) return;
 
-    const googleToken = await this.authzService.getTokenForGoogle(hostAuthId);
-    const calendarId = await this.getMentorsCalendarId(googleToken);
-    await CalendarEntity.create({ dId, googleToken, calendarId });
+      const googleToken = await this.authzService.getTokenForGoogle(hostAuthId);
+      const calendarId = await this.getMentorsCalendarId(googleToken);
+      await CalendarEntity.create({ dId, googleToken, calendarId });
+    } catch (err: any) {
+      throw new CalendarException(err?.message);
+    }
   }
 
   public async getMeetingTimeProposals(
@@ -32,56 +37,63 @@ export class CalendarService {
     durationMs: number,
     resolutionFactor: 0.5 | 1 = 0.5,
   ): Promise<{ data: FreeBusyRanges; error: string }> {
-    const hostCalendar = await CalendarEntity.findByPk(hostDId);
-    if (!hostCalendar)
-      return {
-        data: [] as FreeBusyRanges,
-        error:
-          'No calendar found - unavailable or still fetching data, try again in a few seconds',
-      };
+    try {
+      const hostCalendar = await CalendarEntity.findByPk(hostDId);
+      if (!hostCalendar)
+        return {
+          data: [] as FreeBusyRanges,
+          error:
+            'No calendar found - unavailable or still fetching data, try again in a few seconds',
+        };
 
-    const minimalResolutionMs = 15 * 60 * 1000;
-    const finalResolutionMs: number =
-      durationMs * resolutionFactor <= minimalResolutionMs
-        ? minimalResolutionMs
-        : durationMs * resolutionFactor;
+      const minimalResolutionMs = 15 * 60 * 1000;
+      const finalResolutionMs: number =
+        durationMs * resolutionFactor <= minimalResolutionMs
+          ? minimalResolutionMs
+          : durationMs * resolutionFactor;
 
-    const meetingTimeProposalsTimes = (
-      await this.getMeetingWindows(hostDId)
-    ).map(({ start, end }) => {
-      const meetingTimeProposals: FreeBusyRanges = [];
-      const startRangeTime = new Date(start);
-      const endRangeTima = new Date(end);
+      const meetingTimeProposalsTimes = (
+        await this.getMeetingWindows(hostDId)
+      ).map(({ start, end }) => {
+        const meetingTimeProposals: FreeBusyRanges = [];
+        const startRangeTime = new Date(start);
+        const endRangeTima = new Date(end);
 
-      while (startRangeTime.getTime() + durationMs <= endRangeTima.getTime()) {
-        meetingTimeProposals.push({
-          start: new Date(startRangeTime.getTime()).toISOString(),
-          end: new Date(startRangeTime.getTime() + durationMs).toISOString(),
-        });
-        startRangeTime.setTime(startRangeTime.getTime() + finalResolutionMs);
-      }
-      return meetingTimeProposals;
-    });
-    return { data: meetingTimeProposalsTimes.flat(), error: '' };
+        while (
+          startRangeTime.getTime() + durationMs <=
+          endRangeTima.getTime()
+        ) {
+          meetingTimeProposals.push({
+            start: new Date(startRangeTime.getTime()).toISOString(),
+            end: new Date(startRangeTime.getTime() + durationMs).toISOString(),
+          });
+          startRangeTime.setTime(startRangeTime.getTime() + finalResolutionMs);
+        }
+        return meetingTimeProposals;
+      });
+      return { data: meetingTimeProposalsTimes.flat(), error: '' };
+    } catch (err: any) {
+      throw new CalendarException(err?.message);
+    }
   }
 
   public async bookMeeting(
     hostDId: string,
     meeting: Meeting,
   ): Promise<{ error: string }> {
-    const hostCalendar = await CalendarEntity.findByPk(hostDId);
-    if (!hostCalendar)
-      return {
-        error:
-          'No calendar found - unavailable or still fetching data, try again in a few seconds',
-      };
-
-    const {
-      googleToken,
-      calendarId,
-    }: { googleToken: string; calendarId: string } = hostCalendar;
-
     try {
+      const hostCalendar = await CalendarEntity.findByPk(hostDId);
+      if (!hostCalendar)
+        return {
+          error:
+            'No calendar found - unavailable or still fetching data, try again in a few seconds',
+        };
+
+      const {
+        googleToken,
+        calendarId,
+      }: { googleToken: string; calendarId: string } = hostCalendar;
+
       const {
         summary,
         description,
@@ -120,8 +132,8 @@ export class CalendarService {
       return {
         error: '',
       };
-    } catch (error: any) {
-      throw new Error(error?.message);
+    } catch (err: any) {
+      throw new CalendarException(err?.message);
     }
   }
 
@@ -143,14 +155,14 @@ export class CalendarService {
           summary === settings.calendarObligatoryName,
       );
       if (!mentorCalendar?.id) {
-        throw new Error(
+        throw new CalendarException(
           `Mentor's calendar with name ${settings.calendarObligatoryName} not found`,
         );
       }
 
       return mentorCalendar.id;
-    } catch (error: any) {
-      throw new Error(error?.message);
+    } catch (err: any) {
+      throw new CalendarException(err?.message);
     }
   }
 
@@ -181,8 +193,8 @@ export class CalendarService {
         },
       );
       return freeTimeWindows;
-    } catch (error: any) {
-      throw new Error(error?.message);
+    } catch (err: any) {
+      throw new CalendarException(err?.message);
     }
   }
 
@@ -193,7 +205,7 @@ export class CalendarService {
   ): Promise<FreeBusyRanges> {
     try {
       const hostCalendar = await CalendarEntity.findByPk(hostDId);
-      if (!hostCalendar) throw new Error('No calendar found');
+      if (!hostCalendar) throw new CalendarException('No calendar found');
 
       const {
         googleToken,
@@ -216,8 +228,6 @@ export class CalendarService {
           timeMin,
           timeMax,
           timeZone: 'UTX+02:00',
-          // groupExpansionMax: integer,
-          // calendarExpansionMax: integer,
           items: [
             {
               id: calendarId,
@@ -226,8 +236,8 @@ export class CalendarService {
         },
       });
       return calendars?.[calendarId]?.busy;
-    } catch (error: any) {
-      throw new Error(error?.message);
+    } catch (err: any) {
+      throw new CalendarException(err?.message);
     }
   }
 }

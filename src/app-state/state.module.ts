@@ -1,6 +1,6 @@
 import { Module } from '@nestjs/common';
-import { StateService } from './state.service';
-import { StateFileRepository } from './state.file-repository';
+import { StateService } from './State.service';
+import { StateFileRepository } from './State-file.repository';
 @Module({
   providers: [StateService, StateFileRepository],
   exports: [StateService],

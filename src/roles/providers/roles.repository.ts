@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { RoleDTO } from '../dto/Role.dto';
 import { Role } from '../entity/Role.entity';
 import { RoleMapper } from '../dto/Role.mapper';
-import { DBException } from 'src/db/exception/DB.exception';
+import { DBException } from '../../db/exception/DB.exception';
 
 @Injectable()
 export class RolesRepository {

@@ -1,4 +1,4 @@
-import { Commands } from './commands.enum';
+import { Commands } from '../enums/commands.enum';
 
 export const commands: AppCommand[] = [
   {

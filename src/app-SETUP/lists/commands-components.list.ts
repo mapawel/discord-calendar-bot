@@ -1,4 +1,4 @@
-import { CommandsComponents } from './commands-components.enum';
+import { CommandsComponents } from '../enums/commands-components.enum';
 
 export const commandsComponents: Record<string, AppCommandComponent[]> = {
   managingBot: [

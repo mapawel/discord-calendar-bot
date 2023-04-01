@@ -23,12 +23,14 @@
   UsersModule-->RolesModule
   DiscordInteractionsModule-->AxiosModule
   DiscordInteractionsModule-->StateModule
-  DiscordInteractionsModule-->AuthzModule
+  DiscordInteractionsModule-->CalendarModule
+  CalendarModule-->AuthzModule
   AuthzModule-->JwtModule
   AuthzModule-->UsersModule
   AuthzModule-->RolesModule
   AuthzModule-->PassportModule
   AuthzModule-->AxiosModule
+  CalendarModule-->AxiosModule
   AppModule-->AuthzModule
   AppModule-->DatabaseModule
       </pre>

@@ -4,24 +4,22 @@ import { IntegrationSlashCommandsService } from './service/interactions-slash-co
 import { IntegrationComponentsService } from './service/interactions-components.service';
 import { MapDiscUserMiddleware } from './middlewares/map-disc-user.middleware';
 import { verifyKeyMiddleware } from 'discord-interactions';
-import { AuthenticatedGuardService } from './guards/authentcated-guard.service';
-import { RolesGuardService } from './guards/roles-guard.service';
+import { AuthenticatedGuardService } from './guards/guard-services/authentcated-guard.service';
+import { RolesGuardService } from './guards/guard-services/roles-guard.service';
 import { RolesModule } from '../roles/roles.module';
 import { UsersModule } from '../users/users.module';
-import { AppRoutes } from '../app-routes/app-routes.enum';
-import { WhitelistGuardService } from './guards/whitelist-guard.service';
+import { AppRoutes } from '../routes/routes.enum';
+import { WhitelistGuardService } from './guards/guard-services/whitelist-guard.service';
 import { AxiosModule } from '../axios/axios.module';
-import { StateModule } from '../app-state/state.module';
+import { StateModule } from '../app-state/State.module';
 import { ResponseComponentsProvider } from './service/response-components.provider';
-import { ResponseComponentsHelperService } from './service/response-components-helper.service';
-import { AuthzModule } from '../authz/authz.module';
 import { MeetingService } from './Meeting/Meeting.service';
-import { CalendarService } from './Calendar-service/Calendar.service';
-import { InteractionsGetMeetingService } from './service/interactions-get-meeting.service';
-import { InteractionsBotManagingService } from './service/interactions-bot-managing.service';
+import { InteractionsGetMeetingService } from './service/subservices/interactions-get-meeting.service';
+import { InteractionsBotManagingService } from './service/subservices/interactions-bot-managing.service';
+import { CalendarModule } from 'src/Calendar/Calendar.module';
 
 @Module({
-  imports: [RolesModule, UsersModule, AxiosModule, StateModule, AuthzModule],
+  imports: [RolesModule, UsersModule, AxiosModule, StateModule, CalendarModule],
   controllers: [DiscordInteractionController],
   providers: [
     IntegrationSlashCommandsService,
@@ -31,8 +29,6 @@ import { InteractionsBotManagingService } from './service/interactions-bot-manag
     WhitelistGuardService,
     ResponseComponentsProvider,
     MeetingService,
-    ResponseComponentsHelperService,
-    CalendarService,
     InteractionsGetMeetingService,
     InteractionsBotManagingService,
   ],

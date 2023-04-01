@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { AxiosProvider } from 'src/axios/provider/axios.provider';
+import { AxiosProvider } from '../../axios/provider/axios.provider';
 import { RolesRepository } from './roles.repository';
 import { RoleDTO } from '../dto/Role.dto';
 import { RolesException } from '../exception/Roles.exception';
+import { settings } from '../../app-SETUP/settings';
 
 @Injectable()
 export class RolesService {
@@ -51,6 +52,18 @@ export class RolesService {
 
       await this.rolesRepository.removeAllDBroles();
       await this.rolesRepository.createBulkBDRoles(roles);
+    } catch (err: any) {
+      throw new RolesException(err?.message);
+    }
+  }
+
+  public async checkIfUserIsMeetingHost(dId: string): Promise<boolean> {
+    try {
+      const userRoles: string[] = await this.getUserRole(dId);
+      const rolesUsersCanMeetWith = await this.translateRoleNamesToIds(
+        settings.rolesUsersCanMeetWith,
+      );
+      return userRoles.some((role) => rolesUsersCanMeetWith.includes(role));
     } catch (err: any) {
       throw new RolesException(err?.message);
     }

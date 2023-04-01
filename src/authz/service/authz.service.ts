@@ -1,14 +1,13 @@
 import { Injectable } from '@nestjs/common';
 import { config } from 'dotenv';
-import { AppRoutes } from '../../app-routes/app-routes.enum';
-import { AuthzRoutes } from '../../app-routes/app-routes.enum';
+import { AppRoutes } from '../../routes/routes.enum';
+import { AuthzRoutes } from '../../routes/routes.enum';
 import { AuthServiceException } from './exceptions/auth-service.exception';
 import { JwtService } from '@nestjs/jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { UsersService } from '../../users/providers/users.service';
 import { AppUserDTO } from '../../users/dto/App-user.dto';
 import { RolesService } from '../../roles/providers/roles.service';
-import { settings } from '../../app-SETUP/settings';
 import { AuthzUserDTO } from '../../discord-interactions/dto/Auth-user.dto';
 import { AxiosProvider } from '../../axios/provider/axios.provider';
 
@@ -25,7 +24,8 @@ export class AuthzService {
   ) {}
 
   public async buildRedirectLink(id: string): Promise<string> {
-    const isUserMeetingHost: boolean = await this.checkIfUserIsMeetingHost(id);
+    const isUserMeetingHost: boolean =
+      await this.rolesService.checkIfUserIsMeetingHost(id);
     const signedId = await this.jwtService.signAsync({ id });
 
     const querystring: URLSearchParams = new URLSearchParams({
@@ -70,7 +70,7 @@ export class AuthzService {
         await this.usersService.getUserByDId(id);
       if (!verifiedUser) throw new AuthServiceException('User not found');
 
-      const fullAppUser: AppUserDTO = this.getFullAppUser(
+      const fullAppUser: AppUserDTO = this.usersService.getFullAppUser(
         verifiedUser,
         authUserData,
       );
@@ -88,44 +88,24 @@ export class AuthzService {
   }
 
   public async getTokenForGoogle(hostAuthId: string): Promise<string> {
-    if (!this.authManagementToken)
-      this.authManagementToken = await this.getTokenForAuthManagment();
-    const {
-      data: { identities },
-    }: { data: { identities: { access_token: string }[] } } =
-      await this.axiosProvider.axiosAuthzAPI({
-        method: 'GET',
-        url: `/api/v2/users/${hostAuthId}`,
-        headers: {
-          Authorization: `Bearer ${this.authManagementToken}`,
-        },
-      });
+    try {
+      if (!this.authManagementToken)
+        this.authManagementToken = await this.getTokenForAuthManagment();
+      const {
+        data: { identities },
+      }: { data: { identities: { access_token: string }[] } } =
+        await this.axiosProvider.axiosAuthzAPI({
+          method: 'GET',
+          url: `/api/v2/users/${hostAuthId}`,
+          headers: {
+            Authorization: `Bearer ${this.authManagementToken}`,
+          },
+        });
 
-    return identities[0].access_token;
-  }
-
-  private async checkIfUserIsMeetingHost(dId: string): Promise<boolean> {
-    const userRoles: string[] = await this.rolesService.getUserRole(dId);
-    const rolesUsersCanMeetWith =
-      await this.rolesService.translateRoleNamesToIds(
-        settings.rolesUsersCanMeetWith,
-      );
-    return userRoles.some((role) => rolesUsersCanMeetWith.includes(role));
-  }
-
-  private getFullAppUser(
-    verifiedUser: AppUserDTO,
-    authUserData: AuthzUserDTO,
-  ): AppUserDTO {
-    return {
-      ...verifiedUser,
-      name: authUserData.name,
-      picture: authUserData.picture,
-      authenticated: true,
-      IdP: authUserData.sub.split('|')[0],
-      aId: authUserData.sub,
-      email: authUserData.email,
-    };
+      return identities[0].access_token;
+    } catch (err: any) {
+      throw new AuthServiceException(err?.message);
+    }
   }
 
   private async getTokenForAuthManagment(): Promise<string> {

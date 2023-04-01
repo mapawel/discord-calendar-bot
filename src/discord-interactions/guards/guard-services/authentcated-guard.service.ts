@@ -1,8 +1,8 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
-import { AppUserDTO } from 'src/users/dto/App-user.dto';
-import { DiscordUserDTO } from '../dto/Discord-user.dto';
-import { Commands } from '../../app-SETUP/commands.enum';
-import { UsersService } from 'src/users/providers/users.service';
+import { AppUserDTO } from '../../../users/dto/App-user.dto';
+import { DiscordUserDTO } from '../../dto/Discord-user.dto';
+import { Commands } from '../../../app-SETUP/enums/commands.enum';
+import { UsersService } from '../../../users/providers/users.service';
 
 @Injectable()
 export class AuthenticatedGuardService {
@@ -26,7 +26,7 @@ export class AuthenticatedGuardService {
     return true;
   }
 
-  async default(discordUser: DiscordUserDTO): Promise<true> {
+  async default(): Promise<true> {
     throw new ForbiddenException(
       'There is no suit authorization rule for this command! Contact the bot administrator to solve this issue.',
     );

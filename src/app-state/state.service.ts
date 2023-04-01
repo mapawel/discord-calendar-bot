@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { StateFileRepository } from './state.file-repository';
+import { StateFileRepository } from './State-file.repository';
 @Injectable()
 export class StateService {
   constructor(private readonly stateFileRepository: StateFileRepository) {}

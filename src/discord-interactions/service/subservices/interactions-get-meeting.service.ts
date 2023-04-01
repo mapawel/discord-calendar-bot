@@ -1,15 +1,15 @@
 import { config } from 'dotenv';
 import { Injectable } from '@nestjs/common';
-import { DiscordUserDTO } from '../dto/Discord-user.dto';
-import { AppUserDTO } from '../../users/dto/App-user.dto';
-import { UsersService } from '../../users/providers/users.service';
-import { commandsSelectComponents } from 'src/app-SETUP/commands-select-components.list';
-import { StateService } from '../../app-state/state.service';
-import { ResponseComponentsProvider } from './response-components.provider';
-import { CalendarService } from '../Calendar-service/Calendar.service';
-import { MeetingService } from '../Meeting/Meeting.service';
-import { Meeting } from '../Meeting/interface/Meeting.interface';
-import { FreeBusyRanges } from '../Calendar-service/types/Free-busy-ranges.type';
+import { DiscordUserDTO } from '../../../discord-interactions/dto/Discord-user.dto';
+import { AppUserDTO } from '../../../users/dto/App-user.dto';
+import { UsersService } from '../../../users/providers/users.service';
+import { commandsSelectComponents } from '../../../app-SETUP/lists/commands-select-components.list';
+import { StateService } from '../../../app-state/State.service';
+import { ResponseComponentsProvider } from '../response-components.provider';
+import { CalendarService } from '../../../Calendar/Calendar.service';
+import { MeetingService } from '../../../discord-interactions/Meeting/Meeting.service';
+import { Meeting } from '../../../discord-interactions/Meeting/interface/Meeting.interface';
+import { FreeBusyRanges } from '../../../Calendar/types/Free-busy-ranges.type';
 
 config();
 
@@ -52,7 +52,8 @@ export class InteractionsGetMeetingService {
         type: 7,
         content: `try again... starting from slash command`,
       });
-    // NOT WAITING FOR IT !!
+
+    // NOT AWAITING FOR IT - CORRECT !!
     this.calendarService.getTokens(host.dId, host.aId);
 
     return this.responseComponentsProvider.generateIntegrationResponse({
@@ -137,7 +138,7 @@ export class InteractionsGetMeetingService {
       user: AppUserDTO;
       host: AppUserDTO;
       errorResponse: string | undefined;
-    } = await this.meetingService.takeAndValidateUserAndHost({
+    } = await this.usersService.takeAndValidateUserAndHost({
       userDId,
       hostDId,
     });

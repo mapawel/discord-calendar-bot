@@ -1,11 +1,11 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { MappedInteraction } from '../dto/interaction.dto';
-import { WhitelistGuardService } from './whitelist-guard.service';
-import { commands } from '../../app-SETUP/commands.list';
-import { commandsComponents } from '../../app-SETUP/commands-components.list';
-import { commandsSelectComponents } from '../../app-SETUP/commands-select-components.list';
-import { AppCommandComponent } from '../../app-SETUP/commands-components.list';
-import { AppCommandSelectComponent } from '../../app-SETUP/commands-select-components.list';
+import { WhitelistGuardService } from './guard-services/whitelist-guard.service';
+import { commands } from '../../app-SETUP/lists/commands.list';
+import { commandsComponents } from '../../app-SETUP/lists/commands-components.list';
+import { commandsSelectComponents } from '../../app-SETUP/lists/commands-select-components.list';
+import { AppCommandComponent } from '../../app-SETUP/lists/commands-components.list';
+import { AppCommandSelectComponent } from '../../app-SETUP/lists/commands-select-components.list';
 import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
 
 @Injectable()

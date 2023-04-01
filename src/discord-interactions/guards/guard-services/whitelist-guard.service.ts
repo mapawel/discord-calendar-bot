@@ -15,11 +15,11 @@ export class WhitelistGuardService {
     return true;
   }
 
-  async notWhitelisted(id: string): Promise<boolean> {
+  async notWhitelisted(): Promise<boolean> {
     return true;
   }
 
-  async default(id: string): Promise<boolean> {
+  async default(): Promise<boolean> {
     throw new ForbiddenException('No whitelisting guard rule provided');
   }
 }

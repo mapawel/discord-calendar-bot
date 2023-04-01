@@ -1,12 +1,11 @@
 import { config } from 'dotenv';
 import { Injectable } from '@nestjs/common';
-import { DiscordUserDTO } from '../dto/Discord-user.dto';
-import { AppUserDTO } from '../../users/dto/App-user.dto';
-import { UsersService } from '../../users/providers/users.service';
-import { commandsSelectComponents } from 'src/app-SETUP/commands-select-components.list';
-import { StateService } from '../../app-state/state.service';
-import { ResponseComponentsProvider } from './response-components.provider';
-import { ResponseComponentsHelperService } from './response-components-helper.service';
+import { DiscordUserDTO } from '../../dto/Discord-user.dto';
+import { AppUserDTO } from '../../../users/dto/App-user.dto';
+import { UsersService } from '../../../users/providers/users.service';
+import { commandsSelectComponents } from '../../../app-SETUP/lists/commands-select-components.list';
+import { StateService } from '../../../app-state/State.service';
+import { ResponseComponentsProvider } from '../response-components.provider';
 
 config();
 
@@ -16,7 +15,6 @@ export class InteractionsBotManagingService {
     private readonly usersService: UsersService,
     private readonly stateService: StateService,
     private readonly responseComponentsProvider: ResponseComponentsProvider,
-    private readonly responseComponentsHelperService: ResponseComponentsHelperService,
   ) {}
 
   async addingUserToWhitelist(
@@ -27,7 +25,7 @@ export class InteractionsBotManagingService {
     id: string,
   ) {
     const usersToShow: DiscordUserDTO[] =
-      await this.responseComponentsHelperService.getUsersToShow();
+      await this.usersService.getUsersToShow();
 
     if (!usersToShow.length)
       return this.responseComponentsProvider.generateIntegrationResponse({

@@ -27,7 +27,6 @@ export class UsersRepository {
       throw new DBException(err?.message);
     }
   }
-  //TODO the same include where it's needed
 
   public async createUser(user: DiscordUserDTO): Promise<true> {
     try {
@@ -189,8 +188,7 @@ export class UsersRepository {
         });
       }
     } catch (err: any) {
-      console.log('err  ----> ', err);
-      throw new Error(err?.message);
+      throw new DBException(err?.message);
     }
   }
   sourceUserId: string;
