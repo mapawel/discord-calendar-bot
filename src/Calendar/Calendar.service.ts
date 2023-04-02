@@ -1,62 +1,46 @@
 import { config } from 'dotenv';
-import { settings } from 'src/app-SETUP/settings';
 import { Meeting } from '../discord-interactions/Meeting/interface/Meeting.interface';
-import { AuthzService } from 'src/authz/service/authz.service';
 import { FreeBusyRanges } from './types/Free-busy-ranges.type';
 import { Calendar as CalendarEntity } from './entity/Calendar.entity';
 import { Injectable } from '@nestjs/common';
-import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { CalendarException } from './exception/Calendar.exception';
-import { UsersService } from 'src/users/providers/users.service';
-import { AppUserDTO } from 'src/users/dto/App-user.dto';
+import { GoogleApiService } from 'src/APIs/Google-api.service';
+import { settings } from '../app-SETUP/settings';
 
 config();
 
 @Injectable()
 export class CalendarService {
-  constructor(
-    private readonly authzService: AuthzService,
-    private readonly axiosProvider: AxiosProvider,
-    private readonly usersService: UsersService,
-  ) {}
+  constructor(private readonly googleApiService: GoogleApiService) {}
 
-  // public async getAndSaveHostTokens(dId: string): Promise<{ error: string }> {
-  //   // ALL TO REMOVE
-  //   try {
-  //     const currentCalendar: CalendarEntity | null =
-  //       await CalendarEntity.findOne({
-  //         where: { dId },
-  //       });
+  public async getMentorsCalendarId(googleToken: string): Promise<string> {
+    try {
+      const {
+        data: { items },
+      }: { data: { items: { summary: string; id: string }[] } } =
+        await this.googleApiService.axiosInstance({
+          method: 'GET',
+          url: `/users/me/calendarList`,
+          headers: {
+            Authorization: `Bearer ${googleToken}`,
+          },
+        });
 
-  //     if (!currentCalendar) {
-  //       return {
-  //         error: 'No calendar found for this user who you want to meet with',
-  //       };
-  //     }
+      const mentorCalendar = items.find(
+        ({ summary }: { summary: string }) =>
+          summary === settings.calendarObligatoryName,
+      );
+      if (!mentorCalendar?.id) {
+        throw new Error(
+          `Mentor's calendar with name ${settings.calendarObligatoryName} not found`,
+        );
+      }
 
-  //     if (
-  //       Date.now() <
-  //       currentCalendar.updatedAt.getTime() + settings.googleTokenMaxLifetimeMs
-  //     ) {
-  //       return { error: '' };
-  //     }
-
-  //     const refreshedGoogleToken: string =
-  //       await this.authzService.refreshTokenForGoogle(dId);
-
-  //     await CalendarEntity.update(
-  //       {
-  //         googleToken: refreshedGoogleToken,
-  //       },
-  //       {
-  //         where: { dId },
-  //       },
-  //     );
-  //     return { error: '' };
-  //   } catch (err: any) {
-  //     throw new CalendarException(err?.message);
-  //   }
-  // }
+      return mentorCalendar.id;
+    } catch (err: any) {
+      throw new Error(err?.message);
+    }
+  }
 
   public async getMeetingTimeProposals(
     hostDId: string,
@@ -129,7 +113,7 @@ export class CalendarService {
         end,
       }: Meeting = meeting;
 
-      await this.axiosProvider.axiosGoogleAPI({
+      await this.googleApiService.axiosInstance({
         method: 'POST',
         url: `/calendars/${calendarId}/events`,
         headers: {
@@ -215,7 +199,7 @@ export class CalendarService {
         data: {
           calendars: Record<string, { busy: FreeBusyRanges }>;
         };
-      } = await this.axiosProvider.axiosGoogleAPI({
+      } = await this.googleApiService.axiosInstance({
         method: 'POST',
         url: `/freeBusy`,
         headers: {

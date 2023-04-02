@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AxiosProvider } from '../../axios/provider/axios.provider';
+import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { RolesRepository } from './roles.repository';
 import { RoleDTO } from '../dto/Role.dto';
 import { RolesException } from '../exception/Roles.exception';
@@ -8,7 +8,7 @@ import { settings } from '../../app-SETUP/settings';
 @Injectable()
 export class RolesService {
   constructor(
-    private readonly axiosProvider: AxiosProvider,
+    private readonly discordApiService: DiscordApiService,
     private readonly rolesRepository: RolesRepository,
   ) {}
 
@@ -17,7 +17,7 @@ export class RolesService {
       const {
         data: { roles },
       }: { data: { roles: string[] } } =
-        await this.axiosProvider.axiosDiscordAPI({
+        await this.discordApiService.axiosInstance({
           method: 'GET',
           url: `/guilds/${process.env.GUILD_ID}/members/${userid}`,
         });
@@ -45,7 +45,7 @@ export class RolesService {
   public async updateAllDBRoles(): Promise<void> {
     try {
       const { data: roles }: { data: RoleDTO[] } =
-        await this.axiosProvider.axiosDiscordAPI({
+        await this.discordApiService.axiosInstance({
           method: 'GET',
           url: `/guilds/${process.env.GUILD_ID}/roles`,
         });

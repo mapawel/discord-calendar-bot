@@ -1,10 +1,10 @@
 import { Module } from '@nestjs/common';
 import { RolesService } from './providers/roles.service';
-import { AxiosModule } from 'src/axios/axios.module';
+import { ApisModule } from 'src/APIs/APIs.module';
 import { RolesRepository } from './providers/roles.repository';
 
 @Module({
-  imports: [AxiosModule],
+  imports: [ApisModule],
   providers: [RolesService, RolesRepository],
   exports: [RolesService],
 })

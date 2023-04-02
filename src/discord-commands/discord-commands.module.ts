@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
 import { DiscordCommandsService } from './service/discord-commands.service';
-import { AxiosModule } from 'src/axios/axios.module';
+import { ApisModule } from 'src/APIs/APIs.module';
 
 @Module({
-  imports: [AxiosModule],
+  imports: [ApisModule],
   providers: [DiscordCommandsService],
   exports: [],
 })

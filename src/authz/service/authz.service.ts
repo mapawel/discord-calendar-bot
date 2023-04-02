@@ -9,9 +9,9 @@ import { UsersService } from '../../users/providers/users.service';
 import { AppUserDTO } from '../../users/dto/App-user.dto';
 import { RolesService } from '../../roles/providers/roles.service';
 import { AuthzUserDTO } from '../../discord-interactions/dto/Auth-user.dto';
-import { AxiosProvider } from '../../axios/provider/axios.provider';
+import { AuthzApiService } from 'src/APIs/Authz-api.service';
 import { Calendar as CalendarEntity } from 'src/Calendar/entity/Calendar.entity';
-import { settings } from 'src/app-SETUP/settings';
+import { CalendarService } from 'src/Calendar/Calendar.service';
 
 config();
 
@@ -21,7 +21,8 @@ export class AuthzService {
     private readonly jwtService: JwtService,
     private readonly usersService: UsersService,
     private readonly rolesService: RolesService,
-    private readonly axiosProvider: AxiosProvider,
+    private readonly authzApiService: AuthzApiService,
+    private readonly calendarService: CalendarService,
   ) {}
 
   public async buildRedirectLink(id: string): Promise<string> {
@@ -52,7 +53,7 @@ export class AuthzService {
   public async getToken(code: string, state: string) {
     try {
       const { id, isHost } = await this.jwtService.verifyAsync(state);
-      const { data } = await this.axiosProvider.axiosAuthzAPI({
+      const { data } = await this.authzApiService.axiosInstance({
         method: 'POST',
         url: `${AuthzRoutes.AUTHZ_TOKEN}`,
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
@@ -66,7 +67,7 @@ export class AuthzService {
       });
 
       const { data: authUserData }: { data: AuthzUserDTO } =
-        await this.axiosProvider.axiosAuthzAPI({
+        await this.authzApiService.axiosInstance({
           method: 'POST',
           url: `${AuthzRoutes.GET_USET_INFO}`,
           headers: {
@@ -112,7 +113,9 @@ export class AuthzService {
       }: { googleToken: string; googleRefreshToken: string } =
         await this.getTokensForGoogle(aId);
 
-      const calendarId = await this.getMentorsCalendarId(googleToken);
+      const calendarId = await this.calendarService.getMentorsCalendarId(
+        googleToken,
+      );
       await CalendarEntity.create({
         dId,
         googleToken,
@@ -122,53 +125,7 @@ export class AuthzService {
     }
   }
 
-  private async getTokenForAuthManagment(): Promise<string> {
-    const {
-      data: { access_token },
-    }: { data: { access_token: string } } =
-      await this.axiosProvider.axiosAuthzAPI({
-        method: 'POST',
-        url: '/oauth/token',
-        data: {
-          client_id: process.env.AUTHZ_CLIENT_ID,
-          client_secret: process.env.AUTHZ_SECRET,
-          audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
-          grant_type: 'client_credentials',
-        },
-      });
-    return access_token;
-  }
-
-  public async getMentorsCalendarId(googleToken: string): Promise<string> {
-    try {
-      const {
-        data: { items },
-      }: { data: { items: { summary: string; id: string }[] } } =
-        await this.axiosProvider.axiosGoogleAPI({
-          method: 'GET',
-          url: `/users/me/calendarList`,
-          headers: {
-            Authorization: `Bearer ${googleToken}`,
-          },
-        });
-
-      const mentorCalendar = items.find(
-        ({ summary }: { summary: string }) =>
-          summary === settings.calendarObligatoryName,
-      );
-      if (!mentorCalendar?.id) {
-        throw new AuthServiceException(
-          `Mentor's calendar with name ${settings.calendarObligatoryName} not found`,
-        );
-      }
-
-      return mentorCalendar.id;
-    } catch (err: any) {
-      throw new AuthServiceException(err?.message);
-    }
-  }
-
-  public async getTokensForGoogle(
+  private async getTokensForGoogle(
     hostAuthId: string,
   ): Promise<{ googleToken: string; googleRefreshToken: string }> {
     try {
@@ -177,7 +134,7 @@ export class AuthzService {
         data: { identities },
       }: {
         data: { identities: { access_token: string; refresh_token: string }[] };
-      } = await this.axiosProvider.axiosAuthzAPI({
+      } = await this.authzApiService.axiosInstance({
         method: 'GET',
         url: `/api/v2/users/${hostAuthId}`,
         headers: {
@@ -190,38 +147,24 @@ export class AuthzService {
         googleRefreshToken: identities[0].refresh_token,
       };
     } catch (err: any) {
-      throw new AuthServiceException(err?.message);
+      throw new Error(err?.message);
     }
   }
 
-  // public async refreshTokenForGoogle(dId: string): Promise<string> {
-  //   try {
-  //     const currentCalendar: CalendarEntity | null =
-  //       await CalendarEntity.findByPk(dId);
-
-  //     if (!currentCalendar?.googleRefreshToken)
-  //       throw new AuthServiceException('Calendar access cannot be refreshed');
-
-  //     const { googleRefreshToken }: { googleRefreshToken: string } =
-  //       currentCalendar;
-
-  //     const {
-  //       data: { access_token },
-  //     }: { data: { access_token: string } } =
-  //       await this.axiosProvider.axiosGoogleAPI({
-  //         method: 'POST',
-  //         url: `https://www.googleapis.com/oauth2/v4/token`,
-  //         data: {
-  //           client_id: process.env.GOOGLE_API_CLIENT_ID,
-  //           client_secret: process.env.GOOGLE_API_CLIENT_SECRET,
-  //           refresh_token: googleRefreshToken,
-  //           grant_type: 'refresh_token',
-  //         },
-  //       });
-
-  //     return access_token;
-  //   } catch (err: any) {
-  //     throw new AuthServiceException(err?.message);
-  //   }
-  // }
+  private async getTokenForAuthManagment(): Promise<string> {
+    const {
+      data: { access_token },
+    }: { data: { access_token: string } } =
+      await this.authzApiService.axiosInstance({
+        method: 'POST',
+        url: '/oauth/token',
+        data: {
+          client_id: process.env.AUTHZ_CLIENT_ID,
+          client_secret: process.env.AUTHZ_SECRET,
+          audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
+          grant_type: 'client_credentials',
+        },
+      });
+    return access_token;
+  }
 }

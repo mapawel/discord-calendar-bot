@@ -14,25 +14,24 @@
         <pre class="mermaid">
           graph LR
   AppModule-->DiscordCommandsModule
-  DiscordCommandsModule-->AxiosModule
+  DiscordCommandsModule-->ApisModule
   AppModule-->DiscordInteractionsModule
   DiscordInteractionsModule-->RolesModule
-  RolesModule-->AxiosModule
+  RolesModule-->ApisModule
   DiscordInteractionsModule-->UsersModule
-  UsersModule-->AxiosModule
+  UsersModule-->ApisModule
   UsersModule-->RolesModule
-  DiscordInteractionsModule-->AxiosModule
+  DiscordInteractionsModule-->ApisModule
   DiscordInteractionsModule-->StateModule
   DiscordInteractionsModule-->CalendarModule
-  CalendarModule-->AuthzModule
+  CalendarModule-->ApisModule
+  AppModule-->AuthzModule
   AuthzModule-->JwtModule
   AuthzModule-->UsersModule
   AuthzModule-->RolesModule
   AuthzModule-->PassportModule
-  AuthzModule-->AxiosModule
-  CalendarModule-->AxiosModule
-  CalendarModule-->UsersModule
-  AppModule-->AuthzModule
+  AuthzModule-->ApisModule
+  AuthzModule-->CalendarModule
   AppModule-->DatabaseModule
       </pre>
       </body>

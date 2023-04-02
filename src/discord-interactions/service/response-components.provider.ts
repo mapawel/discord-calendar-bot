@@ -1,14 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
 import { config } from 'dotenv';
-import { AxiosProvider } from 'src/axios/provider/axios.provider';
+import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { DiscordInteractionException } from '../exception/DiscordInteraction.exception';
 
 config();
 
 @Injectable()
 export class ResponseComponentsProvider {
-  constructor(private readonly axiosProvider: AxiosProvider) {}
+  constructor(private readonly discordApiService: DiscordApiService) {}
 
   public async generateIntegrationResponseMultiline({
     id,
@@ -26,7 +26,7 @@ export class ResponseComponentsProvider {
     componentsArrays?: any[][];
   }) {
     try {
-      await this.axiosProvider.axiosDiscordAPI({
+      await this.discordApiService.axiosInstance({
         method: 'POST',
         url: `/interactions/${id}/${token}/callback`,
         data: {
@@ -63,7 +63,7 @@ export class ResponseComponentsProvider {
     components?: any[];
   }) {
     try {
-      await this.axiosProvider.axiosDiscordAPI({
+      await this.discordApiService.axiosInstance({
         method: 'POST',
         url: `/interactions/${id}/${token}/callback`,
         data: {

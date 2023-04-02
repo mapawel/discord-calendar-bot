@@ -1,32 +1,13 @@
-import { Injectable } from '@nestjs/common';
-import axios, { AxiosInstance, AxiosResponse } from 'axios';
-import { config } from 'dotenv';
+import { AxiosInstance, AxiosResponse } from 'axios';
+import axios from 'axios';
 import { Calendar } from 'src/Calendar/entity/Calendar.entity';
 
-config();
+export class GoogleApiService {
+  constructor(public axiosInstance: AxiosInstance) {
+    this.initAxiosInstance();
+  }
 
-// @Injectable()
-export class AxiosProvider {
-  constructor(
-    public readonly axiosDiscordAPI: AxiosInstance = axios.create({
-      baseURL: `https://discord.com/api/v10`,
-      headers: {
-        Authorization: `Bot ${process.env.DISCORD_TOKEN}`,
-        'Content-Type': 'application/json; charset=UTF-8',
-        'User-Agent':
-          'DiscordBot (https://github.com/discord/discord-example-app, 1.0.0)',
-      },
-    }),
-
-    public readonly axiosAuthzAPI: AxiosInstance = axios.create({
-      baseURL: `https://discord-calendar-bot-by-dd.eu.auth0.com`,
-      headers: {
-        'content-type': 'application/json',
-      },
-    }),
-
-    public readonly axiosGoogleAPI: AxiosInstance,
-  ) {
+  private initAxiosInstance() {
     const axiosInstance: AxiosInstance = axios.create({
       baseURL: `https://www.googleapis.com/calendar/v3`,
       headers: {
@@ -41,7 +22,10 @@ export class AxiosProvider {
       async function (error) {
         try {
           if (error.response.status === 401) {
-            console.log('>>>>>>>>>>>>>>>>>>>>>>>error.code ----> ', error.code);
+            console.log(
+              '>>>>>>>>>>>>>>>>>>>>>>> !!!!!!!!!!!!!!!!!!!!!!!!!!!! error.code ----> ',
+              error.code,
+            );
             const originalRequest = error.config;
             const calendarId: string = JSON.parse(originalRequest.data).items[0]
               .id;
@@ -97,6 +81,6 @@ export class AxiosProvider {
       },
     );
 
-    this.axiosGoogleAPI = axiosInstance;
+    this.axiosInstance = axiosInstance;
   }
 }

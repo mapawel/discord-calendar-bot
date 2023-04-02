@@ -28,7 +28,7 @@
   {
     "name": "DiscordCommandsModule",
     "imports": [
-      "AxiosModule"
+      "ApisModule"
     ],
     "providers": {
       "DiscordCommandsService": {
@@ -39,16 +39,24 @@
     "exports": []
   },
   {
-    "name": "AxiosModule",
+    "name": "ApisModule",
     "imports": [],
     "providers": {
-      "AxiosProvider": {
+      "GoogleApiService": {
+        "method": "standard"
+      },
+      "AuthzApiService": {
+        "method": "standard"
+      },
+      "DiscordApiService": {
         "method": "standard"
       }
     },
     "controllers": [],
     "exports": [
-      "AxiosProvider"
+      "GoogleApiService",
+      "AuthzApiService",
+      "DiscordApiService"
     ]
   },
   {
@@ -56,7 +64,7 @@
     "imports": [
       "RolesModule",
       "UsersModule",
-      "AxiosModule",
+      "ApisModule",
       "StateModule",
       "CalendarModule"
     ],
@@ -97,7 +105,7 @@
   {
     "name": "RolesModule",
     "imports": [
-      "AxiosModule"
+      "ApisModule"
     ],
     "providers": {
       "RolesService": {
@@ -115,7 +123,7 @@
   {
     "name": "UsersModule",
     "imports": [
-      "AxiosModule",
+      "ApisModule",
       "RolesModule"
     ],
     "providers": {
@@ -150,9 +158,7 @@
   {
     "name": "CalendarModule",
     "imports": [
-      "AuthzModule",
-      "AxiosModule",
-      "UsersModule"
+      "ApisModule"
     ],
     "providers": {
       "CalendarService": {
@@ -171,7 +177,8 @@
       "UsersModule",
       "RolesModule",
       "PassportModule",
-      "AxiosModule"
+      "ApisModule",
+      "CalendarModule"
     ],
     "providers": {
       "JwtStrategy": {

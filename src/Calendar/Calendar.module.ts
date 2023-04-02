@@ -1,11 +1,9 @@
 import { Module } from '@nestjs/common';
 import { CalendarService } from './Calendar.service';
-import { AuthzModule } from 'src/authz/authz.module';
-import { AxiosModule } from 'src/axios/axios.module';
-import { UsersModule } from 'src/users/users.module';
+import { ApisModule } from 'src/APIs/APIs.module';
 
 @Module({
-  imports: [AuthzModule, AxiosModule, UsersModule],
+  imports: [ApisModule],
   providers: [CalendarService],
   exports: [CalendarService],
 })

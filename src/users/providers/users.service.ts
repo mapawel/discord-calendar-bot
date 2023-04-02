@@ -3,7 +3,7 @@ import { DiscordUserDTO } from '../../discord-interactions/dto/Discord-user.dto'
 import { AppUserDTO } from '../dto/App-user.dto';
 import { UsersRepository } from './users.repository';
 import { RolesService } from 'src/roles/providers/roles.service';
-import { AxiosProvider } from 'src/axios/provider/axios.provider';
+import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { AuthzUserDTO } from 'src/discord-interactions/dto/Auth-user.dto';
 import { UsersException } from '../exception/Users.exception';
 import { Calendar } from 'src/Calendar/entity/Calendar.entity';
@@ -13,7 +13,7 @@ export class UsersService {
   constructor(
     private readonly usersRepository: UsersRepository,
     private readonly rolesService: RolesService,
-    private readonly axiosProvider: AxiosProvider,
+    private readonly discordApiService: DiscordApiService,
   ) {}
 
   public async createUserIfNotExisting(user: DiscordUserDTO): Promise<boolean> {
@@ -55,7 +55,7 @@ export class UsersService {
       const {
         data: { user },
       }: { data: { user: DiscordUserDTO } } =
-        await this.axiosProvider.axiosDiscordAPI({
+        await this.discordApiService.axiosInstance({
           method: 'GET',
           url: `/guilds/${process.env.GUILD_ID}/members/${dId}`,
         });
@@ -71,7 +71,7 @@ export class UsersService {
   ): Promise<DiscordUserDTO[]> {
     try {
       const { data }: { data: { roles: string[]; user: DiscordUserDTO }[] } =
-        await this.axiosProvider.axiosDiscordAPI({
+        await this.discordApiService.axiosInstance({
           method: 'GET',
           url: `https://discord.com/api/v10/guilds/${process.env.GUILD_ID}/members?limit=1000`,
         });

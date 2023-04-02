@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { AxiosProvider } from 'src/axios/provider/axios.provider';
+import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { config } from 'dotenv';
 import { commands } from 'src/app-SETUP/lists/commands.list';
 import { DiscordCommandsException } from '../exception/Discord-commands.exception';
@@ -8,7 +8,7 @@ config();
 
 @Injectable()
 export class DiscordCommandsService {
-  constructor(private readonly axiosProvider: AxiosProvider) {}
+  constructor(private readonly discordApiService: DiscordApiService) {}
 
   public async commandsInit(commands: any[]) {
     // const existingCommands = await this.getExistingCommands();
@@ -57,7 +57,7 @@ export class DiscordCommandsService {
     url?: string;
   }): Promise<any> {
     try {
-      const response = await this.axiosProvider.axiosDiscordAPI({
+      const response = await this.discordApiService.axiosInstance({
         method,
         url: `applications/${process.env.APP_ID}/commands${url}`,
         data,

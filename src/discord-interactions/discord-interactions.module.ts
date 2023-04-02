@@ -10,7 +10,7 @@ import { RolesModule } from '../roles/roles.module';
 import { UsersModule } from '../users/users.module';
 import { AppRoutes } from '../routes/routes.enum';
 import { WhitelistGuardService } from './guards/guard-services/whitelist-guard.service';
-import { AxiosModule } from '../axios/axios.module';
+import { ApisModule } from 'src/APIs/APIs.module';
 import { StateModule } from '../app-state/State.module';
 import { ResponseComponentsProvider } from './service/response-components.provider';
 import { MeetingService } from './Meeting/Meeting.service';
@@ -19,7 +19,7 @@ import { InteractionsBotManagingService } from './service/subservices/interactio
 import { CalendarModule } from 'src/Calendar/Calendar.module';
 
 @Module({
-  imports: [RolesModule, UsersModule, AxiosModule, StateModule, CalendarModule],
+  imports: [RolesModule, UsersModule, ApisModule, StateModule, CalendarModule],
   controllers: [DiscordInteractionController],
   providers: [
     IntegrationSlashCommandsService,
