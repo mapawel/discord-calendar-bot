@@ -20,63 +20,43 @@ export class CalendarService {
     private readonly usersService: UsersService,
   ) {}
 
-  public async getAndSaveHostTokens(
-    dId: string,
-    hostAuthId: string,
-  ): Promise<true> {
-    try {
-      const currentCalendar: CalendarEntity | null =
-        await CalendarEntity.findOne({
-          where: { dId },
-        });
+  // public async getAndSaveHostTokens(dId: string): Promise<{ error: string }> {
+  //   // ALL TO REMOVE
+  //   try {
+  //     const currentCalendar: CalendarEntity | null =
+  //       await CalendarEntity.findOne({
+  //         where: { dId },
+  //       });
 
-      if (!currentCalendar) {
-        const {
-          googleToken,
-          googleRefreshToken,
-        }: { googleToken: string; googleRefreshToken: string } =
-          await this.authzService.getTokensForGoogle(hostAuthId);
+  //     if (!currentCalendar) {
+  //       return {
+  //         error: 'No calendar found for this user who you want to meet with',
+  //       };
+  //     }
 
-        const calendarId = await this.getMentorsCalendarId(googleToken);
-        await CalendarEntity.create({
-          dId,
-          googleToken,
-          googleRefreshToken,
-          calendarId,
-        });
-        return true;
-      }
+  //     if (
+  //       Date.now() <
+  //       currentCalendar.updatedAt.getTime() + settings.googleTokenMaxLifetimeMs
+  //     ) {
+  //       return { error: '' };
+  //     }
 
-      const hostUser: AppUserDTO | undefined =
-        await this.usersService.getUserByDId(dId);
-      if (!hostUser)
-        throw new CalendarException(
-          'No host user found to update get access to calender',
-        );
+  //     const refreshedGoogleToken: string =
+  //       await this.authzService.refreshTokenForGoogle(dId);
 
-      if (
-        Date.now() <
-        hostUser.updatedAt.getTime() + settings.googleTokenMaxLifetimeMs
-      ) {
-        return true;
-      }
-
-      const refreshedGoogleToken: string =
-        await this.authzService.refreshTokenForGoogle(dId);
-
-      await CalendarEntity.update(
-        {
-          googleToken: refreshedGoogleToken,
-        },
-        {
-          where: { dId },
-        },
-      );
-      return true;
-    } catch (err: any) {
-      throw new CalendarException(err?.message);
-    }
-  }
+  //     await CalendarEntity.update(
+  //       {
+  //         googleToken: refreshedGoogleToken,
+  //       },
+  //       {
+  //         where: { dId },
+  //       },
+  //     );
+  //     return { error: '' };
+  //   } catch (err: any) {
+  //     throw new CalendarException(err?.message);
+  //   }
+  // }
 
   public async getMeetingTimeProposals(
     hostDId: string,
@@ -178,35 +158,6 @@ export class CalendarService {
       return {
         error: '',
       };
-    } catch (err: any) {
-      throw new CalendarException(err?.message);
-    }
-  }
-
-  private async getMentorsCalendarId(googleToken: string): Promise<string> {
-    try {
-      const {
-        data: { items },
-      }: { data: { items: { summary: string; id: string }[] } } =
-        await this.axiosProvider.axiosGoogleAPI({
-          method: 'GET',
-          url: `/users/me/calendarList`,
-          headers: {
-            Authorization: `Bearer ${googleToken}`,
-          },
-        });
-
-      const mentorCalendar = items.find(
-        ({ summary }: { summary: string }) =>
-          summary === settings.calendarObligatoryName,
-      );
-      if (!mentorCalendar?.id) {
-        throw new CalendarException(
-          `Mentor's calendar with name ${settings.calendarObligatoryName} not found`,
-        );
-      }
-
-      return mentorCalendar.id;
     } catch (err: any) {
       throw new CalendarException(err?.message);
     }

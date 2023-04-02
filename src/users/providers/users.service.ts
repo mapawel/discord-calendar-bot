@@ -6,6 +6,7 @@ import { RolesService } from 'src/roles/providers/roles.service';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { AuthzUserDTO } from 'src/discord-interactions/dto/Auth-user.dto';
 import { UsersException } from '../exception/Users.exception';
+import { Calendar } from 'src/Calendar/entity/Calendar.entity';
 
 @Injectable()
 export class UsersService {
@@ -126,7 +127,8 @@ export class UsersService {
       throw Error('User or host not found');
     }
 
-    if (!host.aId)
+    const usersCalendar: Calendar | null = await Calendar.findByPk(hostDId);
+    if (!usersCalendar)
       error =
         "Host didn't auth the app and connect his calander yet. Let him know about this fact to book a meeting!";
 
