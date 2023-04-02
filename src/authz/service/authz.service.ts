@@ -10,6 +10,7 @@ import { AppUserDTO } from '../../users/dto/App-user.dto';
 import { RolesService } from '../../roles/providers/roles.service';
 import { AuthzUserDTO } from '../../discord-interactions/dto/Auth-user.dto';
 import { AxiosProvider } from '../../axios/provider/axios.provider';
+import { Calendar as CalendarEntity } from 'src/Calendar/entity/Calendar.entity';
 
 config();
 
@@ -38,6 +39,7 @@ export class AuthzService {
       // connection_scope: 'https://www.googleapis.com/auth/calendar',
       access_type: 'offline',
       approval_prompt: 'force',
+      // prompt: 'consent'
     });
 
     return `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_AUTHORIZE}?${querystring}`;
@@ -89,21 +91,58 @@ export class AuthzService {
     }
   }
 
-  public async getTokenForGoogle(hostAuthId: string): Promise<string> {
+  public async getTokensForGoogle(
+    hostAuthId: string,
+  ): Promise<{ googleToken: string; googleRefreshToken: string }> {
     try {
       const authManagementToken: string = await this.getTokenForAuthManagment();
       const {
         data: { identities },
-      }: { data: { identities: { access_token: string }[] } } =
-        await this.axiosProvider.axiosAuthzAPI({
-          method: 'GET',
-          url: `/api/v2/users/${hostAuthId}`,
-          headers: {
-            Authorization: `Bearer ${authManagementToken}`,
+      }: {
+        data: { identities: { access_token: string; refresh_token: string }[] };
+      } = await this.axiosProvider.axiosAuthzAPI({
+        method: 'GET',
+        url: `/api/v2/users/${hostAuthId}`,
+        headers: {
+          Authorization: `Bearer ${authManagementToken}`,
+        },
+      });
+
+      return {
+        googleToken: identities[0].access_token,
+        googleRefreshToken: identities[0].refresh_token,
+      };
+    } catch (err: any) {
+      throw new AuthServiceException(err?.message);
+    }
+  }
+
+  public async refreshTokenForGoogle(dId: string): Promise<string> {
+    try {
+      const currentCalendar: CalendarEntity | null =
+        await CalendarEntity.findByPk(dId);
+
+      if (!currentCalendar?.googleRefreshToken)
+        throw new AuthServiceException('Calendar access cannot be refreshed');
+
+      const { googleRefreshToken }: { googleRefreshToken: string } =
+        currentCalendar;
+
+      const {
+        data: { access_token },
+      }: { data: { access_token: string } } =
+        await this.axiosProvider.axiosGoogleAPI({
+          method: 'POST',
+          url: `https://www.googleapis.com/oauth2/v4/token`,
+          data: {
+            client_id: process.env.GOOGLE_API_CLIENT_ID,
+            client_secret: process.env.GOOGLE_API_CLIENT_SECRET,
+            refresh_token: googleRefreshToken,
+            grant_type: 'refresh_token',
           },
         });
-      console.log('id ----> ', identities);
-      return identities[0].access_token;
+
+      return access_token;
     } catch (err: any) {
       throw new AuthServiceException(err?.message);
     }

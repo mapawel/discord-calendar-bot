@@ -7,6 +7,8 @@ import { Calendar as CalendarEntity } from './entity/Calendar.entity';
 import { Injectable } from '@nestjs/common';
 import { AxiosProvider } from 'src/axios/provider/axios.provider';
 import { CalendarException } from './exception/Calendar.exception';
+import { UsersService } from 'src/users/providers/users.service';
+import { AppUserDTO } from 'src/users/dto/App-user.dto';
 
 config();
 
@@ -15,32 +17,67 @@ export class CalendarService {
   constructor(
     private readonly authzService: AuthzService,
     private readonly axiosProvider: AxiosProvider,
+    private readonly usersService: UsersService,
   ) {}
 
   public async getAndSaveHostTokens(
     dId: string,
     hostAuthId: string,
-  ): Promise<void> {
+  ): Promise<true> {
     try {
-      const currentCalendar = await CalendarEntity.findOne({
-        where: { dId },
-      });
+      const currentCalendar: CalendarEntity | null =
+        await CalendarEntity.findOne({
+          where: { dId },
+        });
+
+      if (!currentCalendar) {
+        const {
+          googleToken,
+          googleRefreshToken,
+        }: { googleToken: string; googleRefreshToken: string } =
+          await this.authzService.getTokensForGoogle(hostAuthId);
+
+        const calendarId = await this.getMentorsCalendarId(googleToken);
+        await CalendarEntity.create({
+          dId,
+          googleToken,
+          googleRefreshToken,
+          calendarId,
+        });
+        return true;
+      }
+
+      const hostUser: AppUserDTO | undefined =
+        await this.usersService.getUserByDId(dId);
+      if (!hostUser)
+        throw new CalendarException(
+          'No host user found to update get access to calender',
+        );
 
       if (
         Date.now() <
-        currentCalendar?.updatedAt.getTime() + settings.googleTokenMaxLifetimeMs
-      )
-        return;
+        hostUser.updatedAt.getTime() + settings.googleTokenMaxLifetimeMs
+      ) {
+        return true;
+      }
 
-      console.log(' >>>>>>>>>>>>>>>>>>>>>>>>> ----> REFRESHING TOKENS');
-      const googleToken = await this.authzService.getTokenForGoogle(hostAuthId);
-      const calendarId = await this.getMentorsCalendarId(googleToken);
-      await CalendarEntity.create({ dId, googleToken, calendarId });
+      const refreshedGoogleToken: string =
+        await this.authzService.refreshTokenForGoogle(dId);
+
+      await CalendarEntity.update(
+        {
+          googleToken: refreshedGoogleToken,
+        },
+        {
+          where: { dId },
+        },
+      );
+      return true;
     } catch (err: any) {
       throw new CalendarException(err?.message);
     }
   }
-// ya29.a0Ael9sCPg9ZqIMvwqYGMhk6IShN-gb9EzU8FEAeWdAbm3d-uGYqsPH6HF0LwfW2hAVN0oGiGVZfMmNkYB2-hE5sXG3ZsJfc9tynQm1-Pn8pNUtjpZspE6zRJK4Frg5_jlGZhFpO_makSo8t_o0VJFXLLuGfIKfQaCgYKAXcSARISFQF4udJh3jo52ndy7W0P_UHsQo_WtQ0165
+
   public async getMeetingTimeProposals(
     hostDId: string,
     durationMs: number,

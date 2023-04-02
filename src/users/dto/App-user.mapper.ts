@@ -22,5 +22,6 @@ export const AppUserMapper = (user: AppUser): AppUserDTO => ({
   whitelisted: user.whitelisted,
   name: user.name,
   picture: user.picture,
+  updatedAt: user.updatedAt,
   mentors: user.mentors ? mapUsersOrMentors(user.mentors) : [],
 });

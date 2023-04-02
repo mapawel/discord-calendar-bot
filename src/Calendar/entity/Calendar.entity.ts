@@ -11,5 +11,8 @@ export class Calendar extends Model {
   googleToken: string;
 
   @Column
+  googleRefreshToken: string;
+
+  @Column
   calendarId: string;
 }

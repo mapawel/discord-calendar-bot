@@ -8,8 +8,9 @@ export class AppUserDTO {
   whitelisted: boolean;
   name: string;
   picture: string;
+  updatedAt: Date;
   mentors: {
     dId: string;
     username: string;
-  }[] ;
+  }[];
 }
