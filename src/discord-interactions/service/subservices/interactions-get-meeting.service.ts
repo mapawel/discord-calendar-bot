@@ -63,10 +63,6 @@ export class InteractionsGetMeetingService {
 
     await this.saveMeetingData(discordUser.id, meetingData);
 
-    // const { error: hostAuthError }: { error: string } =
-    //   await this.calendarService.getAndSaveHostTokens(host.dId);
-    // if (hostAuthError) return this.respondWithError(id, token, hostAuthError);
-
     return this.responseComponentsProvider.generateIntegrationResponse({
       id,
       token,
