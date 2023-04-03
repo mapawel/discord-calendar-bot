@@ -1,5 +1,5 @@
 import { config } from 'dotenv';
-import { Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { DiscordUserDTO } from '../../dto/Discord-user.dto';
 import { AppUserDTO } from '../../../users/dto/App-user.dto';
 import { UsersService } from '../../../users/providers/users.service';
@@ -41,10 +41,12 @@ export class InteractionsBotManagingService {
     components: any[], //TODO to make a type
   ) {
     const userId = components[0].components[0].value;
+    if (!parseInt(userId)) throw new BadRequestException();
 
     const userToAdd: DiscordUserDTO =
       await this.usersService.getUserFromDiscord(userId);
 
+    await this.usersService.createUserIfNotExisting(userToAdd);
     await this.usersService.updateUserWhitelistStatus(userToAdd.id, true);
 
     await this.responseComponentsProvider.generateInteractionResponse({

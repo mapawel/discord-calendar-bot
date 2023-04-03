@@ -10,6 +10,8 @@ export const commandsModalComponents: Record<
       custom_id: CommandsModalComponents.INPUT_USER_TO_ADD,
       component_label: "User's to add to whitelist discord ID",
       component_placeholder: 'Enter discord ID',
+      component_min_l: 18,
+      component_max_l: 20,
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Mentor', 'Calendar-bot-admin'], // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
       whitelisting_guard_rule: 'notWhitelisted',
@@ -30,6 +32,8 @@ export type AppCommandModalComponent = {
   custom_id: CommandsModalComponents;
   component_label: string;
   component_placeholder: string;
+  component_min_l: number;
+  component_max_l: number;
   authenticated_guard_rule: 'isAuthenticated' | 'notAuthenticated';
   role_guard_rules: ('Mentor' | 'Calendar-bot-admin')[]; // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
   whitelisting_guard_rule: 'isWhitelisted' | 'notWhitelisted';

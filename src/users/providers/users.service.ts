@@ -62,6 +62,7 @@ export class UsersService {
 
       return user;
     } catch (err: any) {
+      console.log('err ----> ', err);
       throw new UsersException(err?.message);
     }
   }
@@ -174,31 +175,12 @@ export class UsersService {
     );
   }
 
-  // TODO to remove
-  // public async getUsersToShow(): Promise<DiscordUserDTO[]> {
-  //   // TODO to refactor to speed it up!
-  //   const allUsers: DiscordUserDTO[] = await this.getUsersFromDiscord();
-  //   const alreadyWhitelistedUsers: AppUserDTO[] =
-  //     await this.getAllWhitelistedUsers();
-  //   const existingUsersDids: string[] = alreadyWhitelistedUsers.map(
-  //     ({ dId }: { dId: string }) => dId,
-  //   );
-  //   return allUsers.filter(
-  //     ({ id }: { id: string }) =>
-  //       id !== process.env.APP_ID && !existingUsersDids.includes(id),
-  //   );
-  // }
-
   async onModuleInit() {
     await this.rolesService.updateAllDBRoles();
-    // const roleIdsEnableToMeetWith: RoleDTO[] =
-    //   await this.rolesService.getDBroles(
-    //     usersManagementSettings.rolesUsersCanMeetWith,
-    //   );
 
     const allDiscordUsers: DiscordUserDTO[] = await this.getUsersFromDiscord();
 
-    await this.usersRepository.createOrUpdateAllUsers(allDiscordUsers);
+    // await this.usersRepository.createOrUpdateAllUsers(allDiscordUsers);
     //TODO add possibility to refresh mentors list from discord
   }
 }

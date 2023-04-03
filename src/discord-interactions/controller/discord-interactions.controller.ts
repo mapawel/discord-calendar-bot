@@ -15,6 +15,7 @@ import { AppCommandComponent } from '../../app-SETUP/lists/commands-components.l
 import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
 import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
 import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-components.list';
+import { BadRequestFilter } from '../exception-filters/bad-request.filter';
 
 @Controller()
 export class DiscordInteractionController {
@@ -28,6 +29,7 @@ export class DiscordInteractionController {
   @UseGuards(RolesdGuard)
   @UseGuards(AuthenticatedGuard)
   @UseFilters(ForbiddenExceptionFilter)
+  @UseFilters(BadRequestFilter)
   async interactionsHandler(
     @Body()
     body: MappedInteraction,
