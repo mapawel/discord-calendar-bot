@@ -3,6 +3,7 @@ import { InteractionResponseType } from 'discord-interactions';
 import { config } from 'dotenv';
 import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { DiscordInteractionException } from '../exception/DiscordInteraction.exception';
+import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
 
 config();
 
@@ -10,7 +11,7 @@ config();
 export class ResponseComponentsProvider {
   constructor(private readonly discordApiService: DiscordApiService) {}
 
-  public async generateIntegrationResponseMultiline({
+  public async generateInteractionResponseMultiline({
     id,
     token,
     type,
@@ -47,7 +48,7 @@ export class ResponseComponentsProvider {
     }
   }
 
-  public async generateIntegrationResponse({
+  public async generateInteractionResponse({
     id,
     token,
     type,
@@ -78,6 +79,50 @@ export class ResponseComponentsProvider {
                   },
                 ]
               : [],
+          },
+        },
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message);
+    }
+  }
+
+  public async generateOneInputModal({
+    id,
+    token,
+    component,
+  }: {
+    id: string;
+    token: string;
+    component: AppCommandModalComponent[];
+  }) {
+    const [data] = component;
+    try {
+      await this.discordApiService.axiosInstance({
+        method: 'POST',
+        url: `/interactions/${id}/${token}/callback`,
+        data: {
+          type: 9,
+          data: {
+            title: data.modal_title,
+            custom_id: data.custom_id,
+            components: [
+              {
+                type: 1,
+                components: [
+                  {
+                    type: 4,
+                    custom_id: `${data.custom_id}-input`,
+                    label: data.component_label,
+                    style: 1,
+                    min_length: 1,
+                    max_length: 4000,
+                    placeholder: data.component_placeholder,
+                    required: true,
+                  },
+                ],
+              },
+            ],
           },
         },
       });

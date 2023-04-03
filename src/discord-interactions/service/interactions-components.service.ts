@@ -101,6 +101,7 @@ export class IntegrationComponentsService {
     token: string,
     custom_id: string,
     id: string,
+    components: any[], //TODO to make a type
   ) {
     return this.interactionsBotManagingService.addingUserToWhitelistCallback(
       discordUser,
@@ -108,6 +109,7 @@ export class IntegrationComponentsService {
       token,
       custom_id,
       id,
+      components,
     );
   }
 
@@ -198,7 +200,7 @@ export class IntegrationComponentsService {
     custom_id: string,
     id: string,
   ) {
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 4,

@@ -174,19 +174,20 @@ export class UsersService {
     );
   }
 
-  public async getUsersToShow(): Promise<DiscordUserDTO[]> {
-    // TODO to refactor to speed it up!
-    const allUsers: DiscordUserDTO[] = await this.getUsersFromDiscord();
-    const alreadyWhitelistedUsers: AppUserDTO[] =
-      await this.getAllWhitelistedUsers();
-    const existingUsersDids: string[] = alreadyWhitelistedUsers.map(
-      ({ dId }: { dId: string }) => dId,
-    );
-    return allUsers.filter(
-      ({ id }: { id: string }) =>
-        id !== process.env.APP_ID && !existingUsersDids.includes(id),
-    );
-  }
+  // TODO to remove
+  // public async getUsersToShow(): Promise<DiscordUserDTO[]> {
+  //   // TODO to refactor to speed it up!
+  //   const allUsers: DiscordUserDTO[] = await this.getUsersFromDiscord();
+  //   const alreadyWhitelistedUsers: AppUserDTO[] =
+  //     await this.getAllWhitelistedUsers();
+  //   const existingUsersDids: string[] = alreadyWhitelistedUsers.map(
+  //     ({ dId }: { dId: string }) => dId,
+  //   );
+  //   return allUsers.filter(
+  //     ({ id }: { id: string }) =>
+  //       id !== process.env.APP_ID && !existingUsersDids.includes(id),
+  //   );
+  // }
 
   async onModuleInit() {
     await this.rolesService.updateAllDBRoles();

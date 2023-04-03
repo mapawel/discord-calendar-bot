@@ -4,8 +4,10 @@ import { WhitelistGuardService } from './guard-services/whitelist-guard.service'
 import { commands } from '../../app-SETUP/lists/commands.list';
 import { commandsComponents } from '../../app-SETUP/lists/commands-components.list';
 import { commandsSelectComponents } from '../../app-SETUP/lists/commands-select-components.list';
+import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-components.list';
 import { AppCommandComponent } from '../../app-SETUP/lists/commands-components.list';
 import { AppCommandSelectComponent } from '../../app-SETUP/lists/commands-select-components.list';
+import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
 import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
 
 @Injectable()
@@ -23,15 +25,16 @@ export class WhitelistGuard implements CanActivate {
     const allCommandsComponents: (
       | AppCommandComponent
       | AppCommandSelectComponent
+      | AppCommandModalComponent
     )[] = getAllCommandComponentsFromObj({
       ...commandsComponents,
       ...commandsSelectComponents,
+      ...commandsModalComponents,
     });
-
     const rulesObject =
       type === 2
         ? commands.find((integration) => integration.name === name)
-        : type === 3
+        : type === 3 || type === 5
         ? allCommandsComponents.find((integration) =>
             custom_id?.includes(integration.custom_id),
           )

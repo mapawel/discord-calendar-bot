@@ -38,7 +38,7 @@ export class IntegrationSlashCommandsService {
       await this.usersService.getUserByDId(discordUser.id);
 
     if (foundUser?.mentors.length) {
-      return this.responseComponentsProvider.generateIntegrationResponse({
+      return this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 4,
@@ -50,7 +50,7 @@ export class IntegrationSlashCommandsService {
         })),
       });
     } else {
-      return this.responseComponentsProvider.generateIntegrationResponse({
+      return this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 4,
@@ -68,7 +68,7 @@ export class IntegrationSlashCommandsService {
   ) {
     await this.usersService.createUserIfNotExisting(discordUser);
 
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 4,
@@ -90,7 +90,7 @@ export class IntegrationSlashCommandsService {
     custom_id: string,
     id: string,
   ) {
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 4,
@@ -106,7 +106,7 @@ export class IntegrationSlashCommandsService {
     custom_id: string,
     id: string,
   ) {
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 4,

@@ -4,27 +4,27 @@ export const commandsSelectComponents: Record<
   string,
   AppCommandSelectComponent[]
 > = {
-  managingBotSelectAdding: [
-    {
-      type: 3,
-      custom_id: CommandsSelectComponents.SELECT_USER_TO_ADD,
-      options: [
-        {
-          label: 'to replace in app code',
-          value: 'to replace in app code',
-          description: 'to replace in app code',
-        },
-      ],
-      placeholder: 'discord user',
-      min_value: 1,
-      max_value: 1,
-      authenticated_guard_rule: 'isAuthenticated',
-      role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
-      whitelisting_guard_rule: 'notWhitelisted',
+  // managingBotSelectAdding: [
+  //   {
+  //     type: 3,
+  //     custom_id: CommandsSelectComponents.SELECT_USER_TO_ADD,
+  //     options: [
+  //       {
+  //         label: 'to replace in app code',
+  //         value: 'to replace in app code',
+  //         description: 'to replace in app code',
+  //       },
+  //     ],
+  //     placeholder: 'discord user',
+  //     min_value: 1,
+  //     max_value: 1,
+  //     authenticated_guard_rule: 'isAuthenticated',
+  //     role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
+  //     whitelisting_guard_rule: 'notWhitelisted',
 
-      controller_service_method: 'addingUserToWhitelistCallback',
-    },
-  ],
+  //     controller_service_method: 'addingUserToWhitelistCallback',
+  //   },
+  // ],
   managingBotSelectRemoving: [
     {
       type: 3,

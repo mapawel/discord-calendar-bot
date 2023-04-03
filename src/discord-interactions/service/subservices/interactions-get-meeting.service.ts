@@ -63,7 +63,7 @@ export class InteractionsGetMeetingService {
 
     await this.saveMeetingData(discordUser.id, meetingData);
 
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 7,
@@ -98,7 +98,7 @@ export class InteractionsGetMeetingService {
 
     await this.saveMeetingData(discordUser.id, meetingData);
 
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 7,
@@ -145,7 +145,7 @@ export class InteractionsGetMeetingService {
       5,
     );
 
-    return await this.responseComponentsProvider.generateIntegrationResponseMultiline(
+    return await this.responseComponentsProvider.generateInteractionResponseMultiline(
       {
         id,
         token,
@@ -190,7 +190,7 @@ export class InteractionsGetMeetingService {
 
     await this.removeMeetingData(discordUser.id);
 
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 7,
@@ -226,7 +226,7 @@ export class InteractionsGetMeetingService {
   }
 
   private respondWithError(id: string, token: string, message?: string) {
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 7,

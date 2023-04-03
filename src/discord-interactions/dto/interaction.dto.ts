@@ -17,6 +17,7 @@ export class MappedInteraction {
     name?: string;
     custom_id?: string;
     values?: string[];
+    components?: any[];
   };
   discord_usr: DiscordUserDTO;
 }

@@ -4,6 +4,7 @@ import { DiscordUserDTO } from '../../dto/Discord-user.dto';
 import { AppUserDTO } from '../../../users/dto/App-user.dto';
 import { UsersService } from '../../../users/providers/users.service';
 import { commandsSelectComponents } from '../../../app-SETUP/lists/commands-select-components.list';
+import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-components.list';
 import { StateService } from '../../../app-state/State.service';
 import { ResponseComponentsProvider } from '../response-components.provider';
 
@@ -24,28 +25,10 @@ export class InteractionsBotManagingService {
     custom_id: string,
     id: string,
   ) {
-    const usersToShow: DiscordUserDTO[] =
-      await this.usersService.getUsersToShow();
-
-    if (!usersToShow.length)
-      return this.responseComponentsProvider.generateIntegrationResponse({
-        id,
-        token,
-        type: 4,
-        content: 'No more users to add to the whitelist.',
-      });
-
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateOneInputModal({
       id,
       token,
-      type: 4,
-      content: 'Choose a user to add to the whitelist:',
-      components: commandsSelectComponents.managingBotSelectAdding.map(
-        (component) => ({
-          ...component,
-          options: this.mapUsersToSelectOptions(usersToShow),
-        }),
-      ),
+      component: commandsModalComponents.managingBotModalAdding,
     });
   }
 
@@ -55,15 +38,16 @@ export class InteractionsBotManagingService {
     token: string,
     custom_id: string,
     id: string,
+    components: any[], //TODO to make a type
   ) {
-    const [userId] = values;
+    const userId = components[0].components[0].value;
 
     const userToAdd: DiscordUserDTO =
       await this.usersService.getUserFromDiscord(userId);
 
     await this.usersService.updateUserWhitelistStatus(userToAdd.id, true);
 
-    await this.responseComponentsProvider.generateIntegrationResponse({
+    await this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 7,
@@ -82,14 +66,14 @@ export class InteractionsBotManagingService {
       await this.usersService.getAllWhitelistedUsers();
 
     if (!usersToShow.length)
-      return this.responseComponentsProvider.generateIntegrationResponse({
+      return this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 4,
         content: 'Nothing to remove...',
       });
 
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 4,
@@ -113,7 +97,7 @@ export class InteractionsBotManagingService {
     const [idToRemove] = values;
     await this.usersService.updateUserWhitelistStatus(idToRemove, false);
 
-    await this.responseComponentsProvider.generateIntegrationResponse({
+    await this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 7,
@@ -130,7 +114,7 @@ export class InteractionsBotManagingService {
   ) {
     const usersToShow: AppUserDTO[] = await this.usersService.getAllUsers();
 
-    return this.responseComponentsProvider.generateIntegrationResponse({
+    return this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 4,
@@ -161,7 +145,7 @@ export class InteractionsBotManagingService {
       userToConnect,
       'continuationUserBinding',
     );
-    return await this.responseComponentsProvider.generateIntegrationResponse({
+    return await this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 7,
@@ -191,7 +175,7 @@ export class InteractionsBotManagingService {
       );
 
     if (!userToBindId)
-      return this.responseComponentsProvider.generateIntegrationResponse({
+      return this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
@@ -204,7 +188,7 @@ export class InteractionsBotManagingService {
       3,
     );
     if (error)
-      return this.responseComponentsProvider.generateIntegrationResponse({
+      return this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
@@ -215,7 +199,7 @@ export class InteractionsBotManagingService {
       discordUser.id,
       'continuationUserBinding',
     );
-    return await this.responseComponentsProvider.generateIntegrationResponse({
+    return await this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 7,

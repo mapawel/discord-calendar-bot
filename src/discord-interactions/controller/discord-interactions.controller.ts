@@ -12,7 +12,9 @@ import { commandsComponents } from '../../app-SETUP/lists/commands-components.li
 import { commandsSelectComponents } from '../../app-SETUP/lists/commands-select-components.list';
 import { AppCommandSelectComponent } from '../../app-SETUP/lists/commands-select-components.list';
 import { AppCommandComponent } from '../../app-SETUP/lists/commands-components.list';
+import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
 import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
+import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-components.list';
 
 @Controller()
 export class DiscordInteractionController {
@@ -34,16 +36,18 @@ export class DiscordInteractionController {
       id,
       token,
       type,
-      data: { name, custom_id, values },
+      data: { name, custom_id, values, components },
       discord_usr,
     } = body;
 
     const allCommandsComponents: (
       | AppCommandComponent
       | AppCommandSelectComponent
+      | AppCommandModalComponent
     )[] = getAllCommandComponentsFromObj({
       ...commandsComponents,
       ...commandsSelectComponents,
+      ...commandsModalComponents,
     });
 
     if (type === 1)
@@ -62,7 +66,7 @@ export class DiscordInteractionController {
         id,
       );
     }
-    if (type === 3) {
+    if (type === 3 || type === 5) {
       const serviceMethod =
         allCommandsComponents.find((integration) =>
           custom_id?.includes(integration.custom_id),
@@ -74,6 +78,7 @@ export class DiscordInteractionController {
         token,
         custom_id || '',
         id,
+        components || [],
       );
     }
   }
