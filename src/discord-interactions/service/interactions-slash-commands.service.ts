@@ -21,7 +21,7 @@ export class IntegrationSlashCommandsService {
     private readonly responseComponentsProvider: ResponseComponentsProvider,
   ) {}
 
-  responseWithPong() {
+  async responseWithPong() {
     return {
       type: InteractionResponseType.PONG,
     };

@@ -2,7 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { WhitelistGuardService } from './guard-services/whitelist-guard.service';
 import { commands } from '../../app-SETUP/lists/commands.list';
-import { getObjectWithRules } from '../../discord-commands/components-operations/discord-component-operations.helper';
+import { getInteractionSettingObject } from '../../discord-commands/components-operations/discord-component-operations.helper';
 import { allCommandsComponents } from '../../discord-commands/components-operations/discord-component-operations.helper';
 
 @Injectable()
@@ -17,7 +17,7 @@ export class WhitelistGuard implements CanActivate {
       },
     }: { body: MappedInteraction } = context.switchToHttp().getRequest();
 
-    const rulesObject = getObjectWithRules(
+    const interactionSettingObject = getInteractionSettingObject(
       type,
       name,
       custom_id,
@@ -25,7 +25,8 @@ export class WhitelistGuard implements CanActivate {
       allCommandsComponents,
     );
 
-    const serviceMethod = rulesObject?.whitelisting_guard_rule || 'default';
+    const serviceMethod =
+      interactionSettingObject?.whitelisting_guard_rule || 'default';
 
     return await this.whitelistGuardService[serviceMethod](id);
   }

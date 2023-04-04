@@ -27,7 +27,7 @@ export const allCommandsComponents: CommandComponentsType =
     ...commandsModalComponents,
   });
 
-export const getObjectWithRules = (
+export const getInteractionSettingObject = (
   type: number,
   interacionName: string | undefined,
   interactionId: string | undefined,

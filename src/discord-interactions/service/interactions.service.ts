@@ -1,19 +1,73 @@
 import { config } from 'dotenv';
 import { Injectable } from '@nestjs/common';
 import { DiscordUserDTO } from '../dto/Discord-user.dto';
-import { ResponseComponentsProvider } from './response-components.provider';
+import { IntegrationSlashCommandsService } from './interactions-slash-commands.service';
 import { InteractionsGetMeetingService } from './subservices/interactions-get-meeting.service';
 import { InteractionsBotManagingService } from './subservices/interactions-bot-managing.service';
+import { ResponseComponentsProvider } from './response-components.provider';
 
 config();
 
 @Injectable()
-export class IntegrationComponentsService {
+export class IntegrationService {
   constructor(
-    private readonly responseComponentsProvider: ResponseComponentsProvider,
+    private readonly integrationSlashCommandsService: IntegrationSlashCommandsService,
     private readonly interactionsGetMeetingService: InteractionsGetMeetingService,
     private readonly interactionsBotManagingService: InteractionsBotManagingService,
+    private readonly responseComponentsProvider: ResponseComponentsProvider,
   ) {}
+
+  async responseWithPong() {
+    return this.integrationSlashCommandsService.responseWithPong();
+  }
+
+  async managingBot(
+    discordUser: DiscordUserDTO,
+    values: string[],
+    token: string,
+    custom_id: string,
+    id: string,
+  ) {
+    return this.integrationSlashCommandsService.managingBot(
+      discordUser,
+      values,
+      token,
+      custom_id,
+      id,
+    );
+  }
+
+  async authenticate(
+    discordUser: DiscordUserDTO,
+    values: string[],
+    token: string,
+    custom_id: string,
+    id: string,
+  ) {
+    return this.integrationSlashCommandsService.authenticate(
+      discordUser,
+      values,
+      token,
+      custom_id,
+      id,
+    );
+  }
+
+  async responseForMeetingInit(
+    discordUser: DiscordUserDTO,
+    values: string[],
+    token: string,
+    custom_id: string,
+    id: string,
+  ) {
+    return this.integrationSlashCommandsService.responseForMeetingInit(
+      discordUser,
+      values,
+      token,
+      custom_id,
+      id,
+    );
+  }
 
   async meetingChooseMentorCallback(
     discordUser: DiscordUserDTO,

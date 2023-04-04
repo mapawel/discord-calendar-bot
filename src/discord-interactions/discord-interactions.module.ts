@@ -1,7 +1,7 @@
 import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
 import { DiscordInteractionController } from './controller/discord-interactions.controller';
 import { IntegrationSlashCommandsService } from './service/interactions-slash-commands.service';
-import { IntegrationComponentsService } from './service/interactions-components.service';
+import { IntegrationService } from './service/interactions.service';
 import { MapDiscUserMiddleware } from './middlewares/map-disc-user.middleware';
 import { verifyKeyMiddleware } from 'discord-interactions';
 import { AuthenticatedGuardService } from './guards/guard-services/authentcated-guard.service';
@@ -23,7 +23,7 @@ import { CalendarModule } from 'src/Calendar/Calendar.module';
   controllers: [DiscordInteractionController],
   providers: [
     IntegrationSlashCommandsService,
-    IntegrationComponentsService,
+    IntegrationService,
     AuthenticatedGuardService,
     RolesGuardService,
     WhitelistGuardService,
