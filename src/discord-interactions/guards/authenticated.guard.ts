@@ -2,13 +2,7 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuardService } from './guard-services/authentcated-guard.service';
 import { commands } from '../../app-SETUP/lists/commands.list';
-import { commandsComponents } from '../../app-SETUP/lists/commands-components.list';
-import { commandsSelectComponents } from '../../app-SETUP/lists/commands-select-components.list';
-import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-components.list';
-import { AppCommandComponent } from '../../app-SETUP/lists/commands-components.list';
-import { AppCommandSelectComponent } from '../../app-SETUP/lists/commands-select-components.list';
-import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
-import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
+import { allCommandsComponents } from '../components-builder/build-command-components';
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
@@ -23,16 +17,6 @@ export class AuthenticatedGuard implements CanActivate {
         data: { name, custom_id },
       },
     }: { body: MappedInteraction } = context.switchToHttp().getRequest();
-
-    const allCommandsComponents: (
-      | AppCommandComponent
-      | AppCommandSelectComponent
-      | AppCommandModalComponent
-    )[] = getAllCommandComponentsFromObj({
-      ...commandsComponents,
-      ...commandsSelectComponents,
-      ...commandsModalComponents,
-    });
 
     const rulesObject =
       type === 2

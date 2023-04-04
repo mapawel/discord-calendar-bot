@@ -8,13 +8,7 @@ import { AppRoutes } from '../../routes/routes.enum';
 import { RolesdGuard } from '../guards/roles.guard';
 import { WhitelistGuard } from '../guards/whitelist.guard';
 import { commands } from '../../app-SETUP/lists/commands.list';
-import { commandsComponents } from '../../app-SETUP/lists/commands-components.list';
-import { commandsSelectComponents } from '../../app-SETUP/lists/commands-select-components.list';
-import { AppCommandSelectComponent } from '../../app-SETUP/lists/commands-select-components.list';
-import { AppCommandComponent } from '../../app-SETUP/lists/commands-components.list';
-import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
-import { getAllCommandComponentsFromObj } from '../utils/ingetrations-utils';
-import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-components.list';
+import { allCommandsComponents } from '../components-builder/build-command-components';
 import { BadRequestFilter } from '../exception-filters/bad-request.filter';
 import { NotFoundFilter } from '../exception-filters/not-found.filter';
 
@@ -43,16 +37,6 @@ export class DiscordInteractionController {
       data: { name, custom_id, values, components },
       discord_usr,
     } = body;
-
-    const allCommandsComponents: (
-      | AppCommandComponent
-      | AppCommandSelectComponent
-      | AppCommandModalComponent
-    )[] = getAllCommandComponentsFromObj({
-      ...commandsComponents,
-      ...commandsSelectComponents,
-      ...commandsModalComponents,
-    });
 
     if (type === 1)
       return this.integrationSlashCommandsService.responseWithPong();
