@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { NotFoundException, Injectable } from '@nestjs/common';
 import { DiscordUserDTO } from '../../discord-interactions/dto/Discord-user.dto';
 import { AppUserDTO } from '../dto/App-user.dto';
 import { UsersRepository } from './users.repository';
@@ -7,6 +7,7 @@ import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { AuthzUserDTO } from 'src/discord-interactions/dto/Auth-user.dto';
 import { UsersException } from '../exception/Users.exception';
 import { Calendar } from 'src/Calendar/entity/Calendar.entity';
+import { log } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -62,8 +63,7 @@ export class UsersService {
 
       return user;
     } catch (err: any) {
-      console.log('err ----> ', err);
-      throw new UsersException(err?.message);
+      throw new NotFoundException(err?.message);
     }
   }
 
