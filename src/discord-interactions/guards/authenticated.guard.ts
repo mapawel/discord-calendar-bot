@@ -2,7 +2,8 @@ import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
 import { MappedInteraction } from '../dto/interaction.dto';
 import { AuthenticatedGuardService } from './guard-services/authentcated-guard.service';
 import { commands } from '../../app-SETUP/lists/commands.list';
-import { allCommandsComponents } from '../components-builder/build-command-components';
+import { getObjectWithRules } from '../../discord-commands/components-operations/discord-component-operations.helper';
+import { allCommandsComponents } from '../../discord-commands/components-operations/discord-component-operations.helper';
 
 @Injectable()
 export class AuthenticatedGuard implements CanActivate {
@@ -18,14 +19,13 @@ export class AuthenticatedGuard implements CanActivate {
       },
     }: { body: MappedInteraction } = context.switchToHttp().getRequest();
 
-    const rulesObject =
-      type === 2
-        ? commands.find((integration) => integration.name === name)
-        : type === 3 || type === 5
-        ? allCommandsComponents.find((integration) =>
-            custom_id?.includes(integration.custom_id),
-          )
-        : null;
+    const rulesObject = getObjectWithRules(
+      type,
+      name,
+      custom_id,
+      commands,
+      allCommandsComponents,
+    );
 
     const serviceMethod = rulesObject?.authenticated_guard_rule || 'default';
 

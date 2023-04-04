@@ -8,7 +8,7 @@ import { AppRoutes } from '../../routes/routes.enum';
 import { RolesdGuard } from '../guards/roles.guard';
 import { WhitelistGuard } from '../guards/whitelist.guard';
 import { commands } from '../../app-SETUP/lists/commands.list';
-import { allCommandsComponents } from '../components-builder/build-command-components';
+import { allCommandsComponents } from '../../discord-commands/components-operations/discord-component-operations.helper';
 import { BadRequestFilter } from '../exception-filters/bad-request.filter';
 import { NotFoundFilter } from '../exception-filters/not-found.filter';
 
