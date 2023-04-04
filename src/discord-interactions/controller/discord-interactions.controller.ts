@@ -70,6 +70,7 @@ export class DiscordInteractionController {
         id,
       );
     }
+
     if (type === 3 || type === 5) {
       const serviceMethod =
         allCommandsComponents.find((integration) =>

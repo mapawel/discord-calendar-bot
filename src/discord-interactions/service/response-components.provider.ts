@@ -130,4 +130,49 @@ export class ResponseComponentsProvider {
       throw new DiscordInteractionException(err?.message);
     }
   }
+
+
+  // // TO SHOW WHITELIST ETC - TO FINISH
+  // public async generateEmbedResponse({
+  //   id,
+  //   token,
+  //   // component,
+  // }: {
+  //   id: string;
+  //   token: string;
+  //   // component: AppCommandModalComponent[];
+  // }) {
+  //   try {
+  //     await this.discordApiService.axiosInstance({
+  //       method: 'POST',
+  //       url: `/interactions/${id}/${token}/callback`,
+  //       data: {
+  //         type: 4,
+  //         data: {
+  //           embeds: [
+  //             {
+  //               title: 'titel',
+  //               description: 'description',
+  //               color: hex,
+  //               fields: [
+  //                 {
+  //                   name: 'Field 1',
+  //                   value: 'Some value here',
+  //                   inline: true,
+  //                 },
+  //                 {
+  //                   name: 'Field 2',
+  //                   value: 'Some value here',
+  //                   inline: true,
+  //                 },
+  //               ],
+  //             },
+  //           ],
+  //         },
+  //       },
+  //     });
+  //   } catch (err: any) {
+  //     throw new DiscordInteractionException(err?.message);
+  //   }
+  // }
 }
