@@ -7,7 +7,6 @@ import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { AuthzUserDTO } from 'src/discord-interactions/dto/Auth-user.dto';
 import { UsersException } from '../exception/Users.exception';
 import { Calendar } from 'src/Calendar/entity/Calendar.entity';
-import { log } from 'console';
 
 @Injectable()
 export class UsersService {
@@ -68,7 +67,7 @@ export class UsersService {
   }
 
   public async getUsersFromDiscord(
-    roles?: string[],
+    roleNames?: string[],
   ): Promise<DiscordUserDTO[]> {
     try {
       const { data }: { data: { roles: string[]; user: DiscordUserDTO }[] } =
@@ -78,6 +77,10 @@ export class UsersService {
         });
 
       if (!data) throw new Error('No data from Discord trying to get users');
+
+      const roles: string[] = await this.rolesService.translateRoleNamesToIds(
+        roleNames || [],
+      );
 
       const usersWithRoles: { roles: string[]; user: DiscordUserDTO }[] =
         roles?.length ? this.filterUsersByRole(data, roles) : data;

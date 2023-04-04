@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AppUser } from '../entity/App-user.entity';
 import { AppUserDTO } from '../dto/App-user.dto';
 import { AppUserMapper } from '../dto/App-user.mapper';
@@ -101,9 +101,14 @@ export class UsersRepository {
     whitelisted: boolean,
   ): Promise<true> {
     try {
-      await AppUser.update({ whitelisted }, { where: { dId } });
+      const updateResult: [number] = await AppUser.update(
+        { whitelisted },
+        { where: { dId } },
+      );
+      if (updateResult[0] === 0) throw new NotFoundException('User not found');
       return true;
     } catch (err: any) {
+      if (err instanceof NotFoundException) throw err;
       throw new DBException(err?.message);
     }
   }

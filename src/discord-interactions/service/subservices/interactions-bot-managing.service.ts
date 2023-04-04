@@ -7,6 +7,7 @@ import { commandsSelectComponents } from '../../../app-SETUP/lists/commands-sele
 import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-components.list';
 import { StateService } from '../../../app-state/State.service';
 import { ResponseComponentsProvider } from '../response-components.provider';
+import { settings } from 'src/app-SETUP/settings';
 
 config();
 
@@ -75,17 +76,10 @@ export class InteractionsBotManagingService {
         content: 'Nothing to remove...',
       });
 
-    return this.responseComponentsProvider.generateInteractionResponse({
+    return this.responseComponentsProvider.generateOneInputModal({
       id,
       token,
-      type: 4,
-      content: 'Choose user to remove from whitelist:',
-      components: commandsSelectComponents.managingBotSelectRemoving.map(
-        (component) => ({
-          ...component,
-          options: this.mapUsersToSelectOptions(usersToShow),
-        }),
-      ),
+      component: commandsModalComponents.managingBotModalRemoving,
     });
   }
 
@@ -95,8 +89,11 @@ export class InteractionsBotManagingService {
     token: string,
     custom_id: string,
     id: string,
+    components: any[], //TODO to make a type
   ) {
-    const [idToRemove] = values;
+    const idToRemove = components[0].components[0].value;
+    if (!parseInt(idToRemove)) throw new BadRequestException();
+
     await this.usersService.updateUserWhitelistStatus(idToRemove, false);
 
     await this.responseComponentsProvider.generateInteractionResponse({
@@ -114,19 +111,10 @@ export class InteractionsBotManagingService {
     custom_id: string,
     id: string,
   ) {
-    const usersToShow: AppUserDTO[] = await this.usersService.getAllUsers();
-
-    return this.responseComponentsProvider.generateInteractionResponse({
+    return this.responseComponentsProvider.generateOneInputModal({
       id,
       token,
-      type: 4,
-      content: 'Choose a user to connect with persons to meet:',
-      components: commandsSelectComponents.managingBotSelectUserToConnect.map(
-        (component) => ({
-          ...component,
-          options: this.mapUsersToSelectOptions(usersToShow),
-        }),
-      ),
+      component: commandsModalComponents.managingBotModalUserToConnect,
     });
   }
 
@@ -136,22 +124,39 @@ export class InteractionsBotManagingService {
     token: string,
     custom_id: string,
     id: string,
+    components: any[], //TODO to make a type
   ) {
-    const [userToConnect] = values;
+    const userToConnectId = components[0].components[0].value;
+    if (!parseInt(userToConnectId)) throw new BadRequestException();
 
-    const personsToMeet: AppUserDTO[] = await this.usersService.getAllUsers();
-    // TODO take users from discord with persont-to-meet role
+    const userToConnect: DiscordUserDTO =
+      await this.usersService.getUserFromDiscord(userToConnectId);
+    await this.usersService.createUserIfNotExisting(userToConnect);
 
     await this.stateService.saveDataAsSession(
       discordUser.id,
-      userToConnect,
+      userToConnectId,
       'continuationUserBinding',
     );
+
+    const personsToMeet: DiscordUserDTO[] =
+      await this.usersService.getUsersFromDiscord(
+        settings.rolesUsersCanMeetWith,
+      );
+
+    if (!personsToMeet.length)
+      return this.responseComponentsProvider.generateInteractionResponse({
+        id,
+        token,
+        type: 7,
+        content: `No users to meet with...`,
+      });
+
     return await this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,
       type: 7,
-      content: `User id ${userToConnect} will be able to meet with:`,
+      content: `User ${userToConnect.username} will be able to meet with:`,
       components: commandsSelectComponents.managingBotSelectMentorToConnect.map(
         (component) => ({
           ...component,
@@ -212,7 +217,7 @@ export class InteractionsBotManagingService {
   private isAppUser(
     users: AppUserDTO[] | DiscordUserDTO[],
   ): users is AppUserDTO[] {
-    return (users[0] as AppUserDTO).dId !== undefined;
+    return (users[0] as AppUserDTO)?.dId !== undefined;
   }
 
   private mapUsersToSelectOptions(users: DiscordUserDTO[] | AppUserDTO[]) {
