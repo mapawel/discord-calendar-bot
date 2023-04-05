@@ -13,26 +13,52 @@
       <body>
         <pre class="mermaid">
           graph LR
+  AppModule-->ConfigModule
+  ConfigModule-->ConfigHostModule
+  ConfigHostModule-->ConfigModule
   AppModule-->DiscordCommandsModule
   DiscordCommandsModule-->ApisModule
+  ApisModule-->ConfigModule
+  ApisModule-->ConfigHostModule
+  DiscordCommandsModule-->ConfigModule
+  DiscordCommandsModule-->ConfigHostModule
   AppModule-->DiscordInteractionsModule
   DiscordInteractionsModule-->RolesModule
   RolesModule-->ApisModule
+  RolesModule-->ConfigModule
+  RolesModule-->ConfigHostModule
   DiscordInteractionsModule-->UsersModule
   UsersModule-->ApisModule
   UsersModule-->RolesModule
+  UsersModule-->ConfigModule
+  UsersModule-->ConfigHostModule
   DiscordInteractionsModule-->ApisModule
   DiscordInteractionsModule-->StateModule
+  StateModule-->ConfigModule
+  StateModule-->ConfigHostModule
   DiscordInteractionsModule-->CalendarModule
   CalendarModule-->ApisModule
+  CalendarModule-->ConfigModule
+  CalendarModule-->ConfigHostModule
+  DiscordInteractionsModule-->ConfigModule
+  DiscordInteractionsModule-->ConfigHostModule
   AppModule-->AuthzModule
   AuthzModule-->JwtModule
+  JwtModule-->ConfigModule
+  JwtModule-->ConfigHostModule
   AuthzModule-->UsersModule
   AuthzModule-->RolesModule
   AuthzModule-->PassportModule
+  PassportModule-->ConfigModule
+  PassportModule-->ConfigHostModule
   AuthzModule-->ApisModule
   AuthzModule-->CalendarModule
+  AuthzModule-->ConfigModule
+  AuthzModule-->ConfigHostModule
   AppModule-->DatabaseModule
+  DatabaseModule-->ConfigModule
+  DatabaseModule-->ConfigHostModule
+  AppModule-->ConfigHostModule
       </pre>
       </body>
       </html>

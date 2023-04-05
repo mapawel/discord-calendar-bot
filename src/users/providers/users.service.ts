@@ -57,7 +57,7 @@ export class UsersService {
       }: { data: { user: DiscordUserDTO } } =
         await this.discordApiService.axiosInstance({
           method: 'GET',
-          url: `/guilds/${process.env.GUILD_ID}/members/${dId}`,
+          url: `/guilds/${process.env.DISCORD_GUILD_ID}/members/${dId}`,
         });
 
       return user;
@@ -73,7 +73,7 @@ export class UsersService {
       const { data }: { data: { roles: string[]; user: DiscordUserDTO }[] } =
         await this.discordApiService.axiosInstance({
           method: 'GET',
-          url: `https://discord.com/api/v10/guilds/${process.env.GUILD_ID}/members?limit=1000`,
+          url: `https://discord.com/api/v10/guilds/${process.env.DISCORD_GUILD_ID}/members?limit=1000`,
         });
 
       if (!data) throw new Error('No data from Discord trying to get users');

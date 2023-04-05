@@ -16,19 +16,62 @@
   {
     "name": "AppModule",
     "imports": [
+      "ConfigModule",
       "DiscordCommandsModule",
       "DiscordInteractionsModule",
       "AuthzModule",
-      "DatabaseModule"
+      "DatabaseModule",
+      "ConfigHostModule"
     ],
     "providers": {},
     "controllers": [],
     "exports": []
   },
   {
+    "name": "ConfigModule",
+    "imports": [
+      "ConfigHostModule"
+    ],
+    "providers": {
+      "ConfigService": {
+        "method": "factory",
+        "injections": [
+          "Symbol(CONFIG_SERVICE)"
+        ]
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "ConfigHostModule",
+      "ConfigService"
+    ]
+  },
+  {
+    "name": "ConfigHostModule",
+    "imports": [
+      "ConfigModule"
+    ],
+    "providers": {
+      "CONFIGURATION_TOKEN": {
+        "method": "factory",
+        "injections": []
+      },
+      "Symbol(CONFIG_SERVICE)": {
+        "method": "standard"
+      }
+    },
+    "controllers": [],
+    "exports": [
+      "CONFIGURATION_TOKEN",
+      "Symbol(CONFIG_SERVICE)"
+    ]
+  },
+  {
     "name": "DiscordCommandsModule",
     "imports": [
-      "ApisModule"
+      "ApisModule",
+      "ConfigModule",
+      "ConfigHostModule"
     ],
     "providers": {
       "DiscordCommandsService": {
@@ -40,7 +83,10 @@
   },
   {
     "name": "ApisModule",
-    "imports": [],
+    "imports": [
+      "ConfigModule",
+      "ConfigHostModule"
+    ],
     "providers": {
       "GoogleApiService": {
         "method": "standard"
@@ -66,7 +112,9 @@
       "UsersModule",
       "ApisModule",
       "StateModule",
-      "CalendarModule"
+      "CalendarModule",
+      "ConfigModule",
+      "ConfigHostModule"
     ],
     "providers": {
       "IntegrationSlashCommandsService": {
@@ -105,7 +153,9 @@
   {
     "name": "RolesModule",
     "imports": [
-      "ApisModule"
+      "ApisModule",
+      "ConfigModule",
+      "ConfigHostModule"
     ],
     "providers": {
       "RolesService": {
@@ -124,7 +174,9 @@
     "name": "UsersModule",
     "imports": [
       "ApisModule",
-      "RolesModule"
+      "RolesModule",
+      "ConfigModule",
+      "ConfigHostModule"
     ],
     "providers": {
       "UsersService": {
@@ -141,7 +193,10 @@
   },
   {
     "name": "StateModule",
-    "imports": [],
+    "imports": [
+      "ConfigModule",
+      "ConfigHostModule"
+    ],
     "providers": {
       "StateService": {
         "method": "standard"
@@ -158,7 +213,9 @@
   {
     "name": "CalendarModule",
     "imports": [
-      "ApisModule"
+      "ApisModule",
+      "ConfigModule",
+      "ConfigHostModule"
     ],
     "providers": {
       "CalendarService": {
@@ -178,7 +235,9 @@
       "RolesModule",
       "PassportModule",
       "ApisModule",
-      "CalendarModule"
+      "CalendarModule",
+      "ConfigModule",
+      "ConfigHostModule"
     ],
     "providers": {
       "JwtStrategy": {
@@ -198,7 +257,10 @@
   },
   {
     "name": "JwtModule",
-    "imports": [],
+    "imports": [
+      "ConfigModule",
+      "ConfigHostModule"
+    ],
     "providers": {
       "JwtService": {
         "method": "standard"
@@ -214,7 +276,10 @@
   },
   {
     "name": "PassportModule",
-    "imports": [],
+    "imports": [
+      "ConfigModule",
+      "ConfigHostModule"
+    ],
     "providers": {
       "AuthModuleOptions": {
         "method": "value"
@@ -227,7 +292,10 @@
   },
   {
     "name": "DatabaseModule",
-    "imports": [],
+    "imports": [
+      "ConfigModule",
+      "ConfigHostModule"
+    ],
     "providers": {
       "SEQUELIZE": {
         "method": "factory",

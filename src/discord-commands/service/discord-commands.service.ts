@@ -1,10 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { DiscordApiService } from 'src/APIs/Discord-api.service';
-import { config } from 'dotenv';
 import { commands } from 'src/app-SETUP/lists/commands.list';
 import { DiscordCommandsException } from '../exception/Discord-commands.exception';
-
-config();
 
 @Injectable()
 export class DiscordCommandsService {
@@ -59,7 +56,7 @@ export class DiscordCommandsService {
     try {
       const response = await this.discordApiService.axiosInstance({
         method,
-        url: `applications/${process.env.APP_ID}/commands${url}`,
+        url: `applications/${process.env.DISCORD_CLIENT_ID}/commands${url}`,
         data,
       });
 

@@ -1,7 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { config } from 'dotenv';
 import { AppRoutes } from '../../routes/routes.enum';
-import { AuthzRoutes } from '../../routes/routes.enum';
 import { AuthServiceException } from './exceptions/auth-service.exception';
 import { JwtService } from '@nestjs/jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';
@@ -12,8 +10,6 @@ import { AuthzUserDTO } from '../../discord-interactions/dto/Auth-user.dto';
 import { AuthzApiService } from 'src/APIs/Authz-api.service';
 import { Calendar as CalendarEntity } from 'src/Calendar/entity/Calendar.entity';
 import { CalendarService } from 'src/Calendar/Calendar.service';
-
-config();
 
 @Injectable()
 export class AuthzService {
@@ -37,17 +33,16 @@ export class AuthzService {
       audience: `${process.env.AUTH0_AUDIENCE}`,
       connection: isUserMeetingHost ? 'google-oauth2' : '',
       response_type: 'code',
-      client_id: `${process.env.AUTHZ_CLIENT_ID}`,
+      client_id: `${process.env.AUTH0_CLIENT_ID}`,
       state: signedId,
       redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
       scope: 'openid profile email',
-      // connection_scope: 'https://www.googleapis.com/auth/calendar',
       access_type: 'offline',
       approval_prompt: 'force',
       // prompt: 'consent'
     });
 
-    return `${process.env.AUTHZ_API_URL}${AuthzRoutes.AUTHZ_AUTHORIZE}?${querystring}`;
+    return `${process.env.AUTH0_API_URL}${process.env.AUTH0_AUTHORIZE_ROUTE}?${querystring}`;
   }
 
   public async getToken(code: string, state: string) {
@@ -55,12 +50,12 @@ export class AuthzService {
       const { id, isHost } = await this.jwtService.verifyAsync(state);
       const { data } = await this.authzApiService.axiosInstance({
         method: 'POST',
-        url: `${AuthzRoutes.AUTHZ_TOKEN}`,
+        url: `${process.env.AUTH0_TOKEN_ROUTE}`,
         headers: { 'content-type': 'application/x-www-form-urlencoded' },
         data: {
           grant_type: 'authorization_code',
-          client_id: process.env.AUTHZ_CLIENT_ID,
-          client_secret: process.env.AUTHZ_SECRET,
+          client_id: process.env.AUTH0_CLIENT_ID,
+          client_secret: process.env.AUTH0_SECRET,
           code,
           redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
         },
@@ -69,7 +64,7 @@ export class AuthzService {
       const { data: authUserData }: { data: AuthzUserDTO } =
         await this.authzApiService.axiosInstance({
           method: 'POST',
-          url: `${AuthzRoutes.GET_USET_INFO}`,
+          url: `${process.env.AUTH0_GET_USER_INFO_ROUTE}`,
           headers: {
             Authorization: `Bearer ${data.access_token}`,
           },
@@ -136,7 +131,7 @@ export class AuthzService {
         data: { identities: { access_token: string; refresh_token: string }[] };
       } = await this.authzApiService.axiosInstance({
         method: 'GET',
-        url: `/api/v2/users/${hostAuthId}`,
+        url: `${process.env.AUTH0_API_ROUTE}users/${hostAuthId}`,
         headers: {
           Authorization: `Bearer ${authManagementToken}`,
         },
@@ -157,11 +152,11 @@ export class AuthzService {
     }: { data: { access_token: string } } =
       await this.authzApiService.axiosInstance({
         method: 'POST',
-        url: '/oauth/token',
+        url: process.env.AUTH0_TOKEN_ROUTE,
         data: {
-          client_id: process.env.AUTHZ_CLIENT_ID,
-          client_secret: process.env.AUTHZ_SECRET,
-          audience: 'https://discord-calendar-bot-by-dd.eu.auth0.com/api/v2/',
+          client_id: process.env.AUTH0_CLIENT_ID,
+          client_secret: process.env.AUTH0_SECRET,
+          audience: `${process.env.AUTH0_API_URL}${process.env.AUTH0_API_ROUTE}`,
           grant_type: 'client_credentials',
         },
       });

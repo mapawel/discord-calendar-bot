@@ -1,4 +1,3 @@
-import { config } from 'dotenv';
 import {
   ExceptionFilter,
   Catch,
@@ -7,8 +6,6 @@ import {
 } from '@nestjs/common';
 import { Response } from 'express';
 import { InteractionResponseType } from 'discord-interactions';
-
-config();
 
 @Catch(NotFoundException)
 export class NotFoundFilter implements ExceptionFilter {

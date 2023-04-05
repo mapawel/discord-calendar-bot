@@ -1,4 +1,3 @@
-import { config } from 'dotenv';
 import { Meeting } from '../discord-interactions/Meeting/interface/Meeting.interface';
 import { FreeBusyRanges } from './types/Free-busy-ranges.type';
 import { Calendar as CalendarEntity } from './entity/Calendar.entity';
@@ -6,8 +5,6 @@ import { Injectable } from '@nestjs/common';
 import { CalendarException } from './exception/Calendar.exception';
 import { GoogleApiService } from 'src/APIs/Google-api.service';
 import { settings } from '../app-SETUP/settings';
-
-config();
 
 @Injectable()
 export class CalendarService {
@@ -20,7 +17,7 @@ export class CalendarService {
       }: { data: { items: { summary: string; id: string }[] } } =
         await this.googleApiService.axiosInstance({
           method: 'GET',
-          url: `/users/me/calendarList`,
+          url: `${process.env.GOOGLE_CALENDARS_LIST_ROUTE}`,
           headers: {
             Authorization: `Bearer ${googleToken}`,
           },
@@ -115,7 +112,7 @@ export class CalendarService {
 
       await this.googleApiService.axiosInstance({
         method: 'POST',
-        url: `/calendars/${calendarId}/events`,
+        url: `${process.env.GOOGLE_CALENDARS_ROUTE}/${calendarId}${process.env.GOOGLE_EVENTS_ROUTE}`,
         headers: {
           Authorization: `Bearer ${googleToken}`,
         },
@@ -132,7 +129,7 @@ export class CalendarService {
           reminders: {
             useDefault: false,
             overrides: [
-              { method: 'email', minutes: 24 * 60 },
+              { method: 'email', minutes: 4 * 60 },
               { method: 'popup', minutes: 10 },
             ],
           },
@@ -201,7 +198,7 @@ export class CalendarService {
         };
       } = await this.googleApiService.axiosInstance({
         method: 'POST',
-        url: `/freeBusy`,
+        url: `${process.env.GOOGLE_CALENDAR_FREEBUSY_ROUTE}`,
         headers: {
           Authorization: `Bearer ${googleToken}`,
         },

@@ -19,7 +19,7 @@ export class RolesService {
       }: { data: { roles: string[] } } =
         await this.discordApiService.axiosInstance({
           method: 'GET',
-          url: `/guilds/${process.env.GUILD_ID}/members/${userid}`,
+          url: `/guilds/${process.env.DISCORD_GUILD_ID}/members/${userid}`,
         });
       return roles;
     } catch (err: any) {
@@ -47,7 +47,7 @@ export class RolesService {
       const { data: roles }: { data: RoleDTO[] } =
         await this.discordApiService.axiosInstance({
           method: 'GET',
-          url: `/guilds/${process.env.GUILD_ID}/roles`,
+          url: `/guilds/${process.env.DISCORD_GUILD_ID}/roles`,
         });
 
       await this.rolesRepository.removeAllDBroles();

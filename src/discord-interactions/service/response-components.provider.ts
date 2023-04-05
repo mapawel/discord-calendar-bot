@@ -1,11 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
-import { config } from 'dotenv';
 import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { DiscordInteractionException } from '../exception/DiscordInteraction.exception';
 import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
-
-config();
 
 @Injectable()
 export class ResponseComponentsProvider {

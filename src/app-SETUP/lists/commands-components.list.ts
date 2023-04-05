@@ -8,9 +8,8 @@ export const commandsComponents: Record<string, AppCommandComponent[]> = {
       style: 3,
       custom_id: CommandsComponents.ADD_TO_WHITELIST,
       authenticated_guard_rule: 'isAuthenticated',
-      role_guard_rules: [],
+      role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
       whitelisting_guard_rule: 'notWhitelisted',
-      // role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
       controller_service_method: 'addingUserToWhitelist',
     },
     {

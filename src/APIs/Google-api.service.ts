@@ -9,7 +9,7 @@ export class GoogleApiService {
 
   private initAxiosInstance() {
     const axiosInstance: AxiosInstance = axios.create({
-      baseURL: `https://www.googleapis.com/calendar/v3`,
+      baseURL: `${process.env.GOOGLE_API_URL}${process.env.GOOGLE_CALENDAR_API_ROUTE}`,
       headers: {
         'content-type': 'application/json',
       },
@@ -76,7 +76,7 @@ export class GoogleApiService {
       data: { access_token },
     }: { data: { access_token: string } } = await axios({
       method: 'POST',
-      url: `https://www.googleapis.com/oauth2/v4/token`,
+      url: `${process.env.GOOGLE_API_URL}${process.env.GOOGLE_OAUTH_API_TOKEN_ROUTE}}`,
       headers: {
         'content-type': 'application/json',
       },

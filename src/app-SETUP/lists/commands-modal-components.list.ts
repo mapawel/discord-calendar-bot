@@ -13,7 +13,7 @@ export const commandsModalComponents: Record<
       component_min_l: 18,
       component_max_l: 20,
       authenticated_guard_rule: 'isAuthenticated',
-      role_guard_rules: ['Mentor', 'Calendar-bot-admin'], // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
+      role_guard_rules: ['Mentor', 'Calendar-bot-admin'],
       whitelisting_guard_rule: 'notWhitelisted',
       controller_service_method: 'addingUserToWhitelistCallback',
     },
@@ -27,7 +27,7 @@ export const commandsModalComponents: Record<
       component_min_l: 18,
       component_max_l: 20,
       authenticated_guard_rule: 'isAuthenticated',
-      role_guard_rules: ['Mentor', 'Calendar-bot-admin'], // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
+      role_guard_rules: ['Mentor', 'Calendar-bot-admin'],
       whitelisting_guard_rule: 'notWhitelisted',
       controller_service_method: 'removingUserFromWhitelistCallback',
     },
@@ -41,7 +41,7 @@ export const commandsModalComponents: Record<
       component_min_l: 18,
       component_max_l: 20,
       authenticated_guard_rule: 'isAuthenticated',
-      role_guard_rules: ['Mentor', 'Calendar-bot-admin'], // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
+      role_guard_rules: ['Mentor', 'Calendar-bot-admin'],
       whitelisting_guard_rule: 'notWhitelisted',
       controller_service_method: 'connectingUserToMentorCallback',
     },

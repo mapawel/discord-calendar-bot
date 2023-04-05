@@ -1,4 +1,3 @@
-import { config } from 'dotenv';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { DiscordUserDTO } from '../../dto/Discord-user.dto';
 import { AppUserDTO } from '../../../users/dto/App-user.dto';
@@ -8,8 +7,6 @@ import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-comp
 import { StateService } from '../../../app-state/State.service';
 import { ResponseComponentsProvider } from '../response-components.provider';
 import { settings } from 'src/app-SETUP/settings';
-
-config();
 
 @Injectable()
 export class InteractionsBotManagingService {

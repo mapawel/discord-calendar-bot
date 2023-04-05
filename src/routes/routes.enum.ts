@@ -4,8 +4,3 @@ export enum AppRoutes {
   LOGIN_METHOD = '/login',
   LOGIN_CALLBACK_METHOD = '/callback',
 }
-export enum AuthzRoutes {
-  AUTHZ_AUTHORIZE = '/authorize',
-  AUTHZ_TOKEN = '/oauth/token',
-  GET_USET_INFO = '/userinfo',
-}

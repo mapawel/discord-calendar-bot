@@ -1,4 +1,3 @@
-import { config } from 'dotenv';
 import { Injectable } from '@nestjs/common';
 import { DiscordUserDTO } from '../../../discord-interactions/dto/Discord-user.dto';
 import { AppUserDTO } from '../../../users/dto/App-user.dto';
@@ -11,8 +10,6 @@ import { MeetingService } from '../../../discord-interactions/Meeting/Meeting.se
 import { Meeting } from '../../../discord-interactions/Meeting/interface/Meeting.interface';
 import { FreeBusyRanges } from '../../../Calendar/types/Free-busy-ranges.type';
 import { AppCommandSelectComponent } from '../../../app-SETUP/lists/commands-select-components.list';
-
-config();
 
 @Injectable()
 export class InteractionsGetMeetingService {

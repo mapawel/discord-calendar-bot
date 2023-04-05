@@ -2,7 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
 import { DiscordUserDTO } from '../dto/Discord-user.dto';
 import { AppUserDTO } from '../../users/dto/App-user.dto';
-import { config } from 'dotenv';
 import { AppRoutes } from '../../routes/routes.enum';
 import { commandsComponents } from '../../app-SETUP/lists/commands-components.list';
 import { UsersService } from '../../users/providers/users.service';
@@ -11,8 +10,6 @@ import { Commands } from '../../app-SETUP/enums/commands.enum';
 import { AppCommand } from '../../app-SETUP/lists/commands.list';
 import { ResponseComponentsProvider } from './response-components.provider';
 import { CommandsComponents } from '../../app-SETUP/enums/commands-components.enum';
-
-config();
 
 @Injectable()
 export class IntegrationSlashCommandsService {

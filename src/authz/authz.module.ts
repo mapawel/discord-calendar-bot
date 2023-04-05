@@ -8,6 +8,8 @@ import { UsersModule } from 'src/users/users.module';
 import { RolesModule } from 'src/roles/roles.module';
 import { ApisModule } from 'src/APIs/APIs.module';
 import { CalendarModule } from 'src/Calendar/Calendar.module';
+import * as dotenv from 'dotenv';
+dotenv.config();
 
 @Module({
   controllers: [AuthzController],

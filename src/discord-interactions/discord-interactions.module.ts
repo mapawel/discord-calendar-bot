@@ -37,7 +37,7 @@ export class DiscordInteractionsModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {
     consumer
       .apply(
-        verifyKeyMiddleware(process.env.PUBLIC_KEY || ''),
+        verifyKeyMiddleware(process.env.DISCORD_PUBLIC_KEY || ''),
         MapDiscUserMiddleware,
       )
       .forRoutes(AppRoutes.DISCORD_INTERACTIONS_METHOD);
