@@ -4,6 +4,7 @@ import { IntegrationSlashCommandsService } from './interactions-slash-commands.s
 import { InteractionsGetMeetingService } from './subservices/interactions-get-meeting.service';
 import { InteractionsBotManagingService } from './subservices/interactions-bot-managing.service';
 import { ResponseComponentsProvider } from './response-components.provider';
+import { InteractionMessage } from '../dto/interaction.dto';
 
 @Injectable()
 export class IntegrationService {
@@ -88,6 +89,8 @@ export class IntegrationService {
     token: string,
     custom_id: string,
     id: string,
+    components: any[],
+    message: InteractionMessage,
   ) {
     return this.interactionsGetMeetingService.meetingDetailsTopicCallback(
       discordUser,
@@ -95,6 +98,8 @@ export class IntegrationService {
       token,
       custom_id,
       id,
+      components,
+      message,
     );
   }
 
@@ -104,6 +109,8 @@ export class IntegrationService {
     token: string,
     custom_id: string,
     id: string,
+    components: any[],
+    message: InteractionMessage,
   ) {
     return this.interactionsGetMeetingService.meetingDetailsDurationCallback(
       discordUser,
@@ -111,6 +118,8 @@ export class IntegrationService {
       token,
       custom_id,
       id,
+      components,
+      message,
     );
   }
 
@@ -120,6 +129,8 @@ export class IntegrationService {
     token: string,
     custom_id: string,
     id: string,
+    components: any[],
+    message: InteractionMessage,
   ) {
     return this.interactionsGetMeetingService.meetingDetailsTimeCallback(
       discordUser,
@@ -127,6 +138,8 @@ export class IntegrationService {
       token,
       custom_id,
       id,
+      components,
+      message,
     );
   }
 
@@ -238,6 +251,8 @@ export class IntegrationService {
     token: string,
     custom_id: string,
     id: string,
+    components: any[],
+    message: InteractionMessage,
   ) {
     return this.interactionsBotManagingService.connectingUserToMentorCallback2(
       discordUser,
@@ -245,6 +260,8 @@ export class IntegrationService {
       token,
       custom_id,
       id,
+      components,
+      message,
     );
   }
 

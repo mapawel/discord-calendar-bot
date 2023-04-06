@@ -2,6 +2,15 @@ import { DiscordUserDTO } from './Discord-user.dto';
 import { ValidateNested, IsOptional, Length } from 'class-validator';
 import { Type } from 'class-transformer';
 
+export class InteractionMessage {
+  embeds: {
+    fields: {
+      name: string;
+      value: string;
+    }[];
+  }[];
+}
+
 class InnerComponent {
   @IsOptional()
   custom_id?: string;
@@ -58,6 +67,8 @@ export class MappedInteraction {
   @Type(() => Data)
   data: Data;
   discord_usr: DiscordUserDTO;
+
+  message: InteractionMessage;
 }
 
 export class InteractionWUserDTO extends InteractionBase {

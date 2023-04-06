@@ -1,7 +1,6 @@
 export interface Meeting {
   userDId: string;
   hostDId: string;
-  hostAId: string;
   summary: string;
   description: string;
   guestEmail: string;

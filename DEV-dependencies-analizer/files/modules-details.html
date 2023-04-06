@@ -111,7 +111,6 @@
       "RolesModule",
       "UsersModule",
       "ApisModule",
-      "StateModule",
       "CalendarModule",
       "ConfigModule",
       "ConfigHostModule"
@@ -133,9 +132,6 @@
         "method": "standard"
       },
       "ResponseComponentsProvider": {
-        "method": "standard"
-      },
-      "MeetingService": {
         "method": "standard"
       },
       "InteractionsGetMeetingService": {
@@ -189,25 +185,6 @@
     "controllers": [],
     "exports": [
       "UsersService"
-    ]
-  },
-  {
-    "name": "StateModule",
-    "imports": [
-      "ConfigModule",
-      "ConfigHostModule"
-    ],
-    "providers": {
-      "StateService": {
-        "method": "standard"
-      },
-      "StateFileRepository": {
-        "method": "standard"
-      }
-    },
-    "controllers": [],
-    "exports": [
-      "StateService"
     ]
   },
   {

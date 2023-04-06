@@ -4,15 +4,14 @@ import { AppUserDTO } from '../../../users/dto/App-user.dto';
 import { UsersService } from '../../../users/providers/users.service';
 import { commandsSelectComponents } from '../../../app-SETUP/lists/commands-select-components.list';
 import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-components.list';
-import { StateService } from '../../../app-state/State.service';
 import { ResponseComponentsProvider } from '../response-components.provider';
 import { settings } from 'src/app-SETUP/settings';
+import { InteractionMessage } from 'src/discord-interactions/dto/interaction.dto';
 
 @Injectable()
 export class InteractionsBotManagingService {
   constructor(
     private readonly usersService: UsersService,
-    private readonly stateService: StateService,
     private readonly responseComponentsProvider: ResponseComponentsProvider,
   ) {}
 
@@ -130,12 +129,6 @@ export class InteractionsBotManagingService {
       await this.usersService.getUserFromDiscord(userToConnectId);
     await this.usersService.createUserIfNotExisting(userToConnect);
 
-    await this.stateService.saveDataAsSession(
-      discordUser.id,
-      userToConnectId,
-      'continuationUserBinding',
-    );
-
     const personsToMeet: DiscordUserDTO[] =
       await this.usersService.getUsersFromDiscord(
         settings.rolesUsersCanMeetWith,
@@ -153,6 +146,15 @@ export class InteractionsBotManagingService {
       id,
       token,
       type: 7,
+      embed: {
+        title: `Connecting user with a host...`,
+        fields: [
+          {
+            name: userToConnect.username,
+            value: userToConnect.id,
+          },
+        ],
+      },
       content: `User ${userToConnect.username} will be able to meet with:`,
       components: commandsSelectComponents.managingBotSelectMentorToConnect.map(
         (component) => ({
@@ -169,22 +171,13 @@ export class InteractionsBotManagingService {
     token: string,
     custom_id: string,
     id: string,
+    components: any[],
+    message: InteractionMessage,
   ) {
     const [mentorToConnect] = values;
-
-    const userToBindId: string | undefined =
-      await this.stateService.loadDataForUserId(
-        discordUser.id,
-        'continuationUserBinding',
-      );
-
-    if (!userToBindId)
-      return this.responseComponentsProvider.generateInteractionResponse({
-        id,
-        token,
-        type: 7,
-        content: `try again... starting from slash command`,
-      });
+    const { embeds } = message;
+    const currentEmbedFields = embeds[0].fields;
+    const userToBindId: string = currentEmbedFields[0].value;
 
     const { error } = await this.usersService.bindUsers(
       userToBindId,
@@ -199,10 +192,6 @@ export class InteractionsBotManagingService {
         content: `error: ${error}`,
       });
 
-    await this.stateService.removeDataForUserId(
-      discordUser.id,
-      'continuationUserBinding',
-    );
     return await this.responseComponentsProvider.generateInteractionResponse({
       id,
       token,

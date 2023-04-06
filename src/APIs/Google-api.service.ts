@@ -72,23 +72,28 @@ export class GoogleApiService {
   private async getRefreshedAccessToken(
     googleRefreshToken: string,
   ): Promise<string> {
-    const {
-      data: { access_token },
-    }: { data: { access_token: string } } = await axios({
-      method: 'POST',
-      url: `${process.env.GOOGLE_API_URL}${process.env.GOOGLE_OAUTH_API_TOKEN_ROUTE}}`,
-      headers: {
-        'content-type': 'application/json',
-      },
-      data: {
-        client_id: process.env.GOOGLE_API_CLIENT_ID,
-        client_secret: process.env.GOOGLE_API_CLIENT_SECRET,
-        refresh_token: googleRefreshToken,
-        grant_type: 'refresh_token',
-      },
-    });
+    try {
+      const {
+        data: { access_token },
+      }: { data: { access_token: string } } = await axios({
+        method: 'POST',
+        url: `${process.env.GOOGLE_API_URL}${process.env.GOOGLE_OAUTH_API_TOKEN_ROUTE}`,
+        headers: {
+          'content-type': 'application/json',
+        },
+        data: {
+          client_id: process.env.GOOGLE_API_CLIENT_ID,
+          client_secret: process.env.GOOGLE_API_CLIENT_SECRET,
+          refresh_token: googleRefreshToken,
+          grant_type: 'refresh_token',
+        },
+      });
 
-    return access_token;
+      return access_token;
+    } catch (err: any) {
+      console.log('err ----> ', err);
+      throw new Error(err?.message);
+    }
   }
 
   private async updateCalendarInstanceWithNewAccessToken(

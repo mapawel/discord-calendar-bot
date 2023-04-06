@@ -1,4 +1,4 @@
-import { Meeting } from '../discord-interactions/Meeting/interface/Meeting.interface';
+import { Meeting } from '../discord-interactions/Meeting/Meeting.interface';
 import { FreeBusyRanges } from './types/Free-busy-ranges.type';
 import { Calendar as CalendarEntity } from './entity/Calendar.entity';
 import { Injectable } from '@nestjs/common';

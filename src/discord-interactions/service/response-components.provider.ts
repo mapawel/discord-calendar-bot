@@ -14,6 +14,7 @@ export class ResponseComponentsProvider {
     type,
     content,
     componentsArrays,
+    embed,
   }: {
     id: string;
     token: string;
@@ -22,6 +23,7 @@ export class ResponseComponentsProvider {
       | InteractionResponseType.UPDATE_MESSAGE;
     content?: string;
     componentsArrays?: any[][];
+    embed?: { title: string; fields: { name: string; value: string }[] };
   }) {
     try {
       await this.discordApiService.axiosInstance({
@@ -30,7 +32,19 @@ export class ResponseComponentsProvider {
         data: {
           type,
           data: {
-            content,
+            embeds: embed
+              ? [
+                  {
+                    title: embed.title,
+                    color: 0x00f00,
+                    fields: embed.fields,
+                    footer: {
+                      text: content,
+                    },
+                  },
+                ]
+              : [],
+            content: embed ? null : content,
             components: componentsArrays?.length
               ? componentsArrays.map((components: any) => ({
                   type: 1,
@@ -51,6 +65,7 @@ export class ResponseComponentsProvider {
     type,
     content,
     components,
+    embed,
   }: {
     id: string;
     token: string;
@@ -59,6 +74,7 @@ export class ResponseComponentsProvider {
       | InteractionResponseType.UPDATE_MESSAGE;
     content?: string;
     components?: any[];
+    embed?: { title: string; fields: { name: string; value: string }[] };
   }) {
     try {
       await this.discordApiService.axiosInstance({
@@ -67,7 +83,19 @@ export class ResponseComponentsProvider {
         data: {
           type,
           data: {
-            content,
+            embeds: embed
+              ? [
+                  {
+                    title: embed.title,
+                    color: 0x00f00,
+                    fields: embed.fields,
+                    footer: {
+                      text: content,
+                    },
+                  },
+                ]
+              : [],
+            content: embed ? null : content,
             components: components?.length
               ? [
                   {
@@ -128,48 +156,47 @@ export class ResponseComponentsProvider {
     }
   }
 
-
   // // TO SHOW WHITELIST ETC - TO FINISH
-  // public async generateEmbedResponse({
-  //   id,
-  //   token,
-  //   // component,
-  // }: {
-  //   id: string;
-  //   token: string;
-  //   // component: AppCommandModalComponent[];
-  // }) {
-  //   try {
-  //     await this.discordApiService.axiosInstance({
-  //       method: 'POST',
-  //       url: `/interactions/${id}/${token}/callback`,
-  //       data: {
-  //         type: 4,
-  //         data: {
-  //           embeds: [
-  //             {
-  //               title: 'titel',
-  //               description: 'description',
-  //               color: hex,
-  //               fields: [
-  //                 {
-  //                   name: 'Field 1',
-  //                   value: 'Some value here',
-  //                   inline: true,
-  //                 },
-  //                 {
-  //                   name: 'Field 2',
-  //                   value: 'Some value here',
-  //                   inline: true,
-  //                 },
-  //               ],
-  //             },
-  //           ],
-  //         },
-  //       },
-  //     });
-  //   } catch (err: any) {
-  //     throw new DiscordInteractionException(err?.message);
-  //   }
-  // }
+  public async generateEmbedResponse({
+    id,
+    token,
+  }: // component,
+  {
+    id: string;
+    token: string;
+    // component: AppCommandModalComponent[];
+  }) {
+    try {
+      await this.discordApiService.axiosInstance({
+        method: 'POST',
+        url: `/interactions/${id}/${token}/callback`,
+        data: {
+          type: 4,
+          data: {
+            embeds: [
+              {
+                title: 'titel',
+                description: 'description',
+                color: 0x00ff0,
+                fields: [
+                  {
+                    name: 'Field 1',
+                    value: 'Some value here',
+                    inline: true,
+                  },
+                  {
+                    name: 'Field 2',
+                    value: 'Some value here',
+                    inline: true,
+                  },
+                ],
+              },
+            ],
+          },
+        },
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message);
+    }
+  }
 }

@@ -11,15 +11,13 @@ import { UsersModule } from '../users/users.module';
 import { AppRoutes } from '../routes/routes.enum';
 import { WhitelistGuardService } from './guards/guard-services/whitelist-guard.service';
 import { ApisModule } from 'src/APIs/APIs.module';
-import { StateModule } from '../app-state/State.module';
 import { ResponseComponentsProvider } from './service/response-components.provider';
-import { MeetingService } from './Meeting/Meeting.service';
 import { InteractionsGetMeetingService } from './service/subservices/interactions-get-meeting.service';
 import { InteractionsBotManagingService } from './service/subservices/interactions-bot-managing.service';
 import { CalendarModule } from 'src/Calendar/Calendar.module';
 
 @Module({
-  imports: [RolesModule, UsersModule, ApisModule, StateModule, CalendarModule],
+  imports: [RolesModule, UsersModule, ApisModule, CalendarModule],
   controllers: [DiscordInteractionController],
   providers: [
     IntegrationSlashCommandsService,
@@ -28,7 +26,6 @@ import { CalendarModule } from 'src/Calendar/Calendar.module';
     RolesGuardService,
     WhitelistGuardService,
     ResponseComponentsProvider,
-    MeetingService,
     InteractionsGetMeetingService,
     InteractionsBotManagingService,
   ],

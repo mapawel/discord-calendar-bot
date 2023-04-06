@@ -33,6 +33,7 @@ export class DiscordInteractionController {
       type,
       data: { name, custom_id, values, components },
       discord_usr,
+      message,
     } = body;
 
     if (type === 1) return this.interactionService.responseWithPong();
@@ -55,6 +56,7 @@ export class DiscordInteractionController {
       custom_id || '',
       id,
       components || [],
+      message
     );
   }
 }
