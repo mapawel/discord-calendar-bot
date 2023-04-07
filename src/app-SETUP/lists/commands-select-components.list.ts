@@ -2,7 +2,7 @@ import { CommandsSelectComponents } from '../enums/commands-select-components.en
 
 export const commandsSelectComponents: Record<
   string,
-  AppCommandSelectComponent[]
+  [AppCommandSelectComponent]
 > = {
   managingBotSelectMentorToConnect: [
     {

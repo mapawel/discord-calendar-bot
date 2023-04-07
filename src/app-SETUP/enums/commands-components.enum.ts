@@ -3,4 +3,5 @@ export enum CommandsComponents {
   REMOVE_FROM_WHITELIST = 'remove-whitelist',
   SET_USER_CONNECTIONS = 'set-connections',
   MEETING_CALLBACK = 'meeting-callback:',
+  AUTHENTICATE = '',
 }

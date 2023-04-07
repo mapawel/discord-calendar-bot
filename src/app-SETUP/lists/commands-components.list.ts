@@ -45,13 +45,26 @@ export const commandsComponents: Record<string, AppCommandComponent[]> = {
       controller_service_method: 'meetingChooseMentorCallback',
     },
   ],
+  authenticateButton: [
+    {
+      type: 2,
+      label: 'Start authentication with Auth0',
+      style: 5,
+      custom_id: CommandsComponents.AUTHENTICATE,
+      url: 'to populate in code...',
+      authenticated_guard_rule: 'notAuthenticated',
+      role_guard_rules: [],
+      whitelisting_guard_rule: 'isWhitelisted',
+      controller_service_method: 'authenticate',
+    },
+  ],
 };
 
 export type AppCommandComponent = {
   type: number;
   label: string;
   style: number;
-  custom_id: CommandsComponents;
+  custom_id: `${CommandsComponents}${string}`;
   authenticated_guard_rule: 'isAuthenticated' | 'notAuthenticated';
   role_guard_rules: ('Mentor' | 'Calendar-bot-admin')[]; // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
   whitelisting_guard_rule: 'isWhitelisted' | 'notWhitelisted';
@@ -59,5 +72,7 @@ export type AppCommandComponent = {
     | 'addingUserToWhitelist'
     | 'removingUserFromWhitelist'
     | 'settingUserConnections'
-    | 'meetingChooseMentorCallback';
+    | 'meetingChooseMentorCallback'
+    | 'authenticate';
+  url?: string;
 };

@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
 import { DiscordUserDTO } from '../dto/Discord-user.dto';
 import { AppUserDTO } from '../../users/dto/App-user.dto';
@@ -33,17 +33,18 @@ export class IntegrationSlashCommandsService {
   ) {
     const foundUser: AppUserDTO | undefined =
       await this.usersService.getUserByDId(discordUser.id);
+    if (!foundUser) throw new NotFoundException('User not found!');
 
-    if (foundUser?.mentors.length) {
+    if (foundUser.mentors.length) {
       return this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 4,
         content: 'Choose a person to meet with:',
-        components: foundUser?.mentors.map((connectedUser) => ({
+        components: foundUser?.mentors.map((connectedUser: AppUserDTO) => ({
           ...commandsComponents.mentorToMeetWithButton[0],
           label: connectedUser.username,
-          custom_id: CommandsComponents.MEETING_CALLBACK + connectedUser.dId,
+          custom_id: `${CommandsComponents.MEETING_CALLBACK}${connectedUser.dId}`,
         })),
       });
     } else {
@@ -69,14 +70,10 @@ export class IntegrationSlashCommandsService {
       id,
       token,
       type: 4,
-      components: [
-        {
-          type: 2,
-          label: this.findContent(commands, Commands.AUTHENTICATE),
-          style: 5,
-          url: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${discordUser.id}`,
-        },
-      ],
+      components: commandsComponents.authenticateButton.map((component) => ({
+        ...component,
+        url: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${discordUser.id}`,
+      })),
     });
   }
 
@@ -111,10 +108,7 @@ export class IntegrationSlashCommandsService {
     });
   }
 
-  private findContent(
-    array: AppCommand[],
-    objName: Commands,
-  ): string | undefined {
-    return array.find((obj) => obj.name === objName)?.content;
+  private findContent(array: AppCommand[], objName: Commands): string {
+    return array.find((obj) => obj.name === objName)?.content || '';
   }
 }

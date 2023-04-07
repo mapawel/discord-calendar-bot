@@ -3,6 +3,8 @@ import { InteractionResponseType } from 'discord-interactions';
 import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { DiscordInteractionException } from '../exception/DiscordInteraction.exception';
 import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
+import { AppAllCommandComponentsType } from 'src/app-SETUP/lists/types/App-all-types-component.type';
+import { AppCommandComponent } from 'src/app-SETUP/lists/commands-components.list';
 
 @Injectable()
 export class ResponseComponentsProvider {
@@ -22,7 +24,7 @@ export class ResponseComponentsProvider {
       | InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
       | InteractionResponseType.UPDATE_MESSAGE;
     content?: string;
-    componentsArrays?: any[][];
+    componentsArrays?: AppAllCommandComponentsType[][];
     embed?: { title: string; fields: { name: string; value: string }[] };
   }) {
     try {
@@ -73,7 +75,7 @@ export class ResponseComponentsProvider {
       | InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
       | InteractionResponseType.UPDATE_MESSAGE;
     content?: string;
-    components?: any[];
+    components?: AppAllCommandComponentsType[];
     embed?: { title: string; fields: { name: string; value: string }[] };
   }) {
     try {
