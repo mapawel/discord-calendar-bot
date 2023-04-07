@@ -4,7 +4,6 @@ import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { DiscordInteractionException } from '../exception/DiscordInteraction.exception';
 import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
 import { AppAllCommandComponentsType } from 'src/app-SETUP/lists/types/App-all-types-component.type';
-import { AppCommandComponent } from 'src/app-SETUP/lists/commands-components.list';
 
 @Injectable()
 export class ResponseComponentsProvider {
@@ -48,10 +47,12 @@ export class ResponseComponentsProvider {
               : [],
             content: embed ? null : content,
             components: componentsArrays?.length
-              ? componentsArrays.map((components: any) => ({
-                  type: 1,
-                  components,
-                }))
+              ? componentsArrays.map(
+                  (components: AppAllCommandComponentsType[]) => ({
+                    type: 1,
+                    components,
+                  }),
+                )
               : [],
           },
         },

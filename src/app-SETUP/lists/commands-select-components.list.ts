@@ -113,8 +113,12 @@ export const commandsSelectComponents: Record<
 
 export type AppCommandSelectComponent = {
   type: 3;
-  options: { value: string | number; label: string; description: string }[];
-  custom_id: CommandsSelectComponents;
+  options: {
+    value: string | number;
+    label: string;
+    description: string | null;
+  }[];
+  custom_id: `${CommandsSelectComponents}${string}`;
   placeholder: string;
   min_value: number;
   max_value: number;

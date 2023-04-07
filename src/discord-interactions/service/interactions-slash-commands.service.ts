@@ -10,6 +10,7 @@ import { Commands } from '../../app-SETUP/enums/commands.enum';
 import { AppCommand } from '../../app-SETUP/lists/commands.list';
 import { ResponseComponentsProvider } from './response-components.provider';
 import { CommandsComponents } from '../../app-SETUP/enums/commands-components.enum';
+import { authButtonComponent } from 'src/app-SETUP/lists/auth-button-component.list';
 
 @Injectable()
 export class IntegrationSlashCommandsService {
@@ -70,7 +71,7 @@ export class IntegrationSlashCommandsService {
       id,
       token,
       type: 4,
-      components: commandsComponents.authenticateButton.map((component) => ({
+      components: authButtonComponent.map((component) => ({
         ...component,
         url: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${discordUser.id}`,
       })),

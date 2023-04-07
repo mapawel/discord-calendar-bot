@@ -121,7 +121,7 @@ export class InteractionsGetMeetingService {
 
     if (error) return this.respondWithError(id, token, error);
 
-    const splittedTimeProposals = this.splitArrayToArrays(
+    const splittedTimeProposals: FreeBusyRanges[] = this.splitArrayToArrays(
       meetingTimeProposals,
       24,
     );
@@ -225,7 +225,10 @@ export class InteractionsGetMeetingService {
     });
   }
 
-  private splitArrayToArrays(objArr: any[], portion: number): any[][] {
+  private splitArrayToArrays(
+    objArr: FreeBusyRanges,
+    portion: number,
+  ): FreeBusyRanges[] {
     const arr = [];
     for (let i = 0; i < objArr.length; i += portion) {
       arr.push(objArr.slice(i, i + portion));
@@ -234,12 +237,12 @@ export class InteractionsGetMeetingService {
   }
 
   private buildSelectMultiComponentsWithTimeranges(
-    topDataArray: any[][],
+    topDataArray: FreeBusyRanges[],
     componentToMultiply: AppCommandSelectComponent[],
     sliceFirstN: number,
-  ) {
-    return topDataArray.slice(0, sliceFirstN).map((set: any[], i) =>
-      componentToMultiply.map((component: any) => ({
+  ): AppCommandSelectComponent[][] {
+    return topDataArray.slice(0, sliceFirstN).map((set: FreeBusyRanges, i) =>
+      componentToMultiply.map((component: AppCommandSelectComponent) => ({
         ...component,
         custom_id: `${component.custom_id}:${i}`,
         options: set.map(({ start, end }: { start: string; end: string }) => {
@@ -248,6 +251,7 @@ export class InteractionsGetMeetingService {
               start,
             )} - ${this.constructShortDate(end)}`,
             value: `${start}/${end}`,
+            description: null,
           };
         }),
       })),

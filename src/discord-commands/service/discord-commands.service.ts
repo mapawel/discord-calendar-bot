@@ -2,24 +2,25 @@ import { Injectable } from '@nestjs/common';
 import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { commands } from 'src/app-SETUP/lists/commands.list';
 import { DiscordCommandsException } from '../exception/Discord-commands.exception';
+import { AppCommand } from 'src/app-SETUP/lists/commands.list';
 
 @Injectable()
 export class DiscordCommandsService {
   constructor(private readonly discordApiService: DiscordApiService) {}
 
-  public async commandsInit(commands: any[]) {
-    // const existingCommands = await this.getExistingCommands();
-    // console.log('existingCommands ----> ', existingCommands);
-    // await Promise.all(
-    //   existingCommands.map(async ({ id }: { id: string }) => {
-    //     return await this.deleteCommand(id);
-    //   }),
-    // );
-    // await Promise.all(
-    //   commands.map(async (command: any) => {
-    //     return await this.addCommand(command);
-    //   }),
-    // );
+  public async commandsInit(commands: AppCommand[]) {
+    //   const existingCommands = await this.getExistingCommands();
+    //   console.log('initialized discord commands ----> ', existingCommands);
+    //   await Promise.all(
+    //     existingCommands.map(
+    //       async ({ id }: { id: string }) => await this.deleteCommand(id),
+    //     ),
+    //   );
+    //   await Promise.all(
+    //     commands.map(
+    //       async (command: AppCommand) => await this.addCommand(command),
+    //     ),
+    //   );
   }
 
   private async getExistingCommands() {
@@ -29,7 +30,7 @@ export class DiscordCommandsService {
     });
   }
 
-  private async addCommand(command: any) {
+  private async addCommand(command: AppCommand) {
     return await this.discordRequest({
       method: 'POST',
       data: command,
@@ -50,9 +51,9 @@ export class DiscordCommandsService {
     url,
   }: {
     method: 'GET' | 'POST' | 'DELETE';
-    data?: any;
+    data?: AppCommand;
     url?: string;
-  }): Promise<any> {
+  }): Promise<AppCommand & { id: string }[]> {
     try {
       const response = await this.discordApiService.axiosInstance({
         method,

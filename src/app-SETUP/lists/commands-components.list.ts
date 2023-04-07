@@ -45,19 +45,6 @@ export const commandsComponents: Record<string, AppCommandComponent[]> = {
       controller_service_method: 'meetingChooseMentorCallback',
     },
   ],
-  authenticateButton: [
-    {
-      type: 2,
-      label: 'Start authentication with Auth0',
-      style: 5,
-      custom_id: CommandsComponents.AUTHENTICATE,
-      url: 'to populate in code...',
-      authenticated_guard_rule: 'notAuthenticated',
-      role_guard_rules: [],
-      whitelisting_guard_rule: 'isWhitelisted',
-      controller_service_method: 'authenticate',
-    },
-  ],
 };
 
 export type AppCommandComponent = {
