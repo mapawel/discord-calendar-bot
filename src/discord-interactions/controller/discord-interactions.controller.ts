@@ -1,6 +1,6 @@
 import { Controller, Post, Body, UseGuards, UseFilters } from '@nestjs/common';
 import { IntegrationService } from '../service/interactions.service';
-import { MappedInteraction } from '../dto/interaction.dto';
+import { MappedInteractionDTO } from '../dto/Interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
 import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
 import { AppRoutes } from '../../routes/routes.enum';
@@ -25,7 +25,7 @@ export class DiscordInteractionController {
   @UseFilters(NotFoundFilter)
   async interactionsHandler(
     @Body()
-    body: MappedInteraction,
+    body: MappedInteractionDTO,
   ) {
     const {
       id,
@@ -56,7 +56,7 @@ export class DiscordInteractionController {
       custom_id || '',
       id,
       components || [],
-      message
+      message,
     );
   }
 }

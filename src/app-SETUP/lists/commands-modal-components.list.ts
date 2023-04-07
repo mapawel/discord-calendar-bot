@@ -43,7 +43,7 @@ export const commandsModalComponents: Record<
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Mentor', 'Calendar-bot-admin'],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'connectingUserToMentorCallback',
+      controller_service_method: 'settingUserConUserSelected',
     },
   ],
 };
@@ -61,5 +61,5 @@ export type AppCommandModalComponent = {
   controller_service_method:
     | 'addingUserToWhitelistCallback'
     | 'removingUserFromWhitelistCallback'
-    | 'connectingUserToMentorCallback';
+    | 'settingUserConUserSelected';
 };

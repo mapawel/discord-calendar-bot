@@ -3,7 +3,7 @@ import { Request, Response, NextFunction } from 'express';
 import {
   InteractionWMemberDTO,
   InteractionWUserDTO,
-} from '../dto/interaction.dto';
+} from '../dto/Interaction.dto';
 import { DiscordUserDTO } from '../dto/Discord-user.dto';
 
 @Injectable()

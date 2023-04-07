@@ -6,7 +6,7 @@ import { JsonWebTokenError } from 'jsonwebtoken';
 import { UsersService } from '../../users/providers/users.service';
 import { AppUserDTO } from '../../users/dto/App-user.dto';
 import { RolesService } from '../../roles/providers/roles.service';
-import { AuthzUserDTO } from '../../discord-interactions/dto/Auth-user.dto';
+import { AuthzUserDTO } from '../dto/Auth-user.dto';
 import { AuthzApiService } from 'src/APIs/Authz-api.service';
 import { Calendar as CalendarEntity } from 'src/Calendar/entity/Calendar.entity';
 import { CalendarService } from 'src/Calendar/Calendar.service';

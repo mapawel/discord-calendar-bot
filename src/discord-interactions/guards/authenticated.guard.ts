@@ -1,5 +1,5 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { MappedInteraction } from '../dto/interaction.dto';
+import { MappedInteractionDTO } from '../dto/Interaction.dto';
 import { AuthenticatedGuardService } from './guard-services/authentcated-guard.service';
 import { commands } from '../../app-SETUP/lists/commands.list';
 import { getInteractionSettingObject } from '../../discord-commands/components-operations/discord-component-operations.helper';
@@ -17,7 +17,7 @@ export class AuthenticatedGuard implements CanActivate {
         type,
         data: { name, custom_id },
       },
-    }: { body: MappedInteraction } = context.switchToHttp().getRequest();
+    }: { body: MappedInteractionDTO } = context.switchToHttp().getRequest();
 
     const interactionSettingObject = getInteractionSettingObject(
       type,

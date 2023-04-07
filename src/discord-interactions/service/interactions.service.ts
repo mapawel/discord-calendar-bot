@@ -4,7 +4,8 @@ import { IntegrationSlashCommandsService } from './interactions-slash-commands.s
 import { InteractionsGetMeetingService } from './subservices/interactions-get-meeting.service';
 import { InteractionsBotManagingService } from './subservices/interactions-bot-managing.service';
 import { ResponseComponentsProvider } from './response-components.provider';
-import { InteractionMessage } from '../dto/interaction.dto';
+import { InteractionMessageDTO } from '../dto/Interaction-message.dto';
+import { InteractionComponentDTO } from '../dto/Interaction-component.dto';
 
 @Injectable()
 export class IntegrationService {
@@ -89,8 +90,8 @@ export class IntegrationService {
     token: string,
     custom_id: string,
     id: string,
-    components: any[],
-    message: InteractionMessage,
+    components: InteractionComponentDTO[],
+    message: InteractionMessageDTO,
   ) {
     return this.interactionsGetMeetingService.meetingDetailsTopicCallback(
       discordUser,
@@ -109,8 +110,8 @@ export class IntegrationService {
     token: string,
     custom_id: string,
     id: string,
-    components: any[],
-    message: InteractionMessage,
+    components: InteractionComponentDTO[],
+    message: InteractionMessageDTO,
   ) {
     return this.interactionsGetMeetingService.meetingDetailsDurationCallback(
       discordUser,
@@ -129,8 +130,8 @@ export class IntegrationService {
     token: string,
     custom_id: string,
     id: string,
-    components: any[],
-    message: InteractionMessage,
+    components: InteractionComponentDTO[],
+    message: InteractionMessageDTO,
   ) {
     return this.interactionsGetMeetingService.meetingDetailsTimeCallback(
       discordUser,
@@ -165,7 +166,7 @@ export class IntegrationService {
     token: string,
     custom_id: string,
     id: string,
-    components: any[], //TODO to make a type
+    components: InteractionComponentDTO[],
   ) {
     return this.interactionsBotManagingService.addingUserToWhitelistCallback(
       discordUser,
@@ -199,7 +200,7 @@ export class IntegrationService {
     token: string,
     custom_id: string,
     id: string,
-    components: any[], //TODO to make a type
+    components: InteractionComponentDTO[],
   ) {
     return this.interactionsBotManagingService.removingUserFromWhitelistCallback(
       discordUser,
@@ -227,15 +228,15 @@ export class IntegrationService {
     );
   }
 
-  async connectingUserToMentorCallback(
+  async settingUserConUserSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
     custom_id: string,
     id: string,
-    components: any[], //TODO to make a type
+    components: InteractionComponentDTO[],
   ) {
-    return this.interactionsBotManagingService.connectingUserToMentorCallback(
+    return this.interactionsBotManagingService.settingUserConUserSelected(
       discordUser,
       values,
       token,
@@ -245,16 +246,16 @@ export class IntegrationService {
     );
   }
 
-  async connectingUserToMentorCallback2(
+  async settingUserConHostSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
     custom_id: string,
     id: string,
-    components: any[],
-    message: InteractionMessage,
+    components: InteractionComponentDTO[],
+    message: InteractionMessageDTO,
   ) {
-    return this.interactionsBotManagingService.connectingUserToMentorCallback2(
+    return this.interactionsBotManagingService.settingUserConHostSelected(
       discordUser,
       values,
       token,

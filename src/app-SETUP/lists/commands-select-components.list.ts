@@ -21,7 +21,7 @@ export const commandsSelectComponents: Record<
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'connectingUserToMentorCallback2',
+      controller_service_method: 'settingUserConHostSelected',
     },
   ],
   meetingDetailsTopics: [
@@ -122,13 +122,7 @@ export type AppCommandSelectComponent = {
   role_guard_rules: ('Mentor' | 'Calendar-bot-admin')[]; // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
   whitelisting_guard_rule: 'isWhitelisted' | 'notWhitelisted';
   controller_service_method:
-    | 'addingUserToWhitelist'
-    | 'removingUserFromWhitelist'
-    | 'addingUserToWhitelistCallback'
-    | 'removingUserFromWhitelistCallback'
-    | 'settingUserConnections'
-    | 'connectingUserToMentorCallback'
-    | 'connectingUserToMentorCallback2'
+    | 'settingUserConHostSelected'
     | 'meetingDetailsTopicCallback'
     | 'meetingDetailsDurationCallback'
     | 'meetingDetailsTimeCallback';

@@ -3,12 +3,13 @@ import { DiscordUserDTO } from '../../dto/Discord-user.dto';
 import { AppUserDTO } from '../../../users/dto/App-user.dto';
 import { UsersService } from '../../../users/providers/users.service';
 import { commandsSelectComponents } from '../../../app-SETUP/lists/commands-select-components.list';
-import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-components.list';
+import { commandsModalComponents } from '../../../app-SETUP/lists/commands-modal-components.list';
 import { ResponseComponentsProvider } from '../response-components.provider';
-import { settings } from 'src/app-SETUP/settings';
-import { InteractionMessage } from 'src/discord-interactions/dto/interaction.dto';
-import { embedTitles } from 'src/app-SETUP/lists/embed-titles.list';
-import { EmbedFiled } from 'src/discord-interactions/dto/interaction.dto';
+import { settings } from '../../../app-SETUP/settings';
+import { InteractionMessageDTO } from '../../../discord-interactions/dto/Interaction-message.dto';
+import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
+import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
+import { InteractionComponentDTO } from '../../../discord-interactions/dto/Interaction-component.dto';
 
 @Injectable()
 export class InteractionsBotManagingService {
@@ -37,9 +38,11 @@ export class InteractionsBotManagingService {
     token: string,
     custom_id: string,
     id: string,
-    components: any[], //TODO to make a type
+    components: InteractionComponentDTO[],
   ) {
-    const userId = components[0].components[0].value;
+    const userId: string | undefined =
+      components?.[0]?.components?.[0]?.value ||
+      'not parsed to int and throws error';
     if (!parseInt(userId)) throw new BadRequestException();
 
     const userToAdd: DiscordUserDTO =
@@ -87,9 +90,11 @@ export class InteractionsBotManagingService {
     token: string,
     custom_id: string,
     id: string,
-    components: any[], //TODO to make a type
+    components: InteractionComponentDTO[],
   ) {
-    const idToRemove = components[0].components[0].value;
+    const idToRemove: string | undefined =
+      components?.[0]?.components?.[0]?.value ||
+      'not parsed to int throws error';
     if (!parseInt(idToRemove)) throw new BadRequestException();
 
     await this.usersService.updateUserWhitelistStatus(idToRemove, false);
@@ -116,15 +121,17 @@ export class InteractionsBotManagingService {
     });
   }
 
-  async connectingUserToMentorCallback(
+  async settingUserConUserSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
     custom_id: string,
     id: string,
-    components: any[], //TODO to make a type
+    components: InteractionComponentDTO[],
   ) {
-    const userToConnectId = components[0].components[0].value;
+    const userToConnectId: string | undefined =
+      components?.[0]?.components?.[0]?.value ||
+      'not parsed to int throws error';
     if (!parseInt(userToConnectId)) throw new BadRequestException();
 
     const userToConnect: DiscordUserDTO =
@@ -167,23 +174,28 @@ export class InteractionsBotManagingService {
     });
   }
 
-  async connectingUserToMentorCallback2(
+  async settingUserConHostSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
     custom_id: string,
     id: string,
-    components: any[],
-    message: InteractionMessage,
+    components: InteractionComponentDTO[],
+    message: InteractionMessageDTO,
   ) {
-    const [mentorToConnect] = values;
-    const currentEmbedFields: EmbedFiled[] =
+    const [mentorToConnectId] = values;
+    const currentEmbedFields: InteractionEmbedFieldDTO[] =
       this.extractFieldsFromMessage(message);
     const userToBindId: string = currentEmbedFields[0].value;
 
+    const mentorToConnect: DiscordUserDTO =
+      await this.usersService.getUserFromDiscord(mentorToConnectId);
+
+    await this.usersService.createUserIfNotExisting(mentorToConnect);
+
     const { error } = await this.usersService.bindUsers(
       userToBindId,
-      mentorToConnect,
+      mentorToConnectId,
       3,
     );
     if (error)
@@ -224,8 +236,11 @@ export class InteractionsBotManagingService {
     }
   }
 
-  private extractFieldsFromMessage(message: InteractionMessage): EmbedFiled[] {
-    const { embeds }: { embeds: { fields: EmbedFiled[] }[] } = message;
+  private extractFieldsFromMessage(
+    message: InteractionMessageDTO,
+  ): InteractionEmbedFieldDTO[] {
+    const { embeds }: { embeds: { fields: InteractionEmbedFieldDTO[] }[] } =
+      message;
     return embeds[0].fields;
   }
 }

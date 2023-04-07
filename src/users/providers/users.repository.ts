@@ -174,7 +174,7 @@ export class UsersRepository {
 
       if (!sourceUser || !targetUser) {
         throw new Error(
-          'Al least one of passed users to connect for meetings not found',
+          'At least one of passed users to connect for meetings not found',
         );
       }
 

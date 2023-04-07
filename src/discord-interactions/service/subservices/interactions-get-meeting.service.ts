@@ -8,10 +8,11 @@ import { CalendarService } from '../../../Calendar/Calendar.service';
 import { Meeting } from '../../Meeting/Meeting.interface';
 import { FreeBusyRanges } from '../../../Calendar/types/Free-busy-ranges.type';
 import { AppCommandSelectComponent } from '../../../app-SETUP/lists/commands-select-components.list';
-import { InteractionMessage } from 'src/discord-interactions/dto/interaction.dto';
-import { embedTitles } from 'src/app-SETUP/lists/embed-titles.list';
-import { EmbedFiled } from 'src/discord-interactions/dto/interaction.dto';
-import { EmbedFieldsMeeting } from 'src/discord-interactions/Meeting/EmbedFieldsMeeting.type';
+import { InteractionMessageDTO } from '../../../discord-interactions/dto/Interaction-message.dto';
+import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
+import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
+import { EmbedFieldsMeeting } from '../../../discord-interactions/Meeting/EmbedFieldsMeeting.type';
+import { InteractionComponentDTO } from 'src/discord-interactions/dto/Interaction-component.dto';
 
 @Injectable()
 export class InteractionsGetMeetingService {
@@ -73,11 +74,11 @@ export class InteractionsGetMeetingService {
     token: string,
     custom_id: string,
     id: string,
-    components: any[],
-    message: InteractionMessage,
+    components: InteractionComponentDTO[],
+    message: InteractionMessageDTO,
   ) {
     const topic: string = values[0];
-    const currentEmbedFields: EmbedFiled[] =
+    const currentEmbedFields: InteractionEmbedFieldDTO[] =
       this.extractFieldsFromMessage(message);
 
     return this.responseComponentsProvider.generateInteractionResponse({
@@ -105,8 +106,8 @@ export class InteractionsGetMeetingService {
     token: string,
     custom_id: string,
     id: string,
-    components: any[],
-    message: InteractionMessage,
+    components: InteractionComponentDTO[],
+    message: InteractionMessageDTO,
   ) {
     const durationMs = Number(values[0]);
     const currentEmbedFields = this.extractFieldsFromMessage(message);
@@ -158,8 +159,8 @@ export class InteractionsGetMeetingService {
     token: string,
     custom_id: string,
     id: string,
-    components: any[],
-    message: InteractionMessage,
+    components: InteractionComponentDTO[],
+    message: InteractionMessageDTO,
   ) {
     const start: string = values[0].split('/')[0];
     const end: string = values[0].split('/')[1];
@@ -260,13 +261,16 @@ export class InteractionsGetMeetingService {
     return `${role}: ${person.username} (${person.email})`;
   }
 
-  private extractFieldsFromMessage(message: InteractionMessage): EmbedFiled[] {
-    const { embeds }: { embeds: { fields: EmbedFiled[] }[] } = message;
+  private extractFieldsFromMessage(
+    message: InteractionMessageDTO,
+  ): InteractionEmbedFieldDTO[] {
+    const { embeds }: { embeds: { fields: InteractionEmbedFieldDTO[] }[] } =
+      message;
     return embeds[0].fields;
   }
 
   private extractMeetingDataFromEmbedFields(
-    fields: EmbedFiled[],
+    fields: InteractionEmbedFieldDTO[],
   ): EmbedFieldsMeeting {
     const hostDId: string = fields[0].value;
     const hostEmail: string = fields[0].name.split(' ')[2].trim().slice(1, -1);

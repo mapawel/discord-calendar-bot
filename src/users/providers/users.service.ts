@@ -4,7 +4,7 @@ import { AppUserDTO } from '../dto/App-user.dto';
 import { UsersRepository } from './users.repository';
 import { RolesService } from 'src/roles/providers/roles.service';
 import { DiscordApiService } from 'src/APIs/Discord-api.service';
-import { AuthzUserDTO } from 'src/discord-interactions/dto/Auth-user.dto';
+import { AuthzUserDTO } from 'src/authz/dto/Auth-user.dto';
 import { UsersException } from '../exception/Users.exception';
 import { Calendar } from 'src/Calendar/entity/Calendar.entity';
 
