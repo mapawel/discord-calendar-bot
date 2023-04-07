@@ -9,6 +9,9 @@ import { Meeting } from '../../Meeting/Meeting.interface';
 import { FreeBusyRanges } from '../../../Calendar/types/Free-busy-ranges.type';
 import { AppCommandSelectComponent } from '../../../app-SETUP/lists/commands-select-components.list';
 import { InteractionMessage } from 'src/discord-interactions/dto/interaction.dto';
+import { embedTitles } from 'src/app-SETUP/lists/embed-titles.list';
+import { EmbedFiled } from 'src/discord-interactions/dto/interaction.dto';
+import { EmbedFieldsMeeting } from 'src/discord-interactions/Meeting/EmbedFieldsMeeting.type';
 
 @Injectable()
 export class InteractionsGetMeetingService {
@@ -49,14 +52,14 @@ export class InteractionsGetMeetingService {
       content: `Choose a topic:`,
       components: commandsSelectComponents.meetingDetailsTopics,
       embed: {
-        title: `Creating a meeting:`,
+        title: embedTitles.creatingMeeting.title,
         fields: [
           {
-            name: `Host: ${host.username} (${host.email})`,
+            name: this.constructPersonString(host, 'Host'),
             value: host.dId,
           },
           {
-            name: `Guest: ${user.username} (${user.email})`,
+            name: this.constructPersonString(user, 'Guest'),
             value: user.dId,
           },
         ],
@@ -74,9 +77,8 @@ export class InteractionsGetMeetingService {
     message: InteractionMessage,
   ) {
     const topic: string = values[0];
-    const { embeds } = message;
-    const currentEmbedFields = embeds[0].fields;
-    //TODO type this
+    const currentEmbedFields: EmbedFiled[] =
+      this.extractFieldsFromMessage(message);
 
     return this.responseComponentsProvider.generateInteractionResponse({
       id,
@@ -85,7 +87,7 @@ export class InteractionsGetMeetingService {
       content: `Choose meeting duration:`,
       components: commandsSelectComponents.meetingDetailsDuration,
       embed: {
-        title: `Creating a meeting:`,
+        title: embedTitles.creatingMeeting.title,
         fields: [
           ...currentEmbedFields,
           {
@@ -107,8 +109,7 @@ export class InteractionsGetMeetingService {
     message: InteractionMessage,
   ) {
     const durationMs = Number(values[0]);
-    const { embeds } = message;
-    const currentEmbedFields = embeds[0].fields;
+    const currentEmbedFields = this.extractFieldsFromMessage(message);
     const hostDId: string = currentEmbedFields[0].value;
 
     const {
@@ -138,7 +139,7 @@ export class InteractionsGetMeetingService {
         content: 'Choose your time:',
         componentsArrays,
         embed: {
-          title: `Creating a meeting:`,
+          title: embedTitles.creatingMeeting.title,
           fields: [
             ...currentEmbedFields,
             {
@@ -162,23 +163,16 @@ export class InteractionsGetMeetingService {
   ) {
     const start: string = values[0].split('/')[0];
     const end: string = values[0].split('/')[1];
-    const { embeds } = message;
-    const currentEmbedFields = embeds[0].fields;
-
-    const hostDId: string = currentEmbedFields[0].value;
-    const hostMail: string = currentEmbedFields[0].name
-      .split(' ')[2]
-      .trim()
-      .slice(1, -1);
-
-    const userDId: string = currentEmbedFields[1].value;
-    const username: string = currentEmbedFields[1].name.split(' ')[2];
-    const userMail: string = currentEmbedFields[1].name
-      .split(' ')[2]
-      .trim()
-      .slice(1, -1);
-
-    const topic: string = currentEmbedFields[2].value;
+    const currentEmbedFields = this.extractFieldsFromMessage(message);
+    const {
+      hostDId,
+      hostEmail,
+      userDId,
+      username,
+      userEmail,
+      topic,
+    }: EmbedFieldsMeeting =
+      this.extractMeetingDataFromEmbedFields(currentEmbedFields);
 
     const meetingData: Meeting = {
       userDId,
@@ -186,8 +180,8 @@ export class InteractionsGetMeetingService {
       topic,
       summary: `Meeting with ${username}`,
       description: topic,
-      guestEmail: userMail,
-      hostEmail: hostMail,
+      guestEmail: userEmail,
+      hostEmail: hostEmail,
       start,
       end,
     };
@@ -205,20 +199,16 @@ export class InteractionsGetMeetingService {
       type: 7,
       content: ``,
       embed: {
-        title: `Your meeting is booked!`,
+        title: embedTitles.meetingBooked.title,
         fields: [
           ...currentEmbedFields,
           {
             name: `Meeting start:`,
-            value: `${new Date(start).toLocaleTimeString('pl-PL', {
-              timeStyle: 'short',
-            })} ${new Date(start).toLocaleDateString('pl-PL', {
-              dateStyle: 'short',
-            })}`,
+            value: this.constructShortDate(start),
           },
           {
-            name: `Meeting end: ${end}`,
-            value: '',
+            name: `Meeting end:`,
+            value: this.constructShortDate(end),
           },
         ],
       },
@@ -252,19 +242,56 @@ export class InteractionsGetMeetingService {
         ...component,
         custom_id: `${component.custom_id}:${i}`,
         options: set.map(({ start, end }: { start: string; end: string }) => {
-          const startD = new Date(start);
-          const endD = new Date(end);
           return {
-            label: `${startD.toDateString()}, ${startD.toLocaleTimeString(
-              'pl-PL',
-              { timeStyle: 'short' },
-            )} - ${endD.toDateString()}, ${endD.toLocaleTimeString('pl-PL', {
-              timeStyle: 'short',
-            })}`,
-            value: `${start.toString()}/${end.toString()}`,
+            label: `${this.constructShortDate(
+              start,
+            )} - ${this.constructShortDate(end)}`,
+            value: `${start}/${end}`,
           };
         }),
       })),
     );
+  }
+
+  private constructPersonString(
+    person: AppUserDTO,
+    role: 'Host' | 'Guest',
+  ): string {
+    return `${role}: ${person.username} (${person.email})`;
+  }
+
+  private extractFieldsFromMessage(message: InteractionMessage): EmbedFiled[] {
+    const { embeds }: { embeds: { fields: EmbedFiled[] }[] } = message;
+    return embeds[0].fields;
+  }
+
+  private extractMeetingDataFromEmbedFields(
+    fields: EmbedFiled[],
+  ): EmbedFieldsMeeting {
+    const hostDId: string = fields[0].value;
+    const hostEmail: string = fields[0].name.split(' ')[2].trim().slice(1, -1);
+
+    const userDId: string = fields[1].value;
+    const username: string = fields[1].name.split(' ')[2];
+    const userEmail: string = fields[1].name.split(' ')[2].trim().slice(1, -1);
+
+    const topic: string = fields[2].value;
+
+    return {
+      hostDId,
+      hostEmail,
+      userDId,
+      username,
+      userEmail,
+      topic,
+    };
+  }
+
+  private constructShortDate(dateString: string): string {
+    return `${new Date(dateString).toLocaleTimeString('pl-PL', {
+      timeStyle: 'short',
+    })}, ${new Date(dateString).toLocaleDateString('pl-PL', {
+      dateStyle: 'short',
+    })}`;
   }
 }

@@ -7,6 +7,8 @@ import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-comp
 import { ResponseComponentsProvider } from '../response-components.provider';
 import { settings } from 'src/app-SETUP/settings';
 import { InteractionMessage } from 'src/discord-interactions/dto/interaction.dto';
+import { embedTitles } from 'src/app-SETUP/lists/embed-titles.list';
+import { EmbedFiled } from 'src/discord-interactions/dto/interaction.dto';
 
 @Injectable()
 export class InteractionsBotManagingService {
@@ -147,7 +149,7 @@ export class InteractionsBotManagingService {
       token,
       type: 7,
       embed: {
-        title: `Connecting user with a host...`,
+        title: embedTitles.connectingUser.title,
         fields: [
           {
             name: userToConnect.username,
@@ -175,8 +177,8 @@ export class InteractionsBotManagingService {
     message: InteractionMessage,
   ) {
     const [mentorToConnect] = values;
-    const { embeds } = message;
-    const currentEmbedFields = embeds[0].fields;
+    const currentEmbedFields: EmbedFiled[] =
+      this.extractFieldsFromMessage(message);
     const userToBindId: string = currentEmbedFields[0].value;
 
     const { error } = await this.usersService.bindUsers(
@@ -220,5 +222,10 @@ export class InteractionsBotManagingService {
         description: user.id,
       }));
     }
+  }
+
+  private extractFieldsFromMessage(message: InteractionMessage): EmbedFiled[] {
+    const { embeds }: { embeds: { fields: EmbedFiled[] }[] } = message;
+    return embeds[0].fields;
   }
 }

@@ -2,12 +2,16 @@ import { DiscordUserDTO } from './Discord-user.dto';
 import { ValidateNested, IsOptional, Length } from 'class-validator';
 import { Type } from 'class-transformer';
 
+
+
+export class EmbedFiled {
+  name: string;
+  value: string;
+}
+
 export class InteractionMessage {
   embeds: {
-    fields: {
-      name: string;
-      value: string;
-    }[];
+    fields: EmbedFiled[];
   }[];
 }
 
