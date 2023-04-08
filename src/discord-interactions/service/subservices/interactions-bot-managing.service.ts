@@ -10,6 +10,7 @@ import { InteractionMessageDTO } from '../../../discord-interactions/dto/Interac
 import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
 import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
 import { InteractionComponentDTO } from '../../../discord-interactions/dto/Interaction-component.dto';
+import { mockedUsers } from 'db/mocked-users';
 
 @Injectable()
 export class InteractionsBotManagingService {
@@ -18,7 +19,7 @@ export class InteractionsBotManagingService {
     private readonly responseComponentsProvider: ResponseComponentsProvider,
   ) {}
 
-  async addingUserToWhitelist(
+  public async addingUserToWhitelist(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -32,7 +33,7 @@ export class InteractionsBotManagingService {
     });
   }
 
-  async addingUserToWhitelistCallback(
+  public async addingUserToWhitelistCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -59,7 +60,7 @@ export class InteractionsBotManagingService {
     });
   }
 
-  async removingUserFromWhitelist(
+  public async removingUserFromWhitelist(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -84,7 +85,7 @@ export class InteractionsBotManagingService {
     });
   }
 
-  async removingUserFromWhitelistCallback(
+  public async removingUserFromWhitelistCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -107,7 +108,7 @@ export class InteractionsBotManagingService {
     });
   }
 
-  async settingUserConnections(
+  public async settingUserConnections(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -121,7 +122,7 @@ export class InteractionsBotManagingService {
     });
   }
 
-  async settingUserConUserSelected(
+  public async settingUserConUserSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -174,7 +175,7 @@ export class InteractionsBotManagingService {
     });
   }
 
-  async settingUserConHostSelected(
+  public async settingUserConHostSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -212,6 +213,74 @@ export class InteractionsBotManagingService {
       type: 7,
       content: `User connected to selected metor!`,
     });
+  }
+
+  public async displayWhitelist(
+    discordUser: DiscordUserDTO,
+    values: string[],
+    token: string,
+    custom_id: string,
+    id: string,
+  ) {
+    const usersToShow: AppUserDTO[] =
+      await this.usersService.getAllWhitelistedUsers();
+
+    const splitedDataForEmbeds: string[][] =
+      this.splitUserdataForLimitedFields(usersToShow);
+    const embedFields: InteractionEmbedFieldDTO[] =
+      this.buildEmbedFieldsFromData(splitedDataForEmbeds);
+
+    if (!usersToShow.length)
+      return this.responseComponentsProvider.generateInteractionResponse({
+        id,
+        token,
+        type: 4,
+        content: 'The whitelist is empty...',
+      });
+
+    return this.responseComponentsProvider.generateInteractionResponse({
+      id,
+      token,
+      type: 7,
+      embed: {
+        title: embedTitles.whitelist.title,
+        fields: embedFields,
+      },
+    });
+  }
+
+  private splitUserdataForLimitedFields(users: AppUserDTO[]): string[][] {
+    const charactersLimit = 1024;
+    let currentCharactersCount = 0;
+    const allEmbedValuesArr: string[][] = [];
+    let freshEmbedValues: string[] = [];
+
+    for (let i = 0; i < users.length; i++) {
+      currentCharactersCount +=
+        users[i].username.length + users[i].dId.length + 5;
+
+      if (currentCharactersCount < charactersLimit) {
+        freshEmbedValues.push(`${users[i].username}-${users[i].dId}`);
+      } else {
+        allEmbedValuesArr.push(freshEmbedValues);
+        freshEmbedValues = [];
+        currentCharactersCount = 0;
+        freshEmbedValues.push(`${users[i].username}-${users[i].dId}`);
+      }
+    }
+    allEmbedValuesArr.push(freshEmbedValues);
+    return allEmbedValuesArr;
+  }
+
+  private buildEmbedFieldsFromData(
+    data: string[][],
+  ): InteractionEmbedFieldDTO[] {
+    return data.map((stringUserDataArr: string[]) => ({
+      name: '',
+      value: stringUserDataArr
+        .map((stringUser: string) => stringUser)
+        .join('\n'),
+    }));
   }
 
   private isAppUser(

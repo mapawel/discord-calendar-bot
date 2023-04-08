@@ -16,11 +16,11 @@ export class IntegrationService {
     private readonly responseComponentsProvider: ResponseComponentsProvider,
   ) {}
 
-  async responseWithPong() {
+  public async responseWithPong() {
     return this.integrationSlashCommandsService.responseWithPong();
   }
 
-  async managingBot(
+  public async managingBot(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -36,7 +36,7 @@ export class IntegrationService {
     );
   }
 
-  async authenticate(
+  public async authenticate(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -52,7 +52,7 @@ export class IntegrationService {
     );
   }
 
-  async responseForMeetingInit(
+  public async responseForMeetingInit(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -68,7 +68,7 @@ export class IntegrationService {
     );
   }
 
-  async meetingChooseMentorCallback(
+  public async meetingChooseMentorCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -124,7 +124,7 @@ export class IntegrationService {
     );
   }
 
-  async meetingDetailsTimeCallback(
+  public async meetingDetailsTimeCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -144,7 +144,7 @@ export class IntegrationService {
     );
   }
 
-  async addingUserToWhitelist(
+  public async addingUserToWhitelist(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -160,7 +160,7 @@ export class IntegrationService {
     );
   }
 
-  async addingUserToWhitelistCallback(
+  public async addingUserToWhitelistCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -178,7 +178,7 @@ export class IntegrationService {
     );
   }
 
-  async removingUserFromWhitelist(
+  public async removingUserFromWhitelist(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -194,7 +194,7 @@ export class IntegrationService {
     );
   }
 
-  async removingUserFromWhitelistCallback(
+  public async removingUserFromWhitelistCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -212,7 +212,7 @@ export class IntegrationService {
     );
   }
 
-  async settingUserConnections(
+  public async settingUserConnections(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -228,7 +228,7 @@ export class IntegrationService {
     );
   }
 
-  async settingUserConUserSelected(
+  public async settingUserConUserSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -246,7 +246,7 @@ export class IntegrationService {
     );
   }
 
-  async settingUserConHostSelected(
+  public async settingUserConHostSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -263,6 +263,22 @@ export class IntegrationService {
       id,
       components,
       message,
+    );
+  }
+
+  public async displayWhitelist(
+    discordUser: DiscordUserDTO,
+    values: string[],
+    token: string,
+    custom_id: string,
+    id: string,
+  ) {
+    return this.interactionsBotManagingService.displayWhitelist(
+      discordUser,
+      values,
+      token,
+      custom_id,
+      id,
     );
   }
 

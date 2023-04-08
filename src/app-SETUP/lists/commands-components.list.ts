@@ -32,6 +32,16 @@ export const commandsComponents: Record<string, AppCommandComponent[]> = {
       whitelisting_guard_rule: 'notWhitelisted',
       controller_service_method: 'settingUserConnections',
     },
+    {
+      type: 2,
+      label: 'display whitelist',
+      style: 1,
+      custom_id: CommandsComponents.DISPLAY_WHITELIST,
+      authenticated_guard_rule: 'isAuthenticated',
+      role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
+      whitelisting_guard_rule: 'notWhitelisted',
+      controller_service_method: 'displayWhitelist',
+    },
   ],
   mentorToMeetWithButton: [
     {
@@ -60,6 +70,7 @@ export type AppCommandComponent = {
     | 'removingUserFromWhitelist'
     | 'settingUserConnections'
     | 'meetingChooseMentorCallback'
-    | 'authenticate';
+    | 'authenticate'
+    | 'displayWhitelist';
   url?: string;
 };

@@ -8,4 +8,7 @@ export const embedTitles: Record<string, { title: string }> = {
   connectingUser: {
     title: 'Connecting user with a host...',
   },
+  whitelist: {
+    title: 'All whitelisted users:',
+  },
 };
