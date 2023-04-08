@@ -1,6 +1,7 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { Calendar } from 'src/Calendar/entity/Calendar.entity';
+import { GoogleApiServiceException } from './exceptions/Google-api-service.exception';
 
 export class GoogleApiService {
   constructor(public axiosInstance: AxiosInstance) {
@@ -58,15 +59,21 @@ export class GoogleApiService {
   private async getRefreshTokenFromCalendarInstance(
     calendarId: string,
   ): Promise<string> {
-    const currentCalendar: Calendar | null = await Calendar.findOne({
-      where: { calendarId },
-    });
-    if (!currentCalendar?.googleRefreshToken)
-      throw new Error('Calendar access cannot be refreshed');
-    const { googleRefreshToken }: { googleRefreshToken: string } =
-      currentCalendar;
+    try {
+      const currentCalendar: Calendar | null = await Calendar.findOne({
+        where: { calendarId },
+      });
+      if (!currentCalendar?.googleRefreshToken)
+        throw new GoogleApiServiceException(
+          'Calendar access cannot be refreshed',
+        );
+      const { googleRefreshToken }: { googleRefreshToken: string } =
+        currentCalendar;
 
-    return googleRefreshToken;
+      return googleRefreshToken;
+    } catch (err: any) {
+      throw new GoogleApiServiceException(err?.message);
+    }
   }
 
   private async getRefreshedAccessToken(
@@ -91,8 +98,7 @@ export class GoogleApiService {
 
       return access_token;
     } catch (err: any) {
-      console.log('err ----> ', err);
-      throw new Error(err?.message);
+      throw new GoogleApiServiceException(err?.message);
     }
   }
 
@@ -100,13 +106,17 @@ export class GoogleApiService {
     calendarId: string,
     access_token: string,
   ) {
-    await Calendar.update(
-      {
-        googleToken: access_token,
-      },
-      {
-        where: { calendarId },
-      },
-    );
+    try {
+      await Calendar.update(
+        {
+          googleToken: access_token,
+        },
+        {
+          where: { calendarId },
+        },
+      );
+    } catch (err: any) {
+      throw new GoogleApiServiceException(err?.message);
+    }
   }
 }

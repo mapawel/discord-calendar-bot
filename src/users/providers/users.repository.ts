@@ -22,9 +22,10 @@ export class UsersRepository {
           },
         ],
       });
+
       return found ? AppUserMapper(found) : undefined;
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -36,7 +37,7 @@ export class UsersRepository {
       });
       return true;
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -58,7 +59,7 @@ export class UsersRepository {
 
       return true;
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -70,7 +71,7 @@ export class UsersRepository {
       await AppUser.update({ authenticated }, { where: { dId } });
       return true;
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -79,7 +80,7 @@ export class UsersRepository {
       const found: AppUser[] = await AppUser.findAll();
       return found.map((user) => AppUserMapper(user));
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -92,7 +93,7 @@ export class UsersRepository {
       });
       return found ? AppUserMapper(found) : undefined;
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -109,7 +110,7 @@ export class UsersRepository {
       return true;
     } catch (err: any) {
       if (err instanceof NotFoundException) throw err;
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -120,7 +121,7 @@ export class UsersRepository {
       });
       return found.map((user) => AppUserMapper(user));
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -153,7 +154,7 @@ export class UsersRepository {
         },
       });
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -198,7 +199,7 @@ export class UsersRepository {
       }
       return { error: '' };
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
   sourceUserId: string;

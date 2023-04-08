@@ -10,7 +10,6 @@ import { InteractionMessageDTO } from '../../../discord-interactions/dto/Interac
 import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
 import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
 import { InteractionComponentDTO } from '../../../discord-interactions/dto/Interaction-component.dto';
-import { mockedUsers } from 'db/mocked-users';
 
 @Injectable()
 export class InteractionsBotManagingService {

@@ -5,7 +5,7 @@ import { UsersRepository } from './users.repository';
 import { RolesService } from 'src/roles/providers/roles.service';
 import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { AuthzUserDTO } from 'src/authz/dto/Auth-user.dto';
-import { UsersException } from '../exception/Users.exception';
+import { UsersServiceException } from '../exception/Users-service.exception';
 import { Calendar } from 'src/Calendar/entity/Calendar.entity';
 
 @Injectable()
@@ -37,7 +37,11 @@ export class UsersService {
   }
 
   public async getUserByDId(dId: string): Promise<AppUserDTO | undefined> {
-    return await this.usersRepository.getFirstUserByParam('dId', dId);
+    try {
+      return await this.usersRepository.getFirstUserByParam('dId', dId);
+    } catch (err: any) {
+      throw new UsersServiceException(err?.message, { causeErr: err });
+    }
   }
 
   public async checIfUserWhitelisted(dId: string): Promise<boolean> {
@@ -96,7 +100,7 @@ export class UsersService {
         }),
       );
     } catch (err: any) {
-      throw new UsersException(err?.message);
+      throw new UsersServiceException(err?.message, { causeErr: err });
     }
   }
 

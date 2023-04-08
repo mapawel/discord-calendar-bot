@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { AppRoutes } from '../../routes/routes.enum';
-import { AuthServiceException } from './exceptions/auth-service.exception';
+import { AuthzServiceException } from './exceptions/Authz-service.exception';
 import { JwtService } from '@nestjs/jwt';
 import { JsonWebTokenError } from 'jsonwebtoken';
 import { UsersService } from '../../users/providers/users.service';
@@ -22,27 +22,31 @@ export class AuthzService {
   ) {}
 
   public async buildRedirectLink(id: string): Promise<string> {
-    const isUserMeetingHost: boolean =
-      await this.rolesService.checkIfUserIsMeetingHost(id);
-    const signedId = await this.jwtService.signAsync({
-      id,
-      isHost: isUserMeetingHost,
-    });
+    try {
+      const isUserMeetingHost: boolean =
+        await this.rolesService.checkIfUserIsMeetingHost(id);
+      const signedId = await this.jwtService.signAsync({
+        id,
+        isHost: isUserMeetingHost,
+      });
 
-    const querystring: URLSearchParams = new URLSearchParams({
-      audience: `${process.env.AUTH0_AUDIENCE}`,
-      connection: isUserMeetingHost ? 'google-oauth2' : '',
-      response_type: 'code',
-      client_id: `${process.env.AUTH0_CLIENT_ID}`,
-      state: signedId,
-      redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
-      scope: 'openid profile email',
-      access_type: 'offline',
-      approval_prompt: 'force',
-      // prompt: 'consent'
-    });
+      const querystring: URLSearchParams = new URLSearchParams({
+        audience: `${process.env.AUTH0_AUDIENCE}`,
+        connection: isUserMeetingHost ? 'google-oauth2' : '',
+        response_type: 'code',
+        client_id: `${process.env.AUTH0_CLIENT_ID}`,
+        state: signedId,
+        redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
+        scope: 'openid profile email',
+        access_type: 'offline',
+        approval_prompt: 'force',
+        // prompt: 'consent'
+      });
 
-    return `${process.env.AUTH0_API_URL}${process.env.AUTH0_AUTHORIZE_ROUTE}?${querystring}`;
+      return `${process.env.AUTH0_API_URL}${process.env.AUTH0_AUTHORIZE_ROUTE}?${querystring}`;
+    } catch (err: any) {
+      throw new AuthzServiceException(err.message);
+    }
   }
 
   public async getToken(code: string, state: string) {
@@ -73,7 +77,7 @@ export class AuthzService {
       const verifiedUser: AppUserDTO | undefined =
         await this.usersService.getUserByDId(id);
       if (!verifiedUser)
-        throw new AuthServiceException('User not found, could not login!');
+        throw new AuthzServiceException('User not found, could not login!');
 
       const fullAppUser: AppUserDTO = this.usersService.getFullAppUser(
         verifiedUser,
@@ -85,38 +89,41 @@ export class AuthzService {
       if (isHost) this.handleHostLogin(id, fullAppUser.aId);
     } catch (err: any) {
       if (err instanceof JsonWebTokenError)
-        throw new AuthServiceException(
+        throw new AuthzServiceException(
           `Error while verifing a json webtoken from state! ${err.message}`,
         );
-      throw new AuthServiceException(
+      throw new AuthzServiceException(
         `Error while getting a token: ${err.message}`,
       );
     }
   }
 
   private async handleHostLogin(dId: string, aId: string) {
-    const currentCalendar: CalendarEntity | null = await CalendarEntity.findOne(
-      {
-        where: { dId },
-      },
-    );
+    try {
+      const currentCalendar: CalendarEntity | null =
+        await CalendarEntity.findOne({
+          where: { dId },
+        });
 
-    if (!currentCalendar) {
-      const {
-        googleToken,
-        googleRefreshToken,
-      }: { googleToken: string; googleRefreshToken: string } =
-        await this.getTokensForGoogle(aId);
+      if (!currentCalendar) {
+        const {
+          googleToken,
+          googleRefreshToken,
+        }: { googleToken: string; googleRefreshToken: string } =
+          await this.getTokensForGoogle(aId);
 
-      const calendarId = await this.calendarService.getMentorsCalendarId(
-        googleToken,
-      );
-      await CalendarEntity.create({
-        dId,
-        googleToken,
-        googleRefreshToken,
-        calendarId,
-      });
+        const calendarId = await this.calendarService.getMentorsCalendarId(
+          googleToken,
+        );
+        await CalendarEntity.create({
+          dId,
+          googleToken,
+          googleRefreshToken,
+          calendarId,
+        });
+      }
+    } catch (err: any) {
+      throw new AuthzServiceException(err.message);
     }
   }
 
@@ -142,24 +149,28 @@ export class AuthzService {
         googleRefreshToken: identities[0].refresh_token,
       };
     } catch (err: any) {
-      throw new Error(err?.message);
+      throw new AuthzServiceException(err?.message);
     }
   }
 
   private async getTokenForAuthManagment(): Promise<string> {
-    const {
-      data: { access_token },
-    }: { data: { access_token: string } } =
-      await this.authzApiService.axiosInstance({
-        method: 'POST',
-        url: process.env.AUTH0_TOKEN_ROUTE,
-        data: {
-          client_id: process.env.AUTH0_CLIENT_ID,
-          client_secret: process.env.AUTH0_SECRET,
-          audience: `${process.env.AUTH0_API_URL}${process.env.AUTH0_API_ROUTE}`,
-          grant_type: 'client_credentials',
-        },
-      });
-    return access_token;
+    try {
+      const {
+        data: { access_token },
+      }: { data: { access_token: string } } =
+        await this.authzApiService.axiosInstance({
+          method: 'POST',
+          url: process.env.AUTH0_TOKEN_ROUTE,
+          data: {
+            client_id: process.env.AUTH0_CLIENT_ID,
+            client_secret: process.env.AUTH0_SECRET,
+            audience: `${process.env.AUTH0_API_URL}${process.env.AUTH0_API_ROUTE}`,
+            grant_type: 'client_credentials',
+          },
+        });
+      return access_token;
+    } catch (err: any) {
+      throw new AuthzServiceException(err.message);
+    }
   }
 }

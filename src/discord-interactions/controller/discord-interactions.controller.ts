@@ -11,6 +11,7 @@ import { allCommandsComponents } from '../../discord-commands/components-operati
 import { BadRequestFilter } from '../exception-filters/bad-request.filter';
 import { NotFoundFilter } from '../exception-filters/not-found.filter';
 import { getInteractionSettingObject } from '../../discord-commands/components-operations/discord-component-operations.helper';
+import { RestErrorsFilter } from '../exception-filters/rest-errors.filter';
 
 @Controller()
 export class DiscordInteractionController {
@@ -23,6 +24,7 @@ export class DiscordInteractionController {
   @UseFilters(ForbiddenExceptionFilter)
   @UseFilters(BadRequestFilter)
   @UseFilters(NotFoundFilter)
+  @UseFilters(RestErrorsFilter)
   async interactionsHandler(
     @Body()
     body: MappedInteractionDTO,

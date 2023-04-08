@@ -3,6 +3,7 @@ import { AppUserDTO } from '../../../users/dto/App-user.dto';
 import { DiscordUserDTO } from '../../dto/Discord-user.dto';
 import { Commands } from '../../../app-SETUP/enums/commands.enum';
 import { UsersService } from '../../../users/providers/users.service';
+import { AuthenticatedGuarsServiceException } from '../exceptions/Authenticated-guard-service.exception';
 
 @Injectable()
 export class AuthenticatedGuardService {
@@ -19,11 +20,18 @@ export class AuthenticatedGuardService {
   }
 
   async notAuthenticated(discordUser: DiscordUserDTO): Promise<true> {
-    const appUser: AppUserDTO | undefined =
-      await this.usersService.getUserByDId(discordUser.id);
-    if (appUser?.authenticated)
-      throw new ForbiddenException('User already authenticated!');
-    return true;
+    try {
+      const appUser: AppUserDTO | undefined =
+        await this.usersService.getUserByDId(discordUser.id);
+      if (appUser?.authenticated)
+        throw new ForbiddenException('User already authenticated!');
+      return true;
+    } catch (err: any) {
+      if (err instanceof ForbiddenException) throw err;
+      throw new AuthenticatedGuarsServiceException(err.message, {
+        causeErr: err,
+      });
+    }
   }
 
   async default(): Promise<true> {

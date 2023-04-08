@@ -13,7 +13,7 @@ export class RolesRepository {
         truncate: true,
       });
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -30,7 +30,7 @@ export class RolesRepository {
       );
       return roles.map((role) => RoleMapper(role));
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 
@@ -42,7 +42,7 @@ export class RolesRepository {
         }),
       );
     } catch (err: any) {
-      throw new DBException(err?.message);
+      throw new DBException(err?.message, { causeErr: err });
     }
   }
 }
