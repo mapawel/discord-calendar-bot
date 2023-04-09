@@ -3,8 +3,8 @@ import { Request, Response, NextFunction } from 'express';
 import {
   InteractionWMemberDTO,
   InteractionWUserDTO,
-} from '../dto/Interaction.dto';
-import { DiscordUserDTO } from '../dto/Discord-user.dto';
+} from '../discord-interactions/dto/Interaction.dto';
+import { DiscordUserDTO } from '../discord-interactions/dto/Discord-user.dto';
 
 @Injectable()
 export class MapDiscUserMiddleware implements NestMiddleware {

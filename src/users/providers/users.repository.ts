@@ -1,9 +1,4 @@
-import {
-  BadRequestException,
-  ForbiddenException,
-  Injectable,
-  NotFoundException,
-} from '@nestjs/common';
+import { Injectable, NotFoundException } from '@nestjs/common';
 import { AppUser } from '../entity/App-user.entity';
 import { AppUserDTO } from '../dto/App-user.dto';
 import { AppUserMapper } from '../dto/App-user.mapper';
@@ -207,5 +202,4 @@ export class UsersRepository {
       throw new DBException(err?.message, { causeErr: err });
     }
   }
-  sourceUserId: string;
 }

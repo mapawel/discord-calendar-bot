@@ -4,7 +4,7 @@ import { AppUserDTO } from '../../../users/dto/App-user.dto';
 import { UsersService } from '../../../users/providers/users.service';
 import { commandsSelectComponents } from '../../../app-SETUP/lists/commands-select-components.list';
 import { ResponseComponentsProvider } from '../response-components.provider';
-import { CalendarService } from '../../../Calendar/Calendar.service';
+import { CalendarService } from '../../../Calendar/services/Calendar.service';
 import { Meeting } from '../../Meeting/Meeting.interface';
 import { FreeBusyRanges } from '../../../Calendar/types/Free-busy-ranges.type';
 import { AppCommandSelectComponent } from '../../../app-SETUP/lists/commands-select-components.list';
@@ -13,6 +13,7 @@ import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
 import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
 import { EmbedFieldsMeeting } from '../../../discord-interactions/Meeting/EmbedFieldsMeeting.type';
 import { InteractionComponentDTO } from 'src/discord-interactions/dto/Interaction-component.dto';
+import { DiscordInteractionException } from '../../../discord-interactions/exception/Discord-interaction.exception';
 
 @Injectable()
 export class InteractionsGetMeetingService {
@@ -29,43 +30,47 @@ export class InteractionsGetMeetingService {
     custom_id: string,
     id: string,
   ) {
-    const userDId: string = discordUser.id;
-    const hostDId: string = custom_id.split(':')[1];
+    try {
+      const userDId: string = discordUser.id;
+      const hostDId: string = custom_id.split(':')[1];
 
-    const {
-      user,
-      host,
-      error,
-    }: {
-      user: AppUserDTO;
-      host: AppUserDTO;
-      error: string | undefined;
-    } = await this.usersService.takeAndValidateUserAndHost({
-      userDId,
-      hostDId,
-    });
-    if (error) return this.respondWithError(id, token, error);
+      const {
+        user,
+        host,
+        error,
+      }: {
+        user: AppUserDTO;
+        host: AppUserDTO;
+        error: string | undefined;
+      } = await this.usersService.takeAndValidateUserAndHost({
+        userDId,
+        hostDId,
+      });
+      if (error) return await this.respondWithError(id, token, error);
 
-    return this.responseComponentsProvider.generateInteractionResponse({
-      id,
-      token,
-      type: 7,
-      content: `Choose a topic:`,
-      components: commandsSelectComponents.meetingDetailsTopics,
-      embed: {
-        title: embedTitles.creatingMeeting.title,
-        fields: [
-          {
-            name: this.constructPersonString(host, 'Host'),
-            value: host.dId,
-          },
-          {
-            name: this.constructPersonString(user, 'Guest'),
-            value: user.dId,
-          },
-        ],
-      },
-    });
+      return await this.responseComponentsProvider.generateInteractionResponse({
+        id,
+        token,
+        type: 7,
+        content: `Choose a topic:`,
+        components: commandsSelectComponents.meetingDetailsTopics,
+        embed: {
+          title: embedTitles.creatingMeeting.title,
+          fields: [
+            {
+              name: this.constructPersonString(host, 'Host'),
+              value: host.dId,
+            },
+            {
+              name: this.constructPersonString(user, 'Guest'),
+              value: user.dId,
+            },
+          ],
+        },
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async meetingDetailsTopicCallback(
@@ -77,27 +82,31 @@ export class InteractionsGetMeetingService {
     components: InteractionComponentDTO[],
     message: InteractionMessageDTO,
   ) {
-    const topic: string = values[0];
-    const currentEmbedFields: InteractionEmbedFieldDTO[] =
-      this.extractFieldsFromMessage(message);
+    try {
+      const topic: string = values[0];
+      const currentEmbedFields: InteractionEmbedFieldDTO[] =
+        this.extractFieldsFromMessage(message);
 
-    return this.responseComponentsProvider.generateInteractionResponse({
-      id,
-      token,
-      type: 7,
-      content: `Choose meeting duration:`,
-      components: commandsSelectComponents.meetingDetailsDuration,
-      embed: {
-        title: embedTitles.creatingMeeting.title,
-        fields: [
-          ...currentEmbedFields,
-          {
-            name: `Topic:`,
-            value: topic,
-          },
-        ],
-      },
-    });
+      return await this.responseComponentsProvider.generateInteractionResponse({
+        id,
+        token,
+        type: 7,
+        content: `Choose meeting duration:`,
+        components: commandsSelectComponents.meetingDetailsDuration,
+        embed: {
+          title: embedTitles.creatingMeeting.title,
+          fields: [
+            ...currentEmbedFields,
+            {
+              name: `Topic:`,
+              value: topic,
+            },
+          ],
+        },
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async meetingDetailsDurationCallback(
@@ -109,48 +118,52 @@ export class InteractionsGetMeetingService {
     components: InteractionComponentDTO[],
     message: InteractionMessageDTO,
   ) {
-    const durationMs = Number(values[0]);
-    const currentEmbedFields = this.extractFieldsFromMessage(message);
-    const hostDId: string = currentEmbedFields[0].value;
+    try {
+      const durationMs = Number(values[0]);
+      const currentEmbedFields = this.extractFieldsFromMessage(message);
+      const hostDId: string = currentEmbedFields[0].value;
 
-    const {
-      data: meetingTimeProposals,
-      error,
-    }: { data: FreeBusyRanges; error: string } =
-      await this.calendarService.getMeetingTimeProposals(hostDId, durationMs);
+      const {
+        data: meetingTimeProposals,
+        error,
+      }: { data: FreeBusyRanges; error: string } =
+        await this.calendarService.getMeetingTimeProposals(hostDId, durationMs);
 
-    if (error) return this.respondWithError(id, token, error);
+      if (error) return await this.respondWithError(id, token, error);
 
-    const splittedTimeProposals: FreeBusyRanges[] = this.splitArrayToArrays(
-      meetingTimeProposals,
-      24,
-    );
+      const splittedTimeProposals: FreeBusyRanges[] = this.splitArrayToArrays(
+        meetingTimeProposals,
+        24,
+      );
 
-    const componentsArrays = this.buildSelectMultiComponentsWithTimeranges(
-      splittedTimeProposals,
-      commandsSelectComponents.meetingDetailsTime,
-      5,
-    );
+      const componentsArrays = this.buildSelectMultiComponentsWithTimeranges(
+        splittedTimeProposals,
+        commandsSelectComponents.meetingDetailsTime,
+        5,
+      );
 
-    return await this.responseComponentsProvider.generateInteractionResponseMultiline(
-      {
-        id,
-        token,
-        type: 7,
-        content: 'Choose your time:',
-        componentsArrays,
-        embed: {
-          title: embedTitles.creatingMeeting.title,
-          fields: [
-            ...currentEmbedFields,
-            {
-              name: `Duration:`,
-              value: `${durationMs / 1000 / 60} minutes`,
-            },
-          ],
+      return await this.responseComponentsProvider.generateInteractionResponseMultiline(
+        {
+          id,
+          token,
+          type: 7,
+          content: 'Choose your time:',
+          componentsArrays,
+          embed: {
+            title: embedTitles.creatingMeeting.title,
+            fields: [
+              ...currentEmbedFields,
+              {
+                name: `Duration:`,
+                value: `${durationMs / 1000 / 60} minutes`,
+              },
+            ],
+          },
         },
-      },
-    );
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   async meetingDetailsTimeCallback(
@@ -162,67 +175,73 @@ export class InteractionsGetMeetingService {
     components: InteractionComponentDTO[],
     message: InteractionMessageDTO,
   ) {
-    const start: string = values[0].split('/')[0];
-    const end: string = values[0].split('/')[1];
-    const currentEmbedFields = this.extractFieldsFromMessage(message);
-    const {
-      hostDId,
-      hostEmail,
-      userDId,
-      username,
-      userEmail,
-      topic,
-    }: EmbedFieldsMeeting =
-      this.extractMeetingDataFromEmbedFields(currentEmbedFields);
+    try {
+      const start: string = values[0].split('/')[0];
+      const end: string = values[0].split('/')[1];
+      const currentEmbedFields = this.extractFieldsFromMessage(message);
+      const {
+        hostDId,
+        hostEmail,
+        userDId,
+        username,
+        userEmail,
+        topic,
+      }: EmbedFieldsMeeting =
+        this.extractMeetingDataFromEmbedFields(currentEmbedFields);
 
-    const meetingData: Meeting = {
-      userDId,
-      hostDId,
-      topic,
-      summary: `Meeting with ${username}`,
-      description: topic,
-      guestEmail: userEmail,
-      hostEmail: hostEmail,
-      start,
-      end,
-    };
+      const meetingData: Meeting = {
+        userDId,
+        hostDId,
+        topic,
+        summary: `Meeting with ${username}`,
+        description: topic,
+        guestEmail: userEmail,
+        hostEmail: hostEmail,
+        start,
+        end,
+      };
 
-    const { error }: { error: string } = await this.calendarService.bookMeeting(
-      hostDId as string,
-      meetingData,
-    );
+      const { error }: { error: string } =
+        await this.calendarService.bookMeeting(hostDId as string, meetingData);
 
-    if (error) return this.respondWithError(id, token, error);
+      if (error) return await this.respondWithError(id, token, error);
 
-    return this.responseComponentsProvider.generateInteractionResponse({
-      id,
-      token,
-      type: 7,
-      content: ``,
-      embed: {
-        title: embedTitles.meetingBooked.title,
-        fields: [
-          ...currentEmbedFields,
-          {
-            name: `Meeting start:`,
-            value: this.constructShortDate(start),
-          },
-          {
-            name: `Meeting end:`,
-            value: this.constructShortDate(end),
-          },
-        ],
-      },
-    });
+      return await this.responseComponentsProvider.generateInteractionResponse({
+        id,
+        token,
+        type: 7,
+        content: ``,
+        embed: {
+          title: embedTitles.meetingBooked.title,
+          fields: [
+            ...currentEmbedFields,
+            {
+              name: `Meeting start:`,
+              value: this.constructShortDate(start),
+            },
+            {
+              name: `Meeting end:`,
+              value: this.constructShortDate(end),
+            },
+          ],
+        },
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
-  private respondWithError(id: string, token: string, message?: string) {
-    return this.responseComponentsProvider.generateInteractionResponse({
-      id,
-      token,
-      type: 7,
-      content: message ? message : `try again... starting from slash command`,
-    });
+  private async respondWithError(id: string, token: string, message?: string) {
+    try {
+      return await this.responseComponentsProvider.generateInteractionResponse({
+        id,
+        token,
+        type: 7,
+        content: message ? message : `try again... starting from slash command`,
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   private splitArrayToArrays(

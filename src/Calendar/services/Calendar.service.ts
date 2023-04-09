@@ -1,10 +1,10 @@
-import { Meeting } from '../discord-interactions/Meeting/Meeting.interface';
-import { FreeBusyRanges } from './types/Free-busy-ranges.type';
-import { Calendar as CalendarEntity } from './entity/Calendar.entity';
+import { Meeting } from '../../discord-interactions/Meeting/Meeting.interface';
+import { FreeBusyRanges } from '../types/Free-busy-ranges.type';
+import { Calendar as CalendarEntity } from '../entity/Calendar.entity';
 import { Injectable } from '@nestjs/common';
-import { CalendarException } from './exception/Calendar.exception';
+import { CalendarException } from '../exception/Calendar.exception';
 import { GoogleApiService } from 'src/APIs/Google-api.service';
-import { settings } from '../app-SETUP/settings';
+import { settings } from '../../app-SETUP/settings';
 
 @Injectable()
 export class CalendarService {

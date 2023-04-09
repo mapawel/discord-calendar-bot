@@ -17,12 +17,16 @@ export class UsersService {
   ) {}
 
   public async createUserIfNotExisting(user: DiscordUserDTO): Promise<boolean> {
-    const foundUser: AppUserDTO | undefined =
-      await this.usersRepository.getFirstUserByParam('dId', user.id);
-    if (foundUser) {
-      return false;
+    try {
+      const foundUser: AppUserDTO | undefined =
+        await this.usersRepository.getFirstUserByParam('dId', user.id);
+      if (foundUser) {
+        return false;
+      }
+      return await this.usersRepository.createUser(user);
+    } catch (err: any) {
+      throw new UsersServiceException(err?.message, { causeErr: err });
     }
-    return await this.usersRepository.createUser(user);
   }
 
   public async updateUser(authUser: AppUserDTO): Promise<boolean> {
@@ -66,7 +70,7 @@ export class UsersService {
 
       return user;
     } catch (err: any) {
-      throw new NotFoundException(err?.message);
+      throw new UsersServiceException(err?.message, { causeErr: err });
     }
   }
 
@@ -126,21 +130,25 @@ export class UsersService {
     userDId: string;
     hostDId: string;
   }) {
-    let error: string | undefined;
-    const [user, host]: (AppUserDTO | undefined)[] = await Promise.all(
-      [userDId, hostDId].map((dId) => this.getUserByDId(dId)),
-    );
+    try {
+      let error: string | undefined;
+      const [user, host]: (AppUserDTO | undefined)[] = await Promise.all(
+        [userDId, hostDId].map((dId) => this.getUserByDId(dId)),
+      );
 
-    if (!user || !host) {
-      throw Error('User or host not found');
+      if (!user || !host) {
+        throw Error('User or host not found');
+      }
+
+      const usersCalendar: Calendar | null = await Calendar.findByPk(hostDId);
+      if (!usersCalendar)
+        error =
+          "Host didn't auth the app and connect his calander yet. Let him know about this fact to book a meeting!";
+
+      return { user, host, error };
+    } catch (err: any) {
+      throw new UsersServiceException(err?.message, { causeErr: err });
     }
-
-    const usersCalendar: Calendar | null = await Calendar.findByPk(hostDId);
-    if (!usersCalendar)
-      error =
-        "Host didn't auth the app and connect his calander yet. Let him know about this fact to book a meeting!";
-
-    return { user, host, error };
   }
 
   private filterUsersByRole(
@@ -175,19 +183,22 @@ export class UsersService {
     targetUserDId: string,
     maxMentors?: number,
   ): Promise<{ error: string }> {
-    return await this.usersRepository.bindUsers(
-      sourceUserDId,
-      targetUserDId,
-      maxMentors,
-    );
+    try {
+      return await this.usersRepository.bindUsers(
+        sourceUserDId,
+        targetUserDId,
+        maxMentors,
+      );
+    } catch (err: any) {
+      throw new UsersServiceException(err?.message, { causeErr: err });
+    }
   }
 
   async onModuleInit() {
     await this.rolesService.updateAllDBRoles();
 
-    const allDiscordUsers: DiscordUserDTO[] = await this.getUsersFromDiscord();
-
+    // to decide by business
+    // const allDiscordUsers: DiscordUserDTO[] = await this.getUsersFromDiscord();
     // await this.usersRepository.createOrUpdateAllUsers(allDiscordUsers);
-    //TODO add possibility to refresh mentors list from discord
   }
 }

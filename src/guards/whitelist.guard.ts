@@ -1,9 +1,9 @@
 import { Injectable, CanActivate, ExecutionContext } from '@nestjs/common';
-import { MappedInteractionDTO } from '../dto/Interaction.dto';
+import { MappedInteractionDTO } from '../discord-interactions/dto/Interaction.dto';
 import { WhitelistGuardService } from './guard-services/whitelist-guard.service';
-import { commands } from '../../app-SETUP/lists/commands.list';
-import { getInteractionSettingObject } from '../../discord-commands/components-operations/discord-component-operations.helper';
-import { allCommandsComponents } from '../../discord-commands/components-operations/discord-component-operations.helper';
+import { commands } from '../app-SETUP/lists/commands.list';
+import { getInteractionSettingObject } from '../discord-interactions/components-operations/discord-component-operations.helper';
+import { allCommandsComponents } from '../discord-interactions/components-operations/discord-component-operations.helper';
 
 @Injectable()
 export class WhitelistGuard implements CanActivate {

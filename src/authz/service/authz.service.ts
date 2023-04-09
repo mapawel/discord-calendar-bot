@@ -1,16 +1,14 @@
 import { Injectable } from '@nestjs/common';
 import { AppRoutes } from '../../routes/routes.enum';
-import { AuthzServiceException } from './exceptions/Authz-service.exception';
+import { AuthzServiceException } from '../exceptions/Authz-service.exception';
 import { JwtService } from '@nestjs/jwt';
-import { JsonWebTokenError } from 'jsonwebtoken';
 import { UsersService } from '../../users/providers/users.service';
 import { AppUserDTO } from '../../users/dto/App-user.dto';
 import { RolesService } from '../../roles/providers/roles.service';
 import { AuthzUserDTO } from '../dto/Auth-user.dto';
 import { AuthzApiService } from 'src/APIs/Authz-api.service';
 import { Calendar as CalendarEntity } from 'src/Calendar/entity/Calendar.entity';
-import { CalendarService } from 'src/Calendar/Calendar.service';
-import { AppError } from 'src/App-error/App-error';
+import { CalendarService } from 'src/Calendar/services/Calendar.service';
 
 @Injectable()
 export class AuthzService {

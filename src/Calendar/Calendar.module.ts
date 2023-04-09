@@ -1,5 +1,5 @@
 import { Module } from '@nestjs/common';
-import { CalendarService } from './Calendar.service';
+import { CalendarService } from './services/Calendar.service';
 import { ApisModule } from 'src/APIs/APIs.module';
 
 @Module({

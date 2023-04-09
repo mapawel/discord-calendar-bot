@@ -10,7 +10,7 @@ import { InteractionMessageDTO } from '../../../discord-interactions/dto/Interac
 import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
 import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
 import { InteractionComponentDTO } from '../../../discord-interactions/dto/Interaction-component.dto';
-import { DiscordInteractionException } from 'src/discord-interactions/exception/Discord-interaction.exception';
+import { DiscordInteractionException } from '../../../discord-interactions/exception/Discord-interaction.exception';
 
 @Injectable()
 export class InteractionsBotManagingService {
@@ -26,11 +26,15 @@ export class InteractionsBotManagingService {
     custom_id: string,
     id: string,
   ) {
-    return this.responseComponentsProvider.generateOneInputModal({
-      id,
-      token,
-      component: commandsModalComponents.managingBotModalAdding,
-    });
+    try {
+      return await this.responseComponentsProvider.generateOneInputModal({
+        id,
+        token,
+        component: commandsModalComponents.managingBotModalAdding,
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
+    }
   }
 
   public async addingUserToWhitelistCallback(
@@ -53,7 +57,7 @@ export class InteractionsBotManagingService {
       await this.usersService.createUserIfNotExisting(userToAdd);
       await this.usersService.updateUserWhitelistStatus(userToAdd.id, true);
 
-      await this.responseComponentsProvider.generateInteractionResponse({
+      return await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
@@ -71,22 +75,28 @@ export class InteractionsBotManagingService {
     custom_id: string,
     id: string,
   ) {
-    const usersToShow: AppUserDTO[] =
-      await this.usersService.getAllWhitelistedUsers();
+    try {
+      const usersToShow: AppUserDTO[] =
+        await this.usersService.getAllWhitelistedUsers();
 
-    if (!usersToShow.length)
-      return this.responseComponentsProvider.generateInteractionResponse({
+      if (!usersToShow.length)
+        return await this.responseComponentsProvider.generateInteractionResponse(
+          {
+            id,
+            token,
+            type: 4,
+            content: 'Nothing to remove...',
+          },
+        );
+
+      return await this.responseComponentsProvider.generateOneInputModal({
         id,
         token,
-        type: 4,
-        content: 'Nothing to remove...',
+        component: commandsModalComponents.managingBotModalRemoving,
       });
-
-    return this.responseComponentsProvider.generateOneInputModal({
-      id,
-      token,
-      component: commandsModalComponents.managingBotModalRemoving,
-    });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
+    }
   }
 
   public async removingUserFromWhitelistCallback(
@@ -97,19 +107,23 @@ export class InteractionsBotManagingService {
     id: string,
     components: InteractionComponentDTO[],
   ) {
-    const idToRemove: string | undefined =
-      components?.[0]?.components?.[0]?.value ||
-      'not parsed to int throws error';
-    if (!parseInt(idToRemove)) throw new BadRequestException();
+    try {
+      const idToRemove: string | undefined =
+        components?.[0]?.components?.[0]?.value ||
+        'not parsed to int throws error';
+      if (!parseInt(idToRemove)) throw new BadRequestException();
 
-    await this.usersService.updateUserWhitelistStatus(idToRemove, false);
+      await this.usersService.updateUserWhitelistStatus(idToRemove, false);
 
-    await this.responseComponentsProvider.generateInteractionResponse({
-      id,
-      token,
-      type: 7,
-      content: `User id ${idToRemove} removed!`,
-    });
+      return await this.responseComponentsProvider.generateInteractionResponse({
+        id,
+        token,
+        type: 7,
+        content: `User id ${idToRemove} removed!`,
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
+    }
   }
 
   public async settingUserConnections(
@@ -119,11 +133,15 @@ export class InteractionsBotManagingService {
     custom_id: string,
     id: string,
   ) {
-    return this.responseComponentsProvider.generateOneInputModal({
-      id,
-      token,
-      component: commandsModalComponents.managingBotModalUserToConnect,
-    });
+    try {
+      return await this.responseComponentsProvider.generateOneInputModal({
+        id,
+        token,
+        component: commandsModalComponents.managingBotModalUserToConnect,
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
+    }
   }
 
   public async settingUserConUserSelected(
@@ -134,49 +152,56 @@ export class InteractionsBotManagingService {
     id: string,
     components: InteractionComponentDTO[],
   ) {
-    const userToConnectId: string | undefined =
-      components?.[0]?.components?.[0]?.value ||
-      'not parsed to int throws error';
-    if (!parseInt(userToConnectId)) throw new BadRequestException();
+    try {
+      const userToConnectId: string | undefined =
+        components?.[0]?.components?.[0]?.value ||
+        'not parsed to int throws error';
+      if (!parseInt(userToConnectId)) throw new BadRequestException();
 
-    const userToConnect: DiscordUserDTO =
-      await this.usersService.getUserFromDiscord(userToConnectId);
-    await this.usersService.createUserIfNotExisting(userToConnect);
+      const userToConnect: DiscordUserDTO =
+        await this.usersService.getUserFromDiscord(userToConnectId);
+      await this.usersService.createUserIfNotExisting(userToConnect);
 
-    const personsToMeet: DiscordUserDTO[] =
-      await this.usersService.getUsersFromDiscord(
-        settings.rolesUsersCanMeetWith,
-      );
+      const personsToMeet: DiscordUserDTO[] =
+        await this.usersService.getUsersFromDiscord(
+          settings.rolesUsersCanMeetWith,
+        );
 
-    if (!personsToMeet.length)
-      return this.responseComponentsProvider.generateInteractionResponse({
+      if (!personsToMeet.length)
+        return await this.responseComponentsProvider.generateInteractionResponse(
+          {
+            id,
+            token,
+            type: 7,
+            content: `No users to meet with...`,
+          },
+        );
+
+      return await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
-        content: `No users to meet with...`,
+        embed: {
+          title: embedTitles.connectingUser.title,
+          fields: [
+            {
+              name: userToConnect.username,
+              value: userToConnect.id,
+            },
+          ],
+        },
+        content: `User ${userToConnect.username} will be able to meet with:`,
+        components:
+          commandsSelectComponents.managingBotSelectMentorToConnect.map(
+            (component) => ({
+              ...component,
+              options: this.mapUsersToSelectOptions(personsToMeet),
+            }),
+          ),
       });
-
-    return await this.responseComponentsProvider.generateInteractionResponse({
-      id,
-      token,
-      type: 7,
-      embed: {
-        title: embedTitles.connectingUser.title,
-        fields: [
-          {
-            name: userToConnect.username,
-            value: userToConnect.id,
-          },
-        ],
-      },
-      content: `User ${userToConnect.username} will be able to meet with:`,
-      components: commandsSelectComponents.managingBotSelectMentorToConnect.map(
-        (component) => ({
-          ...component,
-          options: this.mapUsersToSelectOptions(personsToMeet),
-        }),
-      ),
-    });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
+    }
   }
 
   public async settingUserConHostSelected(
@@ -188,35 +213,41 @@ export class InteractionsBotManagingService {
     components: InteractionComponentDTO[],
     message: InteractionMessageDTO,
   ) {
-    const [mentorToConnectId] = values;
-    const currentEmbedFields: InteractionEmbedFieldDTO[] =
-      this.extractFieldsFromMessage(message);
-    const userToBindId: string = currentEmbedFields[0].value;
+    try {
+      const [mentorToConnectId] = values;
+      const currentEmbedFields: InteractionEmbedFieldDTO[] =
+        this.extractFieldsFromMessage(message);
+      const userToBindId: string = currentEmbedFields[0].value;
 
-    const mentorToConnect: DiscordUserDTO =
-      await this.usersService.getUserFromDiscord(mentorToConnectId);
+      const mentorToConnect: DiscordUserDTO =
+        await this.usersService.getUserFromDiscord(mentorToConnectId);
 
-    await this.usersService.createUserIfNotExisting(mentorToConnect);
+      await this.usersService.createUserIfNotExisting(mentorToConnect);
 
-    const { error } = await this.usersService.bindUsers(
-      userToBindId,
-      mentorToConnectId,
-      3,
-    );
-    if (error)
-      return this.responseComponentsProvider.generateInteractionResponse({
+      const { error } = await this.usersService.bindUsers(
+        userToBindId,
+        mentorToConnectId,
+        3,
+      );
+      if (error)
+        return await this.responseComponentsProvider.generateInteractionResponse(
+          {
+            id,
+            token,
+            type: 7,
+            content: `error: ${error}`,
+          },
+        );
+
+      return await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
-        content: `error: ${error}`,
+        content: `User connected to selected metor!`,
       });
-
-    return await this.responseComponentsProvider.generateInteractionResponse({
-      id,
-      token,
-      type: 7,
-      content: `User connected to selected metor!`,
-    });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
+    }
   }
 
   public async displayWhitelist(
@@ -226,31 +257,37 @@ export class InteractionsBotManagingService {
     custom_id: string,
     id: string,
   ) {
-    const usersToShow: AppUserDTO[] =
-      await this.usersService.getAllWhitelistedUsers();
+    try {
+      const usersToShow: AppUserDTO[] =
+        await this.usersService.getAllWhitelistedUsers();
 
-    const splitedDataForEmbeds: string[][] =
-      this.splitUserdataForLimitedFields(usersToShow);
-    const embedFields: InteractionEmbedFieldDTO[] =
-      this.buildEmbedFieldsFromData(splitedDataForEmbeds);
+      const splitedDataForEmbeds: string[][] =
+        this.splitUserdataForLimitedFields(usersToShow);
+      const embedFields: InteractionEmbedFieldDTO[] =
+        this.buildEmbedFieldsFromData(splitedDataForEmbeds);
 
-    if (!usersToShow.length)
-      return this.responseComponentsProvider.generateInteractionResponse({
+      if (!usersToShow.length)
+        return await this.responseComponentsProvider.generateInteractionResponse(
+          {
+            id,
+            token,
+            type: 4,
+            content: 'The whitelist is empty...',
+          },
+        );
+
+      return await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 4,
-        content: 'The whitelist is empty...',
+        type: 7,
+        embed: {
+          title: embedTitles.whitelist.title,
+          fields: embedFields,
+        },
       });
-
-    return this.responseComponentsProvider.generateInteractionResponse({
-      id,
-      token,
-      type: 7,
-      embed: {
-        title: embedTitles.whitelist.title,
-        fields: embedFields,
-      },
-    });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
+    }
   }
 
   private splitUserdataForLimitedFields(users: AppUserDTO[]): string[][] {

@@ -9,40 +9,56 @@ export class DiscordCommandsService {
   constructor(private readonly discordApiService: DiscordApiService) {}
 
   public async commandsInit(commands: AppCommand[]) {
-    //   const existingCommands = await this.getExistingCommands();
-    //   console.log('initialized discord commands ----> ', existingCommands);
-    //   await Promise.all(
-    //     existingCommands.map(
-    //       async ({ id }: { id: string }) => await this.deleteCommand(id),
-    //     ),
-    //   );
-    //   await Promise.all(
-    //     commands.map(
-    //       async (command: AppCommand) => await this.addCommand(command),
-    //     ),
-    //   );
+    try {
+      //   const existingCommands = await this.getExistingCommands();
+      //   console.log('initialized discord commands ----> ', existingCommands);
+      //   await Promise.all(
+      //     existingCommands.map(
+      //       async ({ id }: { id: string }) => await this.deleteCommand(id),
+      //     ),
+      //   );
+      //   await Promise.all(
+      //     commands.map(
+      //       async (command: AppCommand) => await this.addCommand(command),
+      //     ),
+      //   );
+    } catch (err: any) {
+      throw new DiscordCommandsException(err?.message, { causeErr: err });
+    }
   }
 
   private async getExistingCommands() {
-    return await this.discordRequest({
-      method: 'GET',
-      url: '',
-    });
+    try {
+      return await this.discordRequest({
+        method: 'GET',
+        url: '',
+      });
+    } catch (err: any) {
+      throw new DiscordCommandsException(err?.message, { causeErr: err });
+    }
   }
 
   private async addCommand(command: AppCommand) {
-    return await this.discordRequest({
-      method: 'POST',
-      data: command,
-      url: '',
-    });
+    try {
+      return await this.discordRequest({
+        method: 'POST',
+        data: command,
+        url: '',
+      });
+    } catch (err: any) {
+      throw new DiscordCommandsException(err?.message, { causeErr: err });
+    }
   }
 
   private async deleteCommand(id: string) {
-    return await this.discordRequest({
-      method: 'DELETE',
-      url: `/${id}`,
-    });
+    try {
+      return await this.discordRequest({
+        method: 'DELETE',
+        url: `/${id}`,
+      });
+    } catch (err: any) {
+      throw new DiscordCommandsException(err?.message, { causeErr: err });
+    }
   }
 
   private async discordRequest({

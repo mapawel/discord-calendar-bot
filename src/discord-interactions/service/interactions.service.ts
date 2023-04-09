@@ -1,11 +1,12 @@
 import { Injectable } from '@nestjs/common';
 import { DiscordUserDTO } from '../dto/Discord-user.dto';
-import { IntegrationSlashCommandsService } from './interactions-slash-commands.service';
+import { IntegrationSlashCommandsService } from './subservices/interactions-slash-commands.service';
 import { InteractionsGetMeetingService } from './subservices/interactions-get-meeting.service';
 import { InteractionsBotManagingService } from './subservices/interactions-bot-managing.service';
 import { ResponseComponentsProvider } from './response-components.provider';
 import { InteractionMessageDTO } from '../dto/Interaction-message.dto';
 import { InteractionComponentDTO } from '../dto/Interaction-component.dto';
+import { DiscordInteractionException } from '../exception/Discord-interaction.exception';
 
 @Injectable()
 export class IntegrationService {
@@ -17,7 +18,11 @@ export class IntegrationService {
   ) {}
 
   public async responseWithPong() {
-    return this.integrationSlashCommandsService.responseWithPong();
+    try {
+      return await this.integrationSlashCommandsService.responseWithPong();
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async managingBot(
@@ -27,13 +32,17 @@ export class IntegrationService {
     custom_id: string,
     id: string,
   ) {
-    return this.integrationSlashCommandsService.managingBot(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-    );
+    try {
+      return await this.integrationSlashCommandsService.managingBot(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async authenticate(
@@ -43,13 +52,17 @@ export class IntegrationService {
     custom_id: string,
     id: string,
   ) {
-    return this.integrationSlashCommandsService.authenticate(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-    );
+    try {
+      return await this.integrationSlashCommandsService.authenticate(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async responseForMeetingInit(
@@ -59,13 +72,17 @@ export class IntegrationService {
     custom_id: string,
     id: string,
   ) {
-    return this.integrationSlashCommandsService.responseForMeetingInit(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-    );
+    try {
+      return await this.integrationSlashCommandsService.responseForMeetingInit(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async meetingChooseMentorCallback(
@@ -75,13 +92,17 @@ export class IntegrationService {
     custom_id: string,
     id: string,
   ) {
-    return this.interactionsGetMeetingService.meetingChooseMentorCallback(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-    );
+    try {
+      return await this.interactionsGetMeetingService.meetingChooseMentorCallback(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async meetingDetailsTopicCallback(
@@ -93,15 +114,19 @@ export class IntegrationService {
     components: InteractionComponentDTO[],
     message: InteractionMessageDTO,
   ) {
-    return this.interactionsGetMeetingService.meetingDetailsTopicCallback(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-      components,
-      message,
-    );
+    try {
+      return await this.interactionsGetMeetingService.meetingDetailsTopicCallback(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+        components,
+        message,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async meetingDetailsDurationCallback(
@@ -113,15 +138,19 @@ export class IntegrationService {
     components: InteractionComponentDTO[],
     message: InteractionMessageDTO,
   ) {
-    return this.interactionsGetMeetingService.meetingDetailsDurationCallback(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-      components,
-      message,
-    );
+    try {
+      return await this.interactionsGetMeetingService.meetingDetailsDurationCallback(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+        components,
+        message,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async meetingDetailsTimeCallback(
@@ -133,15 +162,19 @@ export class IntegrationService {
     components: InteractionComponentDTO[],
     message: InteractionMessageDTO,
   ) {
-    return this.interactionsGetMeetingService.meetingDetailsTimeCallback(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-      components,
-      message,
-    );
+    try {
+      return await this.interactionsGetMeetingService.meetingDetailsTimeCallback(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+        components,
+        message,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async addingUserToWhitelist(
@@ -151,13 +184,17 @@ export class IntegrationService {
     custom_id: string,
     id: string,
   ) {
-    return this.interactionsBotManagingService.addingUserToWhitelist(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-    );
+    try {
+      return await this.interactionsBotManagingService.addingUserToWhitelist(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async addingUserToWhitelistCallback(
@@ -168,14 +205,18 @@ export class IntegrationService {
     id: string,
     components: InteractionComponentDTO[],
   ) {
-    return this.interactionsBotManagingService.addingUserToWhitelistCallback(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-      components,
-    );
+    try {
+      return await this.interactionsBotManagingService.addingUserToWhitelistCallback(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+        components,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async removingUserFromWhitelist(
@@ -185,13 +226,17 @@ export class IntegrationService {
     custom_id: string,
     id: string,
   ) {
-    return this.interactionsBotManagingService.removingUserFromWhitelist(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-    );
+    try {
+      return await this.interactionsBotManagingService.removingUserFromWhitelist(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async removingUserFromWhitelistCallback(
@@ -202,14 +247,18 @@ export class IntegrationService {
     id: string,
     components: InteractionComponentDTO[],
   ) {
-    return this.interactionsBotManagingService.removingUserFromWhitelistCallback(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-      components,
-    );
+    try {
+      return await this.interactionsBotManagingService.removingUserFromWhitelistCallback(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+        components,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async settingUserConnections(
@@ -219,13 +268,17 @@ export class IntegrationService {
     custom_id: string,
     id: string,
   ) {
-    return this.interactionsBotManagingService.settingUserConnections(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-    );
+    try {
+      return await this.interactionsBotManagingService.settingUserConnections(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async settingUserConUserSelected(
@@ -236,14 +289,18 @@ export class IntegrationService {
     id: string,
     components: InteractionComponentDTO[],
   ) {
-    return this.interactionsBotManagingService.settingUserConUserSelected(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-      components,
-    );
+    try {
+      return await this.interactionsBotManagingService.settingUserConUserSelected(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+        components,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async settingUserConHostSelected(
@@ -255,15 +312,19 @@ export class IntegrationService {
     components: InteractionComponentDTO[],
     message: InteractionMessageDTO,
   ) {
-    return this.interactionsBotManagingService.settingUserConHostSelected(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-      components,
-      message,
-    );
+    try {
+      return await this.interactionsBotManagingService.settingUserConHostSelected(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+        components,
+        message,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async displayWhitelist(
@@ -273,13 +334,17 @@ export class IntegrationService {
     custom_id: string,
     id: string,
   ) {
-    return this.interactionsBotManagingService.displayWhitelist(
-      discordUser,
-      values,
-      token,
-      custom_id,
-      id,
-    );
+    try {
+      return await this.interactionsBotManagingService.displayWhitelist(
+        discordUser,
+        values,
+        token,
+        custom_id,
+        id,
+      );
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 
   public async default(
@@ -289,11 +354,15 @@ export class IntegrationService {
     custom_id: string,
     id: string,
   ) {
-    return this.responseComponentsProvider.generateInteractionResponse({
-      id,
-      token,
-      type: 4,
-      content: 'No action implemented for this command yet.',
-    });
+    try {
+      return await this.responseComponentsProvider.generateInteractionResponse({
+        id,
+        token,
+        type: 4,
+        content: 'No action implemented for await this command yet.',
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err.message, { causeErr: err });
+    }
   }
 }
