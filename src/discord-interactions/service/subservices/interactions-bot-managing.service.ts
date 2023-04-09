@@ -89,7 +89,7 @@ export class InteractionsBotManagingService {
           },
         );
 
-      this.responseComponentsProvider.generateOneInputModal({
+      await this.responseComponentsProvider.generateOneInputModal({
         id,
         token,
         component: commandsModalComponents.managingBotModalRemoving,

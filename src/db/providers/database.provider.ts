@@ -3,13 +3,14 @@ import { Sequelize } from 'sequelize-typescript';
 import { Role } from '../../roles/entity/Role.entity';
 import { AppUser } from 'src/users/entity/App-user.entity';
 import { AppUsersRelated } from 'src/users/entity/App-users-related.entity';
-import { Calendar } from '../../Calendar/entity/Calendar.entity';
+import { HostCalendar } from '../../Host-calendar/entity/Host-calendar.entity';
 
 export const databaseProviders = [
   {
     provide: 'SEQUELIZE',
     useFactory: async () => {
       const sequelize = new Sequelize({
+        logging: false,
         dialect: 'sqlite',
         storage: join(
           process.cwd(),
@@ -17,7 +18,7 @@ export const databaseProviders = [
           process.env.DB_FILENAME || 'db.sqlite',
         ),
       });
-      sequelize.addModels([Role, AppUser, AppUsersRelated, Calendar]);
+      sequelize.addModels([Role, AppUser, AppUsersRelated, HostCalendar]);
       await sequelize.sync();
       return sequelize;
     },

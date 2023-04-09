@@ -111,7 +111,7 @@
       "RolesModule",
       "UsersModule",
       "ApisModule",
-      "CalendarModule",
+      "HostCalendarModule",
       "ConfigModule",
       "ConfigHostModule"
     ],
@@ -188,20 +188,20 @@
     ]
   },
   {
-    "name": "CalendarModule",
+    "name": "HostCalendarModule",
     "imports": [
       "ApisModule",
       "ConfigModule",
       "ConfigHostModule"
     ],
     "providers": {
-      "CalendarService": {
+      "HostCalendarService": {
         "method": "standard"
       }
     },
     "controllers": [],
     "exports": [
-      "CalendarService"
+      "HostCalendarService"
     ]
   },
   {
@@ -212,7 +212,7 @@
       "RolesModule",
       "PassportModule",
       "ApisModule",
-      "CalendarModule",
+      "HostCalendarModule",
       "ConfigModule",
       "ConfigHostModule"
     ],

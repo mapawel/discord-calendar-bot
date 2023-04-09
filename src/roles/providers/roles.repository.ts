@@ -11,6 +11,7 @@ export class RolesRepository {
       await Role.destroy({
         where: {},
         truncate: true,
+        cascade: true,
       });
     } catch (err: any) {
       throw new DBException(err?.message, { causeErr: err });

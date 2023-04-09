@@ -155,6 +155,7 @@ export class ResponseComponentsProvider {
         },
       });
     } catch (err: any) {
+      console.log('err ----> ', err);
       throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
   }

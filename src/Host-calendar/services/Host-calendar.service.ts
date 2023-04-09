@@ -1,13 +1,13 @@
 import { Meeting } from '../../discord-interactions/Meeting/Meeting.interface';
 import { FreeBusyRanges } from '../types/Free-busy-ranges.type';
-import { Calendar as CalendarEntity } from '../entity/Calendar.entity';
+import { HostCalendar } from '../entity/Host-calendar.entity';
 import { Injectable } from '@nestjs/common';
-import { CalendarException } from '../exception/Calendar.exception';
+import { HostCalendarException } from '../exception/Host-calendar.exception';
 import { GoogleApiService } from 'src/APIs/Google-api.service';
 import { settings } from '../../app-SETUP/settings';
 
 @Injectable()
-export class CalendarService {
+export class HostCalendarService {
   constructor(private readonly googleApiService: GoogleApiService) {}
 
   public async getMentorsCalendarId(googleToken: string): Promise<string> {
@@ -35,7 +35,7 @@ export class CalendarService {
 
       return mentorCalendar.id;
     } catch (err: any) {
-      throw new CalendarException(err?.message, { causeErr: err });
+      throw new HostCalendarException(err?.message, { causeErr: err });
     }
   }
 
@@ -45,7 +45,7 @@ export class CalendarService {
     resolutionFactor: 0.5 | 1 = 0.5,
   ): Promise<{ data: FreeBusyRanges; error: string }> {
     try {
-      const hostCalendar = await CalendarEntity.findByPk(hostDId);
+      const hostCalendar = await HostCalendar.findByPk(hostDId);
       if (!hostCalendar)
         return {
           data: [] as FreeBusyRanges,
@@ -80,7 +80,7 @@ export class CalendarService {
       });
       return { data: meetingTimeProposalsTimes.flat(), error: '' };
     } catch (err: any) {
-      throw new CalendarException(err?.message, { causeErr: err });
+      throw new HostCalendarException(err?.message, { causeErr: err });
     }
   }
 
@@ -89,7 +89,7 @@ export class CalendarService {
     meeting: Meeting,
   ): Promise<{ error: string }> {
     try {
-      const hostCalendar = await CalendarEntity.findByPk(hostDId);
+      const hostCalendar = await HostCalendar.findByPk(hostDId);
       if (!hostCalendar)
         return {
           error:
@@ -140,7 +140,7 @@ export class CalendarService {
         error: '',
       };
     } catch (err: any) {
-      throw new CalendarException(err?.message, { causeErr: err });
+      throw new HostCalendarException(err?.message, { causeErr: err });
     }
   }
 
@@ -172,7 +172,7 @@ export class CalendarService {
       );
       return freeTimeWindows;
     } catch (err: any) {
-      throw new CalendarException(err?.message, { causeErr: err });
+      throw new HostCalendarException(err?.message, { causeErr: err });
     }
   }
 
@@ -182,7 +182,7 @@ export class CalendarService {
     timeMax: string,
   ): Promise<FreeBusyRanges> {
     try {
-      const hostCalendar = await CalendarEntity.findByPk(hostDId);
+      const hostCalendar = await HostCalendar.findByPk(hostDId);
       if (!hostCalendar) throw new Error('No calendar found');
 
       const {
@@ -215,7 +215,7 @@ export class CalendarService {
       });
       return calendars?.[calendarId]?.busy;
     } catch (err: any) {
-      throw new CalendarException(err?.message, { causeErr: err });
+      throw new HostCalendarException(err?.message, { causeErr: err });
     }
   }
 }

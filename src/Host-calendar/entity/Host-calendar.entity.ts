@@ -1,7 +1,7 @@
 import { Table, Column, Model, Unique, PrimaryKey } from 'sequelize-typescript';
 
 @Table
-export class Calendar extends Model {
+export class HostCalendar extends Model {
   @PrimaryKey
   @Unique({ name: 'id', msg: 'Discord ID must be unique' })
   @Column

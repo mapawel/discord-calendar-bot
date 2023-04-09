@@ -14,10 +14,10 @@ import { ApisModule } from 'src/APIs/APIs.module';
 import { ResponseComponentsProvider } from './service/response-components.provider';
 import { InteractionsGetMeetingService } from './service/subservices/interactions-get-meeting.service';
 import { InteractionsBotManagingService } from './service/subservices/interactions-bot-managing.service';
-import { CalendarModule } from 'src/Calendar/Calendar.module';
+import { HostCalendarModule } from 'src/Host-calendar/Host-calendar.module';
 
 @Module({
-  imports: [RolesModule, UsersModule, ApisModule, CalendarModule],
+  imports: [RolesModule, UsersModule, ApisModule, HostCalendarModule],
   controllers: [DiscordInteractionController],
   providers: [
     IntegrationSlashCommandsService,

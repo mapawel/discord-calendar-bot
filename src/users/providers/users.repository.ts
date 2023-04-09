@@ -152,6 +152,7 @@ export class UsersRepository {
         where: {
           dId: appUsersToDelete.map(({ dId }: { dId: string }) => dId),
         },
+        cascade: true,
       });
     } catch (err: any) {
       throw new DBException(err?.message, { causeErr: err });

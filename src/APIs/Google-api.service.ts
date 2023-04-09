@@ -1,6 +1,6 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
 import axios from 'axios';
-import { Calendar } from 'src/Calendar/entity/Calendar.entity';
+import { HostCalendar } from 'src/Host-calendar/entity/Host-calendar.entity';
 import { GoogleApiServiceException } from './exceptions/Google-api-service.exception';
 
 export class GoogleApiService {
@@ -60,7 +60,7 @@ export class GoogleApiService {
     calendarId: string,
   ): Promise<string> {
     try {
-      const currentCalendar: Calendar | null = await Calendar.findOne({
+      const currentCalendar: HostCalendar | null = await HostCalendar.findOne({
         where: { calendarId },
       });
       if (!currentCalendar?.googleRefreshToken)
@@ -105,7 +105,7 @@ export class GoogleApiService {
     access_token: string,
   ) {
     try {
-      await Calendar.update(
+      await HostCalendar.update(
         {
           googleToken: access_token,
         },

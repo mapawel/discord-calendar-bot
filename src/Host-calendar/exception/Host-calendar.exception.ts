@@ -1,8 +1,8 @@
 import { AppError } from '../../App-error/App-error';
 
-export class CalendarException extends AppError {
+export class HostCalendarException extends AppError {
   constructor(message: string, { causeErr }: { causeErr: AppError }) {
     super(message, { causeErr });
-    this.name = 'CalendarException';
+    this.name = 'HostCalendarException';
   }
 }

@@ -4,9 +4,9 @@ import { AppUserDTO } from '../../../users/dto/App-user.dto';
 import { UsersService } from '../../../users/providers/users.service';
 import { commandsSelectComponents } from '../../../app-SETUP/lists/commands-select-components.list';
 import { ResponseComponentsProvider } from '../response-components.provider';
-import { CalendarService } from '../../../Calendar/services/Calendar.service';
+import { HostCalendarService } from '../../../Host-calendar/services/Host-calendar.service';
 import { Meeting } from '../../Meeting/Meeting.interface';
-import { FreeBusyRanges } from '../../../Calendar/types/Free-busy-ranges.type';
+import { FreeBusyRanges } from '../../../Host-calendar/types/Free-busy-ranges.type';
 import { AppCommandSelectComponent } from '../../../app-SETUP/lists/commands-select-components.list';
 import { InteractionMessageDTO } from '../../../discord-interactions/dto/Interaction-message.dto';
 import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
@@ -20,7 +20,7 @@ export class InteractionsGetMeetingService {
   constructor(
     private readonly usersService: UsersService,
     private readonly responseComponentsProvider: ResponseComponentsProvider,
-    private readonly calendarService: CalendarService,
+    private readonly hostCalendarService: HostCalendarService,
   ) {}
 
   async meetingChooseMentorCallback(
@@ -127,7 +127,7 @@ export class InteractionsGetMeetingService {
         data: meetingTimeProposals,
         error,
       }: { data: FreeBusyRanges; error: string } =
-        await this.calendarService.getMeetingTimeProposals(hostDId, durationMs);
+        await this.hostCalendarService.getMeetingTimeProposals(hostDId, durationMs);
 
       if (error) return await this.responseWithError(id, token, error);
 
@@ -202,7 +202,7 @@ export class InteractionsGetMeetingService {
       };
 
       const { error }: { error: string } =
-        await this.calendarService.bookMeeting(hostDId as string, meetingData);
+        await this.hostCalendarService.bookMeeting(hostDId as string, meetingData);
 
       if (error) return await this.responseWithError(id, token, error);
 

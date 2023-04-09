@@ -7,8 +7,8 @@ import { AppUserDTO } from '../../users/dto/App-user.dto';
 import { RolesService } from '../../roles/providers/roles.service';
 import { AuthzUserDTO } from '../dto/Auth-user.dto';
 import { AuthzApiService } from 'src/APIs/Authz-api.service';
-import { Calendar as CalendarEntity } from 'src/Calendar/entity/Calendar.entity';
-import { CalendarService } from 'src/Calendar/services/Calendar.service';
+import { HostCalendar } from 'src/Host-calendar/entity/Host-calendar.entity';
+import { HostCalendarService } from 'src/Host-calendar/services/Host-calendar.service';
 
 @Injectable()
 export class AuthzService {
@@ -17,7 +17,7 @@ export class AuthzService {
     private readonly usersService: UsersService,
     private readonly rolesService: RolesService,
     private readonly authzApiService: AuthzApiService,
-    private readonly calendarService: CalendarService,
+    private readonly hostCalendarService: HostCalendarService,
   ) {}
 
   public async buildRedirectLink(id: string): Promise<string> {
@@ -95,10 +95,9 @@ export class AuthzService {
 
   private async handleHostLogin(dId: string, aId: string) {
     try {
-      const currentCalendar: CalendarEntity | null =
-        await CalendarEntity.findOne({
-          where: { dId },
-        });
+      const currentCalendar: HostCalendar | null = await HostCalendar.findOne({
+        where: { dId },
+      });
 
       if (!currentCalendar) {
         const {
@@ -107,10 +106,10 @@ export class AuthzService {
         }: { googleToken: string; googleRefreshToken: string } =
           await this.getTokensForGoogle(aId);
 
-        const calendarId = await this.calendarService.getMentorsCalendarId(
+        const calendarId = await this.hostCalendarService.getMentorsCalendarId(
           googleToken,
         );
-        await CalendarEntity.create({
+        await HostCalendar.create({
           dId,
           googleToken,
           googleRefreshToken,

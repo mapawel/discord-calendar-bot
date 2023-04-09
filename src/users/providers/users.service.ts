@@ -2,11 +2,11 @@ import { NotFoundException, Injectable } from '@nestjs/common';
 import { DiscordUserDTO } from '../../discord-interactions/dto/Discord-user.dto';
 import { AppUserDTO } from '../dto/App-user.dto';
 import { UsersRepository } from './users.repository';
-import { RolesService } from 'src/roles/providers/roles.service';
-import { DiscordApiService } from 'src/APIs/Discord-api.service';
-import { AuthzUserDTO } from 'src/authz/dto/Auth-user.dto';
+import { RolesService } from '../../roles/providers/roles.service';
+import { DiscordApiService } from '../../APIs/Discord-api.service';
+import { AuthzUserDTO } from '../../authz/dto/Auth-user.dto';
 import { UsersServiceException } from '../exception/Users-service.exception';
-import { Calendar } from 'src/Calendar/entity/Calendar.entity';
+import { HostCalendar } from '../../Host-calendar/entity/Host-calendar.entity';
 
 @Injectable()
 export class UsersService {
@@ -67,9 +67,13 @@ export class UsersService {
           method: 'GET',
           url: `/guilds/${process.env.DISCORD_GUILD_ID}/members/${dId}`,
         });
+      if (!user) throw new NotFoundException('User not found on Discord');
 
       return user;
     } catch (err: any) {
+      if (err?.response?.status === 404) {
+        throw new NotFoundException('User not found on Discord');
+      }
       throw new UsersServiceException(err?.message, { causeErr: err });
     }
   }
@@ -84,7 +88,7 @@ export class UsersService {
           url: `https://discord.com/api/v10/guilds/${process.env.DISCORD_GUILD_ID}/members?limit=1000`,
         });
 
-      if (!data) throw new Error('No data from Discord trying to get users');
+      if (!data) throw new Error('No requested data found on Discord');
 
       const roles: string[] = await this.rolesService.translateRoleNamesToIds(
         roleNames || [],
@@ -104,6 +108,9 @@ export class UsersService {
         }),
       );
     } catch (err: any) {
+      if (err?.response?.status === 404) {
+        throw new NotFoundException('Requested data not found on Discord');
+      }
       throw new UsersServiceException(err?.message, { causeErr: err });
     }
   }
@@ -140,7 +147,7 @@ export class UsersService {
         throw Error('User or host not found');
       }
 
-      const usersCalendar: Calendar | null = await Calendar.findByPk(hostDId);
+      const usersCalendar: HostCalendar | null = await HostCalendar.findByPk(hostDId);
       if (!usersCalendar)
         error =
           "Host didn't auth the app and connect his calander yet. Let him know about this fact to book a meeting!";

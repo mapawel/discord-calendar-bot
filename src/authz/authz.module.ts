@@ -7,7 +7,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { UsersModule } from 'src/users/users.module';
 import { RolesModule } from 'src/roles/roles.module';
 import { ApisModule } from 'src/APIs/APIs.module';
-import { CalendarModule } from 'src/Calendar/Calendar.module';
+import { HostCalendarModule } from 'src/Host-calendar/Host-calendar.module';
 import * as dotenv from 'dotenv';
 dotenv.config();
 
@@ -19,7 +19,7 @@ dotenv.config();
     RolesModule,
     PassportModule.register({ defaultStrategy: 'jwt' }),
     ApisModule,
-    CalendarModule,
+    HostCalendarModule,
   ],
   providers: [JwtStrategy, AuthzService],
   exports: [PassportModule, AuthzService],
