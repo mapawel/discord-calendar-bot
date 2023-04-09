@@ -27,7 +27,7 @@ export class InteractionsBotManagingService {
     id: string,
   ) {
     try {
-      return await this.responseComponentsProvider.generateOneInputModal({
+      await this.responseComponentsProvider.generateOneInputModal({
         id,
         token,
         component: commandsModalComponents.managingBotModalAdding,
@@ -57,7 +57,7 @@ export class InteractionsBotManagingService {
       await this.usersService.createUserIfNotExisting(userToAdd);
       await this.usersService.updateUserWhitelistStatus(userToAdd.id, true);
 
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
@@ -89,7 +89,7 @@ export class InteractionsBotManagingService {
           },
         );
 
-      return await this.responseComponentsProvider.generateOneInputModal({
+      this.responseComponentsProvider.generateOneInputModal({
         id,
         token,
         component: commandsModalComponents.managingBotModalRemoving,
@@ -115,7 +115,7 @@ export class InteractionsBotManagingService {
 
       await this.usersService.updateUserWhitelistStatus(idToRemove, false);
 
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
@@ -134,7 +134,7 @@ export class InteractionsBotManagingService {
     id: string,
   ) {
     try {
-      return await this.responseComponentsProvider.generateOneInputModal({
+      await this.responseComponentsProvider.generateOneInputModal({
         id,
         token,
         component: commandsModalComponents.managingBotModalUserToConnect,
@@ -177,7 +177,7 @@ export class InteractionsBotManagingService {
           },
         );
 
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
@@ -239,7 +239,7 @@ export class InteractionsBotManagingService {
           },
         );
 
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
@@ -276,7 +276,7 @@ export class InteractionsBotManagingService {
           },
         );
 
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,

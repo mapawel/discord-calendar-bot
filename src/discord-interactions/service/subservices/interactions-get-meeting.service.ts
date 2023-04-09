@@ -46,9 +46,9 @@ export class InteractionsGetMeetingService {
         userDId,
         hostDId,
       });
-      if (error) return await this.respondWithError(id, token, error);
+      if (error) return await this.responseWithError(id, token, error);
 
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
@@ -87,7 +87,7 @@ export class InteractionsGetMeetingService {
       const currentEmbedFields: InteractionEmbedFieldDTO[] =
         this.extractFieldsFromMessage(message);
 
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
@@ -129,7 +129,7 @@ export class InteractionsGetMeetingService {
       }: { data: FreeBusyRanges; error: string } =
         await this.calendarService.getMeetingTimeProposals(hostDId, durationMs);
 
-      if (error) return await this.respondWithError(id, token, error);
+      if (error) return await this.responseWithError(id, token, error);
 
       const splittedTimeProposals: FreeBusyRanges[] = this.splitArrayToArrays(
         meetingTimeProposals,
@@ -142,7 +142,7 @@ export class InteractionsGetMeetingService {
         5,
       );
 
-      return await this.responseComponentsProvider.generateInteractionResponseMultiline(
+      await this.responseComponentsProvider.generateInteractionResponseMultiline(
         {
           id,
           token,
@@ -204,9 +204,9 @@ export class InteractionsGetMeetingService {
       const { error }: { error: string } =
         await this.calendarService.bookMeeting(hostDId as string, meetingData);
 
-      if (error) return await this.respondWithError(id, token, error);
+      if (error) return await this.responseWithError(id, token, error);
 
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,
@@ -231,9 +231,9 @@ export class InteractionsGetMeetingService {
     }
   }
 
-  private async respondWithError(id: string, token: string, message?: string) {
+  private async responseWithError(id: string, token: string, message?: string) {
     try {
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 7,

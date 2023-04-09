@@ -45,29 +45,25 @@ export class IntegrationSlashCommandsService {
       if (!foundUser) throw new NotFoundException('User not found!');
 
       if (foundUser.mentors.length) {
-        return await this.responseComponentsProvider.generateInteractionResponse(
-          {
-            id,
-            token,
-            type: 4,
-            content: 'Choose a person to meet with:',
-            components: foundUser?.mentors.map((connectedUser: AppUserDTO) => ({
-              ...commandsComponents.mentorToMeetWithButton[0],
-              label: connectedUser.username,
-              custom_id: `${CommandsComponents.MEETING_CALLBACK}${connectedUser.dId}`,
-            })),
-          },
-        );
+        await this.responseComponentsProvider.generateInteractionResponse({
+          id,
+          token,
+          type: 4,
+          content: 'Choose a person to meet with:',
+          components: foundUser?.mentors.map((connectedUser: AppUserDTO) => ({
+            ...commandsComponents.mentorToMeetWithButton[0],
+            label: connectedUser.username,
+            custom_id: `${CommandsComponents.MEETING_CALLBACK}${connectedUser.dId}`,
+          })),
+        });
       } else {
-        return await this.responseComponentsProvider.generateInteractionResponse(
-          {
-            id,
-            token,
-            type: 4,
-            content:
-              'You have no contacts to meet with. Please contact an admin.',
-          },
-        );
+        await this.responseComponentsProvider.generateInteractionResponse({
+          id,
+          token,
+          type: 4,
+          content:
+            'You have no contacts to meet with. Please contact an admin.',
+        });
       }
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, {
@@ -86,7 +82,7 @@ export class IntegrationSlashCommandsService {
     try {
       await this.usersService.createUserIfNotExisting(discordUser);
 
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 4,
@@ -110,7 +106,7 @@ export class IntegrationSlashCommandsService {
     id: string,
   ) {
     try {
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 4,
@@ -132,7 +128,7 @@ export class IntegrationSlashCommandsService {
     id: string,
   ) {
     try {
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 4,

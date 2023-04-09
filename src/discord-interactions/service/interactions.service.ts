@@ -355,7 +355,7 @@ export class IntegrationService {
     id: string,
   ) {
     try {
-      return await this.responseComponentsProvider.generateInteractionResponse({
+      await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
         type: 4,

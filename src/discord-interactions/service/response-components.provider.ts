@@ -27,7 +27,7 @@ export class ResponseComponentsProvider {
     embed?: { title: string; fields: { name: string; value: string }[] };
   }) {
     try {
-      return await this.discordApiService.axiosInstance({
+      await this.discordApiService.axiosInstance({
         method: 'POST',
         url: `/interactions/${id}/${token}/callback`,
         data: {
@@ -80,7 +80,7 @@ export class ResponseComponentsProvider {
     embed?: { title: string; fields: { name: string; value: string }[] };
   }) {
     try {
-      return await this.discordApiService.axiosInstance({
+      await this.discordApiService.axiosInstance({
         method: 'POST',
         url: `/interactions/${id}/${token}/callback`,
         data: {
@@ -126,7 +126,7 @@ export class ResponseComponentsProvider {
   }) {
     const [data] = component;
     try {
-      return await this.discordApiService.axiosInstance({
+      await this.discordApiService.axiosInstance({
         method: 'POST',
         url: `/interactions/${id}/${token}/callback`,
         data: {
