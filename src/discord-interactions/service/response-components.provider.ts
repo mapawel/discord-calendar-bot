@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
 import { DiscordApiService } from 'src/APIs/Discord-api.service';
-import { DiscordInteractionException } from '../exception/DiscordInteraction.exception';
+import { DiscordInteractionException } from '../exception/Discord-interaction.exception';
 import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
 import { AppAllCommandComponentsType } from 'src/app-SETUP/lists/types/App-all-types-component.type';
 
@@ -58,7 +58,7 @@ export class ResponseComponentsProvider {
         },
       });
     } catch (err: any) {
-      throw new DiscordInteractionException(err?.message);
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
   }
 
@@ -111,7 +111,7 @@ export class ResponseComponentsProvider {
         },
       });
     } catch (err: any) {
-      throw new DiscordInteractionException(err?.message);
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
   }
 
@@ -155,7 +155,7 @@ export class ResponseComponentsProvider {
         },
       });
     } catch (err: any) {
-      throw new DiscordInteractionException(err?.message);
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
   }
 }

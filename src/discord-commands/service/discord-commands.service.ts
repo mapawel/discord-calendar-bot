@@ -63,7 +63,7 @@ export class DiscordCommandsService {
 
       return response?.data;
     } catch (err: any) {
-      throw new DiscordCommandsException(err?.message);
+      throw new DiscordCommandsException(err?.message, { causeErr: err });
     }
   }
 

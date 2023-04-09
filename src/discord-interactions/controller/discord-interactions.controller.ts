@@ -2,16 +2,13 @@ import { Controller, Post, Body, UseGuards, UseFilters } from '@nestjs/common';
 import { IntegrationService } from '../service/interactions.service';
 import { MappedInteractionDTO } from '../dto/Interaction.dto';
 import { AuthenticatedGuard } from '../guards/authenticated.guard';
-import { ForbiddenExceptionFilter } from '../exception-filters/forbidden.filter';
 import { AppRoutes } from '../../routes/routes.enum';
 import { RolesdGuard } from '../guards/roles.guard';
 import { WhitelistGuard } from '../guards/whitelist.guard';
 import { commands } from '../../app-SETUP/lists/commands.list';
 import { allCommandsComponents } from '../../discord-commands/components-operations/discord-component-operations.helper';
-import { BadRequestFilter } from '../exception-filters/bad-request.filter';
-import { NotFoundFilter } from '../exception-filters/not-found.filter';
 import { getInteractionSettingObject } from '../../discord-commands/components-operations/discord-component-operations.helper';
-import { RestErrorsFilter } from '../exception-filters/rest-errors.filter';
+import { AppErrorsFilter } from '../exception-filters/app-errors.filter';
 
 @Controller()
 export class DiscordInteractionController {
@@ -21,10 +18,7 @@ export class DiscordInteractionController {
   @UseGuards(WhitelistGuard)
   @UseGuards(RolesdGuard)
   @UseGuards(AuthenticatedGuard)
-  @UseFilters(ForbiddenExceptionFilter)
-  @UseFilters(BadRequestFilter)
-  @UseFilters(NotFoundFilter)
-  @UseFilters(RestErrorsFilter)
+  @UseFilters(AppErrorsFilter)
   async interactionsHandler(
     @Body()
     body: MappedInteractionDTO,

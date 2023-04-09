@@ -10,6 +10,7 @@ import { AuthzUserDTO } from '../dto/Auth-user.dto';
 import { AuthzApiService } from 'src/APIs/Authz-api.service';
 import { Calendar as CalendarEntity } from 'src/Calendar/entity/Calendar.entity';
 import { CalendarService } from 'src/Calendar/Calendar.service';
+import { AppError } from 'src/App-error/App-error';
 
 @Injectable()
 export class AuthzService {
@@ -45,7 +46,7 @@ export class AuthzService {
 
       return `${process.env.AUTH0_API_URL}${process.env.AUTH0_AUTHORIZE_ROUTE}?${querystring}`;
     } catch (err: any) {
-      throw new AuthzServiceException(err.message);
+      throw new AuthzServiceException(err.message, { causeErr: err });
     }
   }
 
@@ -76,8 +77,7 @@ export class AuthzService {
 
       const verifiedUser: AppUserDTO | undefined =
         await this.usersService.getUserByDId(id);
-      if (!verifiedUser)
-        throw new AuthzServiceException('User not found, could not login!');
+      if (!verifiedUser) throw new Error('User not found, could not login!');
 
       const fullAppUser: AppUserDTO = this.usersService.getFullAppUser(
         verifiedUser,
@@ -88,12 +88,9 @@ export class AuthzService {
 
       if (isHost) this.handleHostLogin(id, fullAppUser.aId);
     } catch (err: any) {
-      if (err instanceof JsonWebTokenError)
-        throw new AuthzServiceException(
-          `Error while verifing a json webtoken from state! ${err.message}`,
-        );
       throw new AuthzServiceException(
         `Error while getting a token: ${err.message}`,
+        { causeErr: err },
       );
     }
   }
@@ -123,7 +120,7 @@ export class AuthzService {
         });
       }
     } catch (err: any) {
-      throw new AuthzServiceException(err.message);
+      throw new AuthzServiceException(err.message, { causeErr: err });
     }
   }
 
@@ -149,7 +146,7 @@ export class AuthzService {
         googleRefreshToken: identities[0].refresh_token,
       };
     } catch (err: any) {
-      throw new AuthzServiceException(err?.message);
+      throw new AuthzServiceException(err?.message, { causeErr: err });
     }
   }
 
@@ -170,7 +167,7 @@ export class AuthzService {
         });
       return access_token;
     } catch (err: any) {
-      throw new AuthzServiceException(err.message);
+      throw new AuthzServiceException(err.message, { causeErr: err });
     }
   }
 }

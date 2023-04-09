@@ -23,19 +23,23 @@ export class RolesService {
         });
       return roles;
     } catch (err: any) {
-      throw new RolesException(err?.message);
+      throw new RolesException(err?.message, { causeErr: err });
     }
   }
 
   public async translateRoleNamesToIds(roleNames: string[]): Promise<string[]> {
-    const roles: RoleDTO[] = await this.getDBroles();
-    return roleNames.map((roleName) => {
-      const role = roles.find(
-        ({ name }: { name: string }) => name === roleName,
-      );
-      if (!role) throw new RolesException('Role not found!');
-      return role.id;
-    });
+    try {
+      const roles: RoleDTO[] = await this.getDBroles();
+      return roleNames.map((roleName) => {
+        const role = roles.find(
+          ({ name }: { name: string }) => name === roleName,
+        );
+        if (!role) throw new Error('Role not found!');
+        return role.id;
+      });
+    } catch (err: any) {
+      throw new RolesException(err?.message, { causeErr: err });
+    }
   }
 
   public async getDBroles(roleNames: string[] = []): Promise<RoleDTO[]> {
@@ -53,7 +57,7 @@ export class RolesService {
       await this.rolesRepository.removeAllDBroles();
       await this.rolesRepository.createBulkBDRoles(roles);
     } catch (err: any) {
-      throw new RolesException(err?.message);
+      throw new RolesException(err?.message, { causeErr: err });
     }
   }
 
@@ -65,7 +69,7 @@ export class RolesService {
       );
       return userRoles.some((role) => rolesUsersCanMeetWith.includes(role));
     } catch (err: any) {
-      throw new RolesException(err?.message);
+      throw new RolesException(err?.message, { causeErr: err });
     }
   }
 }

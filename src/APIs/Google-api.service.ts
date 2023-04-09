@@ -64,15 +64,13 @@ export class GoogleApiService {
         where: { calendarId },
       });
       if (!currentCalendar?.googleRefreshToken)
-        throw new GoogleApiServiceException(
-          'Calendar access cannot be refreshed',
-        );
+        throw new Error('Calendar access cannot be refreshed');
       const { googleRefreshToken }: { googleRefreshToken: string } =
         currentCalendar;
 
       return googleRefreshToken;
     } catch (err: any) {
-      throw new GoogleApiServiceException(err?.message);
+      throw new GoogleApiServiceException(err?.message, { causeErr: err });
     }
   }
 
@@ -98,7 +96,7 @@ export class GoogleApiService {
 
       return access_token;
     } catch (err: any) {
-      throw new GoogleApiServiceException(err?.message);
+      throw new GoogleApiServiceException(err?.message, { causeErr: err });
     }
   }
 
@@ -116,7 +114,7 @@ export class GoogleApiService {
         },
       );
     } catch (err: any) {
-      throw new GoogleApiServiceException(err?.message);
+      throw new GoogleApiServiceException(err?.message, { causeErr: err });
     }
   }
 }

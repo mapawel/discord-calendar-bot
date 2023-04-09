@@ -10,6 +10,7 @@ import { InteractionMessageDTO } from '../../../discord-interactions/dto/Interac
 import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
 import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
 import { InteractionComponentDTO } from '../../../discord-interactions/dto/Interaction-component.dto';
+import { DiscordInteractionException } from 'src/discord-interactions/exception/Discord-interaction.exception';
 
 @Injectable()
 export class InteractionsBotManagingService {
@@ -40,23 +41,27 @@ export class InteractionsBotManagingService {
     id: string,
     components: InteractionComponentDTO[],
   ) {
-    const userId: string | undefined =
-      components?.[0]?.components?.[0]?.value ||
-      'not parsed to int and throws error';
-    if (!parseInt(userId)) throw new BadRequestException();
+    try {
+      const userId: string | undefined =
+        components?.[0]?.components?.[0]?.value ||
+        'not parsed to int and throws error';
+      if (!parseInt(userId)) throw new BadRequestException();
 
-    const userToAdd: DiscordUserDTO =
-      await this.usersService.getUserFromDiscord(userId);
+      const userToAdd: DiscordUserDTO =
+        await this.usersService.getUserFromDiscord(userId);
 
-    await this.usersService.createUserIfNotExisting(userToAdd);
-    await this.usersService.updateUserWhitelistStatus(userToAdd.id, true);
+      await this.usersService.createUserIfNotExisting(userToAdd);
+      await this.usersService.updateUserWhitelistStatus(userToAdd.id, true);
 
-    await this.responseComponentsProvider.generateInteractionResponse({
-      id,
-      token,
-      type: 7,
-      content: `User ${userToAdd.username} added!`,
-    });
+      await this.responseComponentsProvider.generateInteractionResponse({
+        id,
+        token,
+        type: 7,
+        content: `User ${userToAdd.username} added!`,
+      });
+    } catch (err: any) {
+      throw new DiscordInteractionException(err?.message, { causeErr: err });
+    }
   }
 
   public async removingUserFromWhitelist(
