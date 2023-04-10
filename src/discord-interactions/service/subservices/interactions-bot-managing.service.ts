@@ -11,7 +11,7 @@ import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
 import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
 import { DiscordInteractionException } from '../../../discord-interactions/exception/Discord-interaction.exception';
 import { InteractionResponseType } from 'discord-interactions';
-import { InteractionBodyFieldsType } from 'src/discord-interactions/types/Body-fields.type';
+import { InteractionBodyFieldsType } from '../../../discord-interactions/types/Body-fields.type';
 
 @Injectable()
 export class InteractionsBotManagingService {

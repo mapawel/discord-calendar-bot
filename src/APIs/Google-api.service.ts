@@ -1,6 +1,6 @@
 import { AxiosInstance, AxiosResponse } from 'axios';
 import axios from 'axios';
-import { HostCalendar } from 'src/Host-calendar/entity/Host-calendar.entity';
+import { HostCalendar } from '../Host-calendar/entity/Host-calendar.entity';
 import { GoogleApiServiceException } from './exceptions/Google-api-service.exception';
 import { isStatusValid } from './APIs.helpers';
 

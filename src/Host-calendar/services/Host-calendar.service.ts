@@ -3,9 +3,9 @@ import { FreeBusyRanges } from '../types/Free-busy-ranges.type';
 import { HostCalendar } from '../entity/Host-calendar.entity';
 import { Injectable } from '@nestjs/common';
 import { HostCalendarException } from '../exception/Host-calendar.exception';
-import { GoogleApiService } from 'src/APIs/Google-api.service';
+import { GoogleApiService } from '../../APIs/Google-api.service';
 import { settings } from '../../app-SETUP/settings';
-import { isStatusValid } from 'src/APIs/APIs.helpers';
+import { isStatusValid } from '../../APIs/APIs.helpers';
 import { AxiosResponse } from 'axios';
 
 @Injectable()

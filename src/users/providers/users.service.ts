@@ -7,7 +7,7 @@ import { DiscordApiService } from '../../APIs/Discord-api.service';
 import { AuthzUserDTO } from '../../authz/dto/Auth-user.dto';
 import { UsersServiceException } from '../exception/Users-service.exception';
 import { HostCalendar } from '../../Host-calendar/entity/Host-calendar.entity';
-import { isStatusValid } from 'src/APIs/APIs.helpers';
+import { isStatusValid } from '../../APIs/APIs.helpers';
 
 @Injectable()
 export class UsersService {

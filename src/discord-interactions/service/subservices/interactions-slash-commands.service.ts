@@ -11,7 +11,7 @@ import { ResponseComponentsProvider } from '../response-components.provider';
 import { CommandsComponents } from '../../../app-SETUP/enums/commands-components.enum';
 import { authButtonComponent } from '../../../app-SETUP/lists/auth-button-component.list';
 import { DiscordInteractionException } from '../../../discord-interactions/exception/Discord-interaction.exception';
-import { InteractionBodyFieldsType } from 'src/discord-interactions/types/Body-fields.type';
+import { InteractionBodyFieldsType } from '../../../discord-interactions/types/Body-fields.type';
 
 @Injectable()
 export class IntegrationSlashCommandsService {

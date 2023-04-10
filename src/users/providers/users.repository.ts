@@ -2,8 +2,8 @@ import { Injectable, NotFoundException } from '@nestjs/common';
 import { AppUser } from '../entity/App-user.entity';
 import { AppUserDTO } from '../dto/App-user.dto';
 import { AppUserMapper } from '../dto/App-user.mapper';
-import { DiscordUserDTO } from 'src/discord-interactions/dto/Discord-user.dto';
-import { DBException } from 'src/db/exception/DB.exception';
+import { DiscordUserDTO } from '../../discord-interactions/dto/Discord-user.dto';
+import { DBException } from '../../db/exception/DB.exception';
 import { AppUsersRelated } from '../entity/App-users-related.entity';
 
 @Injectable()

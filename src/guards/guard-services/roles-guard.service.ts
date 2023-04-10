@@ -1,5 +1,5 @@
 import { Injectable, ForbiddenException } from '@nestjs/common';
-import { RolesService } from 'src/roles/providers/roles.service';
+import { RolesService } from '../../roles/providers/roles.service';
 import { RolesGuarsServiceException } from '../exceptions/Roles-guard-service.exception';
 
 @Injectable()

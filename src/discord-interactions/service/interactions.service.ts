@@ -8,7 +8,7 @@ import { InteractionResponseType } from 'discord-interactions';
 import { InteractionBodyFieldsType } from '../types/Body-fields.type';
 
 @Injectable()
-export class IntegrationService {
+export class InteractionService {
   constructor(
     private readonly integrationSlashCommandsService: IntegrationSlashCommandsService,
     private readonly interactionsGetMeetingService: InteractionsGetMeetingService,

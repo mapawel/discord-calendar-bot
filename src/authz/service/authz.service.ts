@@ -6,11 +6,11 @@ import { UsersService } from '../../users/providers/users.service';
 import { AppUserDTO } from '../../users/dto/App-user.dto';
 import { RolesService } from '../../roles/providers/roles.service';
 import { AuthzUserDTO } from '../dto/Auth-user.dto';
-import { AuthzApiService } from 'src/APIs/Authz-api.service';
-import { HostCalendar } from 'src/Host-calendar/entity/Host-calendar.entity';
-import { HostCalendarService } from 'src/Host-calendar/services/Host-calendar.service';
+import { AuthzApiService } from '../../APIs/Authz-api.service';
+import { HostCalendar } from '../../Host-calendar/entity/Host-calendar.entity';
+import { HostCalendarService } from '../../Host-calendar/services/Host-calendar.service';
 import { AxiosResponse } from 'axios';
-import { isStatusValid } from 'src/APIs/APIs.helpers';
+import { isStatusValid } from '../../APIs/APIs.helpers';
 
 @Injectable()
 export class AuthzService {

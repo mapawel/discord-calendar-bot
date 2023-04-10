@@ -1,6 +1,6 @@
 import { Controller, Res, Query, Get } from '@nestjs/common';
 import { Response } from 'express';
-import { AppRoutes } from 'src/routes/routes.enum';
+import { AppRoutes } from '../../routes/routes.enum';
 import { AuthzService } from '../service/authz.service';
 
 @Controller(AppRoutes.LOGIN_CONTROLLER)

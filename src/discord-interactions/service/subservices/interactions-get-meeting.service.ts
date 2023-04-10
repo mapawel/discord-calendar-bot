@@ -13,7 +13,7 @@ import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Inte
 import { EmbedFieldsMeeting } from '../../../discord-interactions/Meeting/EmbedFieldsMeeting.type';
 import { DiscordInteractionException } from '../../../discord-interactions/exception/Discord-interaction.exception';
 import { InteractionResponseType } from 'discord-interactions';
-import { InteractionBodyFieldsType } from 'src/discord-interactions/types/Body-fields.type';
+import { InteractionBodyFieldsType } from '../../../discord-interactions/types/Body-fields.type';
 
 @Injectable()
 export class InteractionsGetMeetingService {

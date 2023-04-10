@@ -1,8 +1,8 @@
 import { join } from 'path';
 import { Sequelize } from 'sequelize-typescript';
 import { Role } from '../../roles/entity/Role.entity';
-import { AppUser } from 'src/users/entity/App-user.entity';
-import { AppUsersRelated } from 'src/users/entity/App-users-related.entity';
+import { AppUser } from '../../users/entity/App-user.entity';
+import { AppUsersRelated } from '../../users/entity/App-users-related.entity';
 import { HostCalendar } from '../../Host-calendar/entity/Host-calendar.entity';
 
 export const databaseProviders = [

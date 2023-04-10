@@ -1,10 +1,10 @@
 import { Injectable } from '@nestjs/common';
-import { DiscordApiService } from 'src/APIs/Discord-api.service';
+import { DiscordApiService } from '../../APIs/Discord-api.service';
 import { RolesRepository } from './roles.repository';
 import { RoleDTO } from '../dto/Role.dto';
 import { RolesException } from '../exception/Roles.exception';
 import { settings } from '../../app-SETUP/settings';
-import { isStatusValid } from 'src/APIs/APIs.helpers';
+import { isStatusValid } from '../../APIs/APIs.helpers';
 
 @Injectable()
 export class RolesService {
