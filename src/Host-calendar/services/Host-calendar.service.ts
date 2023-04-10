@@ -54,8 +54,6 @@ export class HostCalendarService {
     durationMs: number,
   ): Promise<{ data: FreeBusyRanges; error: string }> {
     try {
-      const resolutionFactor: 0.5 | 1 = this.getResolutionFactor();
-
       const hostCalendar = await HostCalendar.findByPk(hostDId);
       if (!hostCalendar)
         return {
@@ -64,31 +62,9 @@ export class HostCalendarService {
             'No calendar found - unavailable or still fetching data, try again in a few seconds',
         };
 
-      const minimalResolutionMs = 15 * 60 * 1000;
-      const finalResolutionMs: number =
-        durationMs * resolutionFactor <= minimalResolutionMs
-          ? minimalResolutionMs
-          : durationMs * resolutionFactor;
+      const meetingTimeProposalsTimes: FreeBusyRanges[] =
+        await this.getMeetingProposalTimes(hostDId, durationMs);
 
-      const meetingTimeProposalsTimes: FreeBusyRanges[] = (
-        await this.getMeetingWindows(hostDId)
-      ).map(({ start, end }) => {
-        const meetingTimeProposals: FreeBusyRanges = [];
-        const startRangeTime = new Date(start);
-        const endRangeTima = new Date(end);
-
-        while (
-          startRangeTime.getTime() + durationMs <=
-          endRangeTima.getTime()
-        ) {
-          meetingTimeProposals.push({
-            start: new Date(startRangeTime.getTime()).toISOString(),
-            end: new Date(startRangeTime.getTime() + durationMs).toISOString(),
-          });
-          startRangeTime.setTime(startRangeTime.getTime() + finalResolutionMs);
-        }
-        return meetingTimeProposals;
-      });
       return { data: meetingTimeProposalsTimes.flat(), error: '' };
     } catch (err: any) {
       throw new HostCalendarException(err?.message, { causeErr: err });
@@ -112,15 +88,6 @@ export class HostCalendarService {
         calendarId,
       }: { googleToken: string; calendarId: string } = hostCalendar;
 
-      const {
-        summary,
-        description,
-        guestEmail,
-        hostEmail,
-        start,
-        end,
-      }: Meeting = meeting;
-
       const { status }: AxiosResponse =
         await this.googleApiService.axiosInstance({
           method: 'POST',
@@ -128,24 +95,7 @@ export class HostCalendarService {
           headers: {
             Authorization: `Bearer ${googleToken}`,
           },
-          data: {
-            summary,
-            description,
-            start: {
-              dateTime: start,
-            },
-            end: {
-              dateTime: end,
-            },
-            attendees: [{ email: guestEmail }, { email: hostEmail }],
-            reminders: {
-              useDefault: false,
-              overrides: [
-                { method: 'email', minutes: 4 * 60 },
-                { method: 'popup', minutes: 10 },
-              ],
-            },
-          },
+          data: this.buildGoogleMeetingData(meeting),
         });
 
       if (!isStatusValid(status))
@@ -254,5 +204,67 @@ export class HostCalendarService {
 
   private getDaysRangeNo() {
     return parseInt(process.env.DAYS_NO_FOR_MEETING_PROPOSAL || '') || 4;
+  }
+
+  private getFinalResolutionMs(durationMs: number) {
+    const resolutionFactor = this.getResolutionFactor();
+    const minimalResolutionMs = 15 * 60 * 1000;
+    return durationMs * resolutionFactor <= minimalResolutionMs
+      ? minimalResolutionMs
+      : durationMs * resolutionFactor;
+  }
+
+  private async getMeetingProposalTimes(
+    hostDId: string,
+    durationMs: number,
+  ): Promise<FreeBusyRanges[]> {
+    const hostMeetingWindows: FreeBusyRanges =
+      await await this.getMeetingWindows(hostDId);
+    const meetingProposalTimes: FreeBusyRanges[] = hostMeetingWindows.map(
+      ({ start, end }) => {
+        const meetingTimeProposals: FreeBusyRanges = [];
+        const startRangeTime = new Date(start);
+        const endRangeTima = new Date(end);
+
+        while (
+          startRangeTime.getTime() + durationMs <=
+          endRangeTima.getTime()
+        ) {
+          meetingTimeProposals.push({
+            start: new Date(startRangeTime.getTime()).toISOString(),
+            end: new Date(startRangeTime.getTime() + durationMs).toISOString(),
+          });
+          startRangeTime.setTime(
+            startRangeTime.getTime() + this.getFinalResolutionMs(durationMs),
+          );
+        }
+        return meetingTimeProposals;
+      },
+    );
+    return meetingProposalTimes;
+  }
+
+  private buildGoogleMeetingData(meeting: Meeting) {
+    const { summary, description, guestEmail, hostEmail, start, end }: Meeting =
+      meeting;
+
+    return {
+      summary,
+      description,
+      start: {
+        dateTime: start,
+      },
+      end: {
+        dateTime: end,
+      },
+      attendees: [{ email: guestEmail }, { email: hostEmail }],
+      reminders: {
+        useDefault: false,
+        overrides: [
+          { method: 'email', minutes: 4 * 60 },
+          { method: 'popup', minutes: 10 },
+        ],
+      },
+    };
   }
 }
