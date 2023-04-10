@@ -7,6 +7,7 @@ import { DiscordApiService } from '../../APIs/Discord-api.service';
 import { AuthzUserDTO } from '../../authz/dto/Auth-user.dto';
 import { UsersServiceException } from '../exception/Users-service.exception';
 import { HostCalendar } from '../../Host-calendar/entity/Host-calendar.entity';
+import { isStatusValid } from 'src/APIs/APIs.helpers';
 
 @Injectable()
 export class UsersService {
@@ -62,11 +63,16 @@ export class UsersService {
     try {
       const {
         data: { user },
-      }: { data: { user: DiscordUserDTO } } =
+        status,
+      }: { data: { user: DiscordUserDTO }; status: number } =
         await this.discordApiService.axiosInstance({
           method: 'GET',
           url: `/guilds/${process.env.DISCORD_GUILD_ID}/members/${dId}`,
         });
+      if (!isStatusValid(status))
+        throw new Error(
+          `Error from discord API while getting users!: ${status}`,
+        );
       if (!user) throw new NotFoundException('User not found on Discord');
 
       return user;
@@ -82,12 +88,18 @@ export class UsersService {
     roleNames?: string[],
   ): Promise<DiscordUserDTO[]> {
     try {
-      const { data }: { data: { roles: string[]; user: DiscordUserDTO }[] } =
+      const {
+        data,
+        status,
+      }: { data: { roles: string[]; user: DiscordUserDTO }[]; status: number } =
         await this.discordApiService.axiosInstance({
           method: 'GET',
           url: `https://discord.com/api/v10/guilds/${process.env.DISCORD_GUILD_ID}/members?limit=1000`,
         });
-
+      if (!isStatusValid(status))
+        throw new Error(
+          `Error from discord API while getting users!: ${status}`,
+        );
       if (!data) throw new Error('No requested data found on Discord');
 
       const roles: string[] = await this.rolesService.translateRoleNamesToIds(

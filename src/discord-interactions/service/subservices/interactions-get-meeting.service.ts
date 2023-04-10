@@ -128,7 +128,10 @@ export class InteractionsGetMeetingService {
         data: meetingTimeProposals,
         error,
       }: { data: FreeBusyRanges; error: string } =
-        await this.hostCalendarService.getMeetingTimeProposals(hostDId, durationMs);
+        await this.hostCalendarService.getMeetingTimeProposals(
+          hostDId,
+          durationMs,
+        );
 
       if (error) return await this.responseWithError(id, token, error);
 
@@ -203,7 +206,10 @@ export class InteractionsGetMeetingService {
       };
 
       const { error }: { error: string } =
-        await this.hostCalendarService.bookMeeting(hostDId as string, meetingData);
+        await this.hostCalendarService.bookMeeting(
+          hostDId as string,
+          meetingData,
+        );
 
       if (error) return await this.responseWithError(id, token, error);
 

@@ -5,6 +5,8 @@ import { Injectable } from '@nestjs/common';
 import { HostCalendarException } from '../exception/Host-calendar.exception';
 import { GoogleApiService } from 'src/APIs/Google-api.service';
 import { settings } from '../../app-SETUP/settings';
+import { isStatusValid } from 'src/APIs/APIs.helpers';
+import { AxiosResponse } from 'axios';
 
 @Injectable()
 export class HostCalendarService {
@@ -14,14 +16,22 @@ export class HostCalendarService {
     try {
       const {
         data: { items },
-      }: { data: { items: { summary: string; id: string }[] } } =
-        await this.googleApiService.axiosInstance({
-          method: 'GET',
-          url: `${process.env.GOOGLE_CALENDARS_LIST_ROUTE}`,
-          headers: {
-            Authorization: `Bearer ${googleToken}`,
-          },
-        });
+        status,
+      }: {
+        data: { items: { summary: string; id: string }[] };
+        status: number;
+      } = await this.googleApiService.axiosInstance({
+        method: 'GET',
+        url: `${process.env.GOOGLE_CALENDARS_LIST_ROUTE}`,
+        headers: {
+          Authorization: `Bearer ${googleToken}`,
+        },
+      });
+
+      if (!isStatusValid(status))
+        throw new Error(
+          `Google API error while getting a calendar ID: ${status}`,
+        );
 
       const mentorCalendar = items.find(
         ({ summary }: { summary: string }) =>
@@ -110,31 +120,37 @@ export class HostCalendarService {
         end,
       }: Meeting = meeting;
 
-      await this.googleApiService.axiosInstance({
-        method: 'POST',
-        url: `${process.env.GOOGLE_CALENDARS_ROUTE}/${calendarId}${process.env.GOOGLE_EVENTS_ROUTE}`,
-        headers: {
-          Authorization: `Bearer ${googleToken}`,
-        },
-        data: {
-          summary,
-          description,
-          start: {
-            dateTime: start,
+      const { status }: AxiosResponse =
+        await this.googleApiService.axiosInstance({
+          method: 'POST',
+          url: `${process.env.GOOGLE_CALENDARS_ROUTE}/${calendarId}${process.env.GOOGLE_EVENTS_ROUTE}`,
+          headers: {
+            Authorization: `Bearer ${googleToken}`,
           },
-          end: {
-            dateTime: end,
+          data: {
+            summary,
+            description,
+            start: {
+              dateTime: start,
+            },
+            end: {
+              dateTime: end,
+            },
+            attendees: [{ email: guestEmail }, { email: hostEmail }],
+            reminders: {
+              useDefault: false,
+              overrides: [
+                { method: 'email', minutes: 4 * 60 },
+                { method: 'popup', minutes: 10 },
+              ],
+            },
           },
-          attendees: [{ email: guestEmail }, { email: hostEmail }],
-          reminders: {
-            useDefault: false,
-            overrides: [
-              { method: 'email', minutes: 4 * 60 },
-              { method: 'popup', minutes: 10 },
-            ],
-          },
-        },
-      });
+        });
+
+      if (!isStatusValid(status))
+        throw new Error(
+          `Google API error while bookine a meeting in google calendar: ${status}`,
+        );
 
       return {
         error: '',
@@ -192,10 +208,12 @@ export class HostCalendarService {
 
       const {
         data: { calendars },
+        status,
       }: {
         data: {
           calendars: Record<string, { busy: FreeBusyRanges }>;
         };
+        status: number;
       } = await this.googleApiService.axiosInstance({
         method: 'POST',
         url: `${process.env.GOOGLE_CALENDAR_FREEBUSY_ROUTE}`,
@@ -213,6 +231,15 @@ export class HostCalendarService {
           ],
         },
       });
+
+      if (!isStatusValid(status))
+        throw new Error(`Google API error while checking free busy: ${status}`);
+
+      if (!calendars?.[calendarId])
+        throw new Error(
+          `Google API error while checking connected calendar. Calendar with id: ${calendarId} not found`,
+        );
+
       return calendars?.[calendarId]?.busy;
     } catch (err: any) {
       throw new HostCalendarException(err?.message, { causeErr: err });

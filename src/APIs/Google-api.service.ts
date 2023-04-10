@@ -2,6 +2,7 @@ import { AxiosInstance, AxiosResponse } from 'axios';
 import axios from 'axios';
 import { HostCalendar } from 'src/Host-calendar/entity/Host-calendar.entity';
 import { GoogleApiServiceException } from './exceptions/Google-api-service.exception';
+import { isStatusValid } from './APIs.helpers';
 
 export class GoogleApiService {
   constructor(public axiosInstance: AxiosInstance) {
@@ -80,7 +81,8 @@ export class GoogleApiService {
     try {
       const {
         data: { access_token },
-      }: { data: { access_token: string } } = await axios({
+        status,
+      }: { data: { access_token: string }; status: number } = await axios({
         method: 'POST',
         url: `${process.env.GOOGLE_API_URL}${process.env.GOOGLE_OAUTH_API_TOKEN_ROUTE}`,
         headers: {
@@ -93,6 +95,11 @@ export class GoogleApiService {
           grant_type: 'refresh_token',
         },
       });
+
+      if (!isStatusValid(status))
+        throw new Error(
+          `Error from Google API while refreshing a token: ${status}`,
+        );
 
       return access_token;
     } catch (err: any) {

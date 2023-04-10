@@ -4,6 +4,8 @@ import { DiscordApiService } from 'src/APIs/Discord-api.service';
 import { DiscordInteractionException } from '../exception/Discord-interaction.exception';
 import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
 import { AppAllCommandComponentsType } from 'src/app-SETUP/lists/types/App-all-types-component.type';
+import { AxiosResponse } from 'axios';
+import { isStatusValid } from 'src/APIs/APIs.helpers';
 
 @Injectable()
 export class ResponseComponentsProvider {
@@ -27,36 +29,42 @@ export class ResponseComponentsProvider {
     embed?: { title: string; fields: { name: string; value: string }[] };
   }) {
     try {
-      await this.discordApiService.axiosInstance({
-        method: 'POST',
-        url: `/interactions/${id}/${token}/callback`,
-        data: {
-          type,
+      const { status }: AxiosResponse =
+        await this.discordApiService.axiosInstance({
+          method: 'POST',
+          url: `/interactions/${id}/${token}/callback`,
           data: {
-            embeds: embed
-              ? [
-                  {
-                    title: embed.title,
-                    color: 0x00f00,
-                    fields: embed.fields,
-                    footer: {
-                      text: content,
+            type,
+            data: {
+              embeds: embed
+                ? [
+                    {
+                      title: embed.title,
+                      color: 0x00f00,
+                      fields: embed.fields,
+                      footer: {
+                        text: content,
+                      },
                     },
-                  },
-                ]
-              : [],
-            content: embed ? null : content,
-            components: componentsArrays?.length
-              ? componentsArrays.map(
-                  (components: AppAllCommandComponentsType[]) => ({
-                    type: 1,
-                    components,
-                  }),
-                )
-              : [],
+                  ]
+                : [],
+              content: embed ? null : content,
+              components: componentsArrays?.length
+                ? componentsArrays.map(
+                    (components: AppAllCommandComponentsType[]) => ({
+                      type: 1,
+                      components,
+                    }),
+                  )
+                : [],
+            },
           },
-        },
-      });
+        });
+      if (!isStatusValid(status)) {
+        throw new Error(
+          `Error while generating interaction response: ${status}`,
+        );
+      }
     } catch (err: any) {
       throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
@@ -80,36 +88,42 @@ export class ResponseComponentsProvider {
     embed?: { title: string; fields: { name: string; value: string }[] };
   }) {
     try {
-      await this.discordApiService.axiosInstance({
-        method: 'POST',
-        url: `/interactions/${id}/${token}/callback`,
-        data: {
-          type,
+      const { status }: AxiosResponse =
+        await this.discordApiService.axiosInstance({
+          method: 'POST',
+          url: `/interactions/${id}/${token}/callback`,
           data: {
-            embeds: embed
-              ? [
-                  {
-                    title: embed.title,
-                    color: 0x00f00,
-                    fields: embed.fields,
-                    footer: {
-                      text: content,
+            type,
+            data: {
+              embeds: embed
+                ? [
+                    {
+                      title: embed.title,
+                      color: 0x00f00,
+                      fields: embed.fields,
+                      footer: {
+                        text: content,
+                      },
                     },
-                  },
-                ]
-              : [],
-            content: embed ? null : content,
-            components: components?.length
-              ? [
-                  {
-                    type: 1,
-                    components,
-                  },
-                ]
-              : [],
+                  ]
+                : [],
+              content: embed ? null : content,
+              components: components?.length
+                ? [
+                    {
+                      type: 1,
+                      components,
+                    },
+                  ]
+                : [],
+            },
           },
-        },
-      });
+        });
+      if (!isStatusValid(status)) {
+        throw new Error(
+          `Error while generating interaction response: ${status}`,
+        );
+      }
     } catch (err: any) {
       throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
@@ -126,36 +140,41 @@ export class ResponseComponentsProvider {
   }) {
     const [data] = component;
     try {
-      await this.discordApiService.axiosInstance({
-        method: 'POST',
-        url: `/interactions/${id}/${token}/callback`,
-        data: {
-          type: 9,
+      const { status }: AxiosResponse =
+        await this.discordApiService.axiosInstance({
+          method: 'POST',
+          url: `/interactions/${id}/${token}/callback`,
           data: {
-            title: data.modal_title,
-            custom_id: data.custom_id,
-            components: [
-              {
-                type: 1,
-                components: [
-                  {
-                    type: 4,
-                    custom_id: `${data.custom_id}-input`,
-                    label: data.component_label,
-                    style: 1,
-                    min_length: data.component_min_l,
-                    max_length: data.component_max_l,
-                    placeholder: data.component_placeholder,
-                    required: true,
-                  },
-                ],
-              },
-            ],
+            type: 9,
+            data: {
+              title: data.modal_title,
+              custom_id: data.custom_id,
+              components: [
+                {
+                  type: 1,
+                  components: [
+                    {
+                      type: 4,
+                      custom_id: `${data.custom_id}-input`,
+                      label: data.component_label,
+                      style: 1,
+                      min_length: data.component_min_l,
+                      max_length: data.component_max_l,
+                      placeholder: data.component_placeholder,
+                      required: true,
+                    },
+                  ],
+                },
+              ],
+            },
           },
-        },
-      });
+        });
+      if (!isStatusValid(status)) {
+        throw new Error(
+          `Error while generating interaction response: ${status}`,
+        );
+      }
     } catch (err: any) {
-      console.log('err ----> ', err);
       throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
   }

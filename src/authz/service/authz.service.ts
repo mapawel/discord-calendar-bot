@@ -9,6 +9,8 @@ import { AuthzUserDTO } from '../dto/Auth-user.dto';
 import { AuthzApiService } from 'src/APIs/Authz-api.service';
 import { HostCalendar } from 'src/Host-calendar/entity/Host-calendar.entity';
 import { HostCalendarService } from 'src/Host-calendar/services/Host-calendar.service';
+import { AxiosResponse } from 'axios';
+import { isStatusValid } from 'src/APIs/APIs.helpers';
 
 @Injectable()
 export class AuthzService {
@@ -51,20 +53,26 @@ export class AuthzService {
   public async getToken(code: string, state: string) {
     try {
       const { id, isHost } = await this.jwtService.verifyAsync(state);
-      const { data } = await this.authzApiService.axiosInstance({
-        method: 'POST',
-        url: `${process.env.AUTH0_TOKEN_ROUTE}`,
-        headers: { 'content-type': 'application/x-www-form-urlencoded' },
-        data: {
-          grant_type: 'authorization_code',
-          client_id: process.env.AUTH0_CLIENT_ID,
-          client_secret: process.env.AUTH0_SECRET,
-          code,
-          redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
-        },
-      });
+      const { data, status }: AxiosResponse =
+        await this.authzApiService.axiosInstance({
+          method: 'POST',
+          url: `${process.env.AUTH0_TOKEN_ROUTE}`,
+          headers: { 'content-type': 'application/x-www-form-urlencoded' },
+          data: {
+            grant_type: 'authorization_code',
+            client_id: process.env.AUTH0_CLIENT_ID,
+            client_secret: process.env.AUTH0_SECRET,
+            code,
+            redirect_uri: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_CALLBACK_METHOD}`,
+          },
+        });
+      if (!isStatusValid(status))
+        throw new Error(`Auth API error while getting a token: ${status}`);
 
-      const { data: authUserData }: { data: AuthzUserDTO } =
+      const {
+        data: authUserData,
+        status: fetchUserStatus,
+      }: { data: AuthzUserDTO; status: number } =
         await this.authzApiService.axiosInstance({
           method: 'POST',
           url: `${process.env.AUTH0_GET_USER_INFO_ROUTE}`,
@@ -72,6 +80,10 @@ export class AuthzService {
             Authorization: `Bearer ${data.access_token}`,
           },
         });
+      if (!isStatusValid(fetchUserStatus))
+        throw new Error(
+          `Auth API error while fetching auth user data: ${status}`,
+        );
 
       const verifiedUser: AppUserDTO | undefined =
         await this.usersService.getUserByDId(id);
@@ -128,8 +140,10 @@ export class AuthzService {
       const authManagementToken: string = await this.getTokenForAuthManagment();
       const {
         data: { identities },
+        status,
       }: {
         data: { identities: { access_token: string; refresh_token: string }[] };
+        status: number;
       } = await this.authzApiService.axiosInstance({
         method: 'GET',
         url: `${process.env.AUTH0_API_ROUTE}users/${hostAuthId}`,
@@ -137,6 +151,11 @@ export class AuthzService {
           Authorization: `Bearer ${authManagementToken}`,
         },
       });
+
+      if (!isStatusValid(status))
+        throw new Error(
+          `Auth API error while getting a token for google from auth0: ${status}`,
+        );
 
       return {
         googleToken: identities[0].access_token,
@@ -151,7 +170,8 @@ export class AuthzService {
     try {
       const {
         data: { access_token },
-      }: { data: { access_token: string } } =
+        status,
+      }: { data: { access_token: string }; status: number } =
         await this.authzApiService.axiosInstance({
           method: 'POST',
           url: process.env.AUTH0_TOKEN_ROUTE,
@@ -162,6 +182,12 @@ export class AuthzService {
             grant_type: 'client_credentials',
           },
         });
+
+      if (!isStatusValid(status))
+        throw new Error(
+          `Auth API error while getting a token for Auth0 management: ${status}`,
+        );
+
       return access_token;
     } catch (err: any) {
       throw new AuthzServiceException(err.message, { causeErr: err });

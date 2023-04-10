@@ -4,6 +4,7 @@ import { RolesRepository } from './roles.repository';
 import { RoleDTO } from '../dto/Role.dto';
 import { RolesException } from '../exception/Roles.exception';
 import { settings } from '../../app-SETUP/settings';
+import { isStatusValid } from 'src/APIs/APIs.helpers';
 
 @Injectable()
 export class RolesService {
@@ -16,11 +17,18 @@ export class RolesService {
     try {
       const {
         data: { roles },
-      }: { data: { roles: string[] } } =
+        status,
+      }: { data: { roles: string[] }; status: number } =
         await this.discordApiService.axiosInstance({
           method: 'GET',
           url: `/guilds/${process.env.DISCORD_GUILD_ID}/members/${userid}`,
         });
+
+      if (!isStatusValid(status))
+        throw new Error(
+          `Error from discord API while getting user roles!: ${status}`,
+        );
+
       return roles;
     } catch (err: any) {
       throw new RolesException(err?.message, { causeErr: err });
@@ -48,11 +56,16 @@ export class RolesService {
 
   public async updateAllDBRoles(): Promise<void> {
     try {
-      const { data: roles }: { data: RoleDTO[] } =
+      const { data: roles, status }: { data: RoleDTO[]; status: number } =
         await this.discordApiService.axiosInstance({
           method: 'GET',
           url: `/guilds/${process.env.DISCORD_GUILD_ID}/roles`,
         });
+
+      if (!isStatusValid(status))
+        throw new Error(
+          `Error from discord API while getting user roles!: ${status}`,
+        );
 
       await this.rolesRepository.removeAllDBroles();
       await this.rolesRepository.createBulkBDRoles(roles);
