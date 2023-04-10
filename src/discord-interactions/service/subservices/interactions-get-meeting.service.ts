@@ -14,6 +14,7 @@ import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Inte
 import { EmbedFieldsMeeting } from '../../../discord-interactions/Meeting/EmbedFieldsMeeting.type';
 import { InteractionComponentDTO } from 'src/discord-interactions/dto/Interaction-component.dto';
 import { DiscordInteractionException } from '../../../discord-interactions/exception/Discord-interaction.exception';
+import { InteractionResponseType } from 'discord-interactions';
 
 @Injectable()
 export class InteractionsGetMeetingService {
@@ -23,7 +24,7 @@ export class InteractionsGetMeetingService {
     private readonly hostCalendarService: HostCalendarService,
   ) {}
 
-  async meetingChooseMentorCallback(
+  async getMeetingSelectMentor(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -51,7 +52,7 @@ export class InteractionsGetMeetingService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 7,
+        type: InteractionResponseType.UPDATE_MESSAGE,
         content: `Choose a topic:`,
         components: commandsSelectComponents.meetingDetailsTopics,
         embed: {
@@ -73,7 +74,7 @@ export class InteractionsGetMeetingService {
     }
   }
 
-  public async meetingDetailsTopicCallback(
+  public async getMeetingSelectTopic(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -90,7 +91,7 @@ export class InteractionsGetMeetingService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 7,
+        type: InteractionResponseType.UPDATE_MESSAGE,
         content: `Choose meeting duration:`,
         components: commandsSelectComponents.meetingDetailsDuration,
         embed: {
@@ -109,7 +110,7 @@ export class InteractionsGetMeetingService {
     }
   }
 
-  public async meetingDetailsDurationCallback(
+  public async getMeetingSelectDuration(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -146,7 +147,7 @@ export class InteractionsGetMeetingService {
         {
           id,
           token,
-          type: 7,
+          type: InteractionResponseType.UPDATE_MESSAGE,
           content: 'Choose your time:',
           componentsArrays,
           embed: {
@@ -166,7 +167,7 @@ export class InteractionsGetMeetingService {
     }
   }
 
-  async meetingDetailsTimeCallback(
+  async getMeetingSelectTime(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -209,7 +210,7 @@ export class InteractionsGetMeetingService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 7,
+        type: InteractionResponseType.UPDATE_MESSAGE,
         content: ``,
         embed: {
           title: embedTitles.meetingBooked.title,
@@ -236,7 +237,7 @@ export class InteractionsGetMeetingService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 7,
+        type: InteractionResponseType.UPDATE_MESSAGE,
         content: message ? message : `try again... starting from slash command`,
       });
     } catch (err: any) {

@@ -8,7 +8,7 @@ import { WhitelistGuard } from '../../guards/whitelist.guard';
 import { commands } from '../../app-SETUP/lists/commands.list';
 import { allCommandsComponents } from '../components-operations/discord-component-operations.helper';
 import { getInteractionSettingObject } from '../components-operations/discord-component-operations.helper';
-import { AppErrorsFilter } from '../../exception-filters/app-errors.filter';
+// import { AppErrorsFilter } from '../../exception-filters/app-errors.filter';
 
 @Controller()
 export class DiscordInteractionController {
@@ -18,7 +18,7 @@ export class DiscordInteractionController {
   @UseGuards(WhitelistGuard)
   @UseGuards(RolesdGuard)
   @UseGuards(AuthenticatedGuard)
-  @UseFilters(AppErrorsFilter)
+  // @UseFilters(AppErrorsFilter)
   async interactionsHandler(
     @Body()
     body: MappedInteractionDTO,

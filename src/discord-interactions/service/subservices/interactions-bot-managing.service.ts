@@ -11,6 +11,7 @@ import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
 import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
 import { InteractionComponentDTO } from '../../../discord-interactions/dto/Interaction-component.dto';
 import { DiscordInteractionException } from '../../../discord-interactions/exception/Discord-interaction.exception';
+import { InteractionResponseType } from 'discord-interactions';
 
 @Injectable()
 export class InteractionsBotManagingService {
@@ -19,7 +20,7 @@ export class InteractionsBotManagingService {
     private readonly responseComponentsProvider: ResponseComponentsProvider,
   ) {}
 
-  public async addingUserToWhitelist(
+  public async addUserToWhitelist(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -30,14 +31,14 @@ export class InteractionsBotManagingService {
       await this.responseComponentsProvider.generateOneInputModal({
         id,
         token,
-        component: commandsModalComponents.managingBotModalAdding,
+        component: commandsModalComponents.manageBotModalAdding,
       });
     } catch (err: any) {
       throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
   }
 
-  public async addingUserToWhitelistCallback(
+  public async addUserToWhitelistCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -60,7 +61,7 @@ export class InteractionsBotManagingService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 7,
+        type: InteractionResponseType.UPDATE_MESSAGE,
         content: `User ${userToAdd.username} added!`,
       });
     } catch (err: any) {
@@ -68,7 +69,7 @@ export class InteractionsBotManagingService {
     }
   }
 
-  public async removingUserFromWhitelist(
+  public async removeUserFromWhitelist(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -84,7 +85,7 @@ export class InteractionsBotManagingService {
           {
             id,
             token,
-            type: 4,
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             content: 'Nothing to remove...',
           },
         );
@@ -92,14 +93,14 @@ export class InteractionsBotManagingService {
       await this.responseComponentsProvider.generateOneInputModal({
         id,
         token,
-        component: commandsModalComponents.managingBotModalRemoving,
+        component: commandsModalComponents.manageBotModalRemoving,
       });
     } catch (err: any) {
       throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
   }
 
-  public async removingUserFromWhitelistCallback(
+  public async removeUserFromWhitelistCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -118,7 +119,7 @@ export class InteractionsBotManagingService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 7,
+        type: InteractionResponseType.UPDATE_MESSAGE,
         content: `User id ${idToRemove} removed!`,
       });
     } catch (err: any) {
@@ -126,7 +127,7 @@ export class InteractionsBotManagingService {
     }
   }
 
-  public async settingUserConnections(
+  public async setUserConnections(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -137,14 +138,14 @@ export class InteractionsBotManagingService {
       await this.responseComponentsProvider.generateOneInputModal({
         id,
         token,
-        component: commandsModalComponents.managingBotModalUserToConnect,
+        component: commandsModalComponents.manageBotModalUserToConnect,
       });
     } catch (err: any) {
       throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
   }
 
-  public async settingUserConUserSelected(
+  public async setUserConUserSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -172,7 +173,7 @@ export class InteractionsBotManagingService {
           {
             id,
             token,
-            type: 7,
+            type: InteractionResponseType.UPDATE_MESSAGE,
             content: `No users to meet with...`,
           },
         );
@@ -180,7 +181,7 @@ export class InteractionsBotManagingService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 7,
+        type: InteractionResponseType.UPDATE_MESSAGE,
         embed: {
           title: embedTitles.connectingUser.title,
           fields: [
@@ -191,20 +192,19 @@ export class InteractionsBotManagingService {
           ],
         },
         content: `User ${userToConnect.username} will be able to meet with:`,
-        components:
-          commandsSelectComponents.managingBotSelectMentorToConnect.map(
-            (component) => ({
-              ...component,
-              options: this.mapUsersToSelectOptions(personsToMeet),
-            }),
-          ),
+        components: commandsSelectComponents.manageBotSelectMentorToConnect.map(
+          (component) => ({
+            ...component,
+            options: this.mapUsersToSelectOptions(personsToMeet),
+          }),
+        ),
       });
     } catch (err: any) {
       throw new DiscordInteractionException(err?.message, { causeErr: err });
     }
   }
 
-  public async settingUserConHostSelected(
+  public async setUserConHostSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -234,7 +234,7 @@ export class InteractionsBotManagingService {
           {
             id,
             token,
-            type: 7,
+            type: InteractionResponseType.UPDATE_MESSAGE,
             content: `error: ${error}`,
           },
         );
@@ -242,7 +242,7 @@ export class InteractionsBotManagingService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 7,
+        type: InteractionResponseType.UPDATE_MESSAGE,
         content: `User connected to selected metor!`,
       });
     } catch (err: any) {
@@ -271,7 +271,7 @@ export class InteractionsBotManagingService {
           {
             id,
             token,
-            type: 4,
+            type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
             content: 'The whitelist is empty...',
           },
         );
@@ -279,7 +279,7 @@ export class InteractionsBotManagingService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 7,
+        type: InteractionResponseType.UPDATE_MESSAGE,
         embed: {
           title: embedTitles.whitelist.title,
           fields: embedFields,

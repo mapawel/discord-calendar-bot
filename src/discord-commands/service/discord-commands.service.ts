@@ -1,8 +1,9 @@
 import { Injectable } from '@nestjs/common';
-import { DiscordApiService } from 'src/APIs/Discord-api.service';
-import { commands } from 'src/app-SETUP/lists/commands.list';
+import { DiscordApiService } from '../../APIs/Discord-api.service';
+import { commands } from '../../app-SETUP/lists/commands.list';
 import { DiscordCommandsException } from '../exception/Discord-commands.exception';
-import { AppCommand } from 'src/app-SETUP/lists/commands.list';
+import { AppCommand } from '../../app-SETUP/lists/commands.list';
+import { isStatusValid } from '../../APIs/APIs.helpers';
 
 @Injectable()
 export class DiscordCommandsService {
@@ -10,18 +11,18 @@ export class DiscordCommandsService {
 
   public async commandsInit(commands: AppCommand[]) {
     try {
-      //   const existingCommands = await this.getExistingCommands();
-      //   console.log('initialized discord commands ----> ', existingCommands);
-      //   await Promise.all(
-      //     existingCommands.map(
-      //       async ({ id }: { id: string }) => await this.deleteCommand(id),
-      //     ),
-      //   );
-      //   await Promise.all(
-      //     commands.map(
-      //       async (command: AppCommand) => await this.addCommand(command),
-      //     ),
-      //   );
+      // const existingCommands = await this.getExistingCommands();
+      // console.log('initialized discord commands ----> ', existingCommands);
+      // await Promise.all(
+      //   existingCommands.map(
+      //     async ({ id }: { id: string }) => await this.deleteCommand(id),
+      //   ),
+      // );
+      // await Promise.all(
+      //   commands.map(
+      //     async (command: AppCommand) => await this.addCommand(command),
+      //   ),
+      // );
     } catch (err: any) {
       throw new DiscordCommandsException(err?.message, { causeErr: err });
     }
@@ -76,6 +77,10 @@ export class DiscordCommandsService {
         url: `applications/${process.env.DISCORD_CLIENT_ID}/commands${url}`,
         data,
       });
+
+      if (!isStatusValid(response.status)) {
+        throw new Error(`Discord API responded with status ${response.status}`);
+      }
 
       return response?.data;
     } catch (err: any) {

@@ -4,6 +4,10 @@ import { DiscordInteractionsModule } from './discord-interactions/discord-intera
 import { DatabaseModule } from './db/db.module';
 import { AuthzModule } from './authz/authz.module';
 import { DiscordCommandsModule } from './discord-commands/discord-commands.module';
+import { APP_FILTER } from '@nestjs/core';
+import { AppErrorsFilter } from './exception-filters/app-errors.filter';
+import { ResponseComponentsProvider } from './discord-interactions/service/response-components.provider';
+import { DiscordApiService } from './APIs/Discord-api.service';
 
 @Module({
   imports: [
@@ -15,6 +19,14 @@ import { DiscordCommandsModule } from './discord-commands/discord-commands.modul
     DiscordInteractionsModule,
     AuthzModule,
     DatabaseModule,
+  ],
+  providers: [
+    {
+      provide: APP_FILTER,
+      useClass: AppErrorsFilter,
+    },
+    ResponseComponentsProvider,
+    DiscordApiService,
   ],
 })
 export class AppModule {}

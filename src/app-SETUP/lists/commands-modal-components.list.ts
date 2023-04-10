@@ -4,7 +4,7 @@ export const commandsModalComponents: Record<
   string,
   [AppCommandModalComponent]
 > = {
-  managingBotModalAdding: [
+  manageBotModalAdding: [
     {
       modal_title: 'Adding user to whitelist',
       custom_id: CommandsModalComponents.INPUT_USER_TO_ADD,
@@ -15,10 +15,10 @@ export const commandsModalComponents: Record<
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Mentor', 'Calendar-bot-admin'],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'addingUserToWhitelistCallback',
+      controller_service_method: 'addUserToWhitelistCallback',
     },
   ],
-  managingBotModalRemoving: [
+  manageBotModalRemoving: [
     {
       modal_title: 'Removing user from whitelist',
       custom_id: CommandsModalComponents.INPUT_USER_TO_REMOVE,
@@ -29,10 +29,10 @@ export const commandsModalComponents: Record<
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Mentor', 'Calendar-bot-admin'],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'removingUserFromWhitelistCallback',
+      controller_service_method: 'removeUserFromWhitelistCallback',
     },
   ],
-  managingBotModalUserToConnect: [
+  manageBotModalUserToConnect: [
     {
       modal_title: 'Connecting user to host',
       custom_id: CommandsModalComponents.INPUT_USER_TO_CONNECT,
@@ -43,7 +43,7 @@ export const commandsModalComponents: Record<
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Mentor', 'Calendar-bot-admin'],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'settingUserConUserSelected',
+      controller_service_method: 'setUserConUserSelected',
     },
   ],
 };
@@ -59,7 +59,7 @@ export type AppCommandModalComponent = {
   role_guard_rules: ('Mentor' | 'Calendar-bot-admin')[]; // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
   whitelisting_guard_rule: 'isWhitelisted' | 'notWhitelisted';
   controller_service_method:
-    | 'addingUserToWhitelistCallback'
-    | 'removingUserFromWhitelistCallback'
-    | 'settingUserConUserSelected';
+    | 'addUserToWhitelistCallback'
+    | 'removeUserFromWhitelistCallback'
+    | 'setUserConUserSelected';
 };

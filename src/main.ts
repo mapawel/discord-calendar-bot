@@ -9,6 +9,7 @@ async function bootstrap() {
     bodyParser: false,
   });
   app.enableCors();
+
   app.useGlobalPipes(new ValidationPipe(AppValidationPipeOptions));
 
   // for development only! for DI debuging!

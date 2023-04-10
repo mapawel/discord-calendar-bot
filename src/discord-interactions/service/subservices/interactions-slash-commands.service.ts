@@ -32,7 +32,7 @@ export class IntegrationSlashCommandsService {
     }
   }
 
-  async responseForMeetingInit(
+  async getMeetingInit(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -48,7 +48,7 @@ export class IntegrationSlashCommandsService {
         await this.responseComponentsProvider.generateInteractionResponse({
           id,
           token,
-          type: 4,
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           content: 'Choose a person to meet with:',
           components: foundUser?.mentors.map((connectedUser: AppUserDTO) => ({
             ...commandsComponents.mentorToMeetWithButton[0],
@@ -60,7 +60,7 @@ export class IntegrationSlashCommandsService {
         await this.responseComponentsProvider.generateInteractionResponse({
           id,
           token,
-          type: 4,
+          type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
           content:
             'You have no contacts to meet with. Please contact an admin.',
         });
@@ -85,7 +85,7 @@ export class IntegrationSlashCommandsService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 4,
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         components: authButtonComponent.map((component) => ({
           ...component,
           url: `${process.env.APP_BASE_URL}${AppRoutes.LOGIN_CONTROLLER}${AppRoutes.LOGIN_METHOD}?id=${discordUser.id}`,
@@ -98,7 +98,7 @@ export class IntegrationSlashCommandsService {
     }
   }
 
-  async managingBot(
+  async manageBot(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -109,9 +109,9 @@ export class IntegrationSlashCommandsService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 4,
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         content: this.findContent(commands, Commands.BOT_MANAGE),
-        components: commandsComponents.managingBot,
+        components: commandsComponents.manageBot,
       });
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, {
@@ -131,7 +131,7 @@ export class IntegrationSlashCommandsService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 4,
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         content: 'No action implemented for this command yet.',
       });
     } catch (err: any) {

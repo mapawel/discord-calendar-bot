@@ -4,7 +4,7 @@ export const commandsSelectComponents: Record<
   string,
   [AppCommandSelectComponent]
 > = {
-  managingBotSelectMentorToConnect: [
+  manageBotSelectMentorToConnect: [
     {
       type: 3,
       custom_id: CommandsSelectComponents.SELECT_MENTOR_TO_CONNECT,
@@ -21,7 +21,7 @@ export const commandsSelectComponents: Record<
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'settingUserConHostSelected',
+      controller_service_method: 'setUserConHostSelected',
     },
   ],
   meetingDetailsTopics: [
@@ -56,7 +56,7 @@ export const commandsSelectComponents: Record<
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: [],
       whitelisting_guard_rule: 'isWhitelisted',
-      controller_service_method: 'meetingDetailsTopicCallback',
+      controller_service_method: 'getMeetingSelectTopic',
     },
   ],
   meetingDetailsDuration: [
@@ -86,7 +86,7 @@ export const commandsSelectComponents: Record<
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: [],
       whitelisting_guard_rule: 'isWhitelisted',
-      controller_service_method: 'meetingDetailsDurationCallback',
+      controller_service_method: 'getMeetingSelectDuration',
     },
   ],
   meetingDetailsTime: [
@@ -106,7 +106,7 @@ export const commandsSelectComponents: Record<
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: [],
       whitelisting_guard_rule: 'isWhitelisted',
-      controller_service_method: 'meetingDetailsTimeCallback',
+      controller_service_method: 'getMeetingSelectTime',
     },
   ],
 };
@@ -126,8 +126,8 @@ export type AppCommandSelectComponent = {
   role_guard_rules: ('Mentor' | 'Calendar-bot-admin')[]; // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
   whitelisting_guard_rule: 'isWhitelisted' | 'notWhitelisted';
   controller_service_method:
-    | 'settingUserConHostSelected'
-    | 'meetingDetailsTopicCallback'
-    | 'meetingDetailsDurationCallback'
-    | 'meetingDetailsTimeCallback';
+    | 'setUserConHostSelected'
+    | 'getMeetingSelectTopic'
+    | 'getMeetingSelectDuration'
+    | 'getMeetingSelectTime';
 };

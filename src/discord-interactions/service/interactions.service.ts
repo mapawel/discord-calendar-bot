@@ -7,6 +7,7 @@ import { ResponseComponentsProvider } from './response-components.provider';
 import { InteractionMessageDTO } from '../dto/Interaction-message.dto';
 import { InteractionComponentDTO } from '../dto/Interaction-component.dto';
 import { DiscordInteractionException } from '../exception/Discord-interaction.exception';
+import { InteractionResponseType } from 'discord-interactions';
 
 @Injectable()
 export class IntegrationService {
@@ -25,7 +26,7 @@ export class IntegrationService {
     }
   }
 
-  public async managingBot(
+  public async manageBot(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -33,7 +34,7 @@ export class IntegrationService {
     id: string,
   ) {
     try {
-      return await this.integrationSlashCommandsService.managingBot(
+      return await this.integrationSlashCommandsService.manageBot(
         discordUser,
         values,
         token,
@@ -65,7 +66,7 @@ export class IntegrationService {
     }
   }
 
-  public async responseForMeetingInit(
+  public async getMeetingInit(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -73,7 +74,7 @@ export class IntegrationService {
     id: string,
   ) {
     try {
-      return await this.integrationSlashCommandsService.responseForMeetingInit(
+      return await this.integrationSlashCommandsService.getMeetingInit(
         discordUser,
         values,
         token,
@@ -85,7 +86,7 @@ export class IntegrationService {
     }
   }
 
-  public async meetingChooseMentorCallback(
+  public async getMeetingSelectMentor(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -93,7 +94,7 @@ export class IntegrationService {
     id: string,
   ) {
     try {
-      return await this.interactionsGetMeetingService.meetingChooseMentorCallback(
+      return await this.interactionsGetMeetingService.getMeetingSelectMentor(
         discordUser,
         values,
         token,
@@ -105,7 +106,7 @@ export class IntegrationService {
     }
   }
 
-  public async meetingDetailsTopicCallback(
+  public async getMeetingSelectTopic(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -115,7 +116,7 @@ export class IntegrationService {
     message: InteractionMessageDTO,
   ) {
     try {
-      return await this.interactionsGetMeetingService.meetingDetailsTopicCallback(
+      return await this.interactionsGetMeetingService.getMeetingSelectTopic(
         discordUser,
         values,
         token,
@@ -129,7 +130,7 @@ export class IntegrationService {
     }
   }
 
-  public async meetingDetailsDurationCallback(
+  public async getMeetingSelectDuration(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -139,7 +140,7 @@ export class IntegrationService {
     message: InteractionMessageDTO,
   ) {
     try {
-      return await this.interactionsGetMeetingService.meetingDetailsDurationCallback(
+      return await this.interactionsGetMeetingService.getMeetingSelectDuration(
         discordUser,
         values,
         token,
@@ -153,7 +154,7 @@ export class IntegrationService {
     }
   }
 
-  public async meetingDetailsTimeCallback(
+  public async getMeetingSelectTime(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -163,7 +164,7 @@ export class IntegrationService {
     message: InteractionMessageDTO,
   ) {
     try {
-      return await this.interactionsGetMeetingService.meetingDetailsTimeCallback(
+      return await this.interactionsGetMeetingService.getMeetingSelectTime(
         discordUser,
         values,
         token,
@@ -177,7 +178,7 @@ export class IntegrationService {
     }
   }
 
-  public async addingUserToWhitelist(
+  public async addUserToWhitelist(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -185,7 +186,7 @@ export class IntegrationService {
     id: string,
   ) {
     try {
-      return await this.interactionsBotManagingService.addingUserToWhitelist(
+      return await this.interactionsBotManagingService.addUserToWhitelist(
         discordUser,
         values,
         token,
@@ -197,7 +198,7 @@ export class IntegrationService {
     }
   }
 
-  public async addingUserToWhitelistCallback(
+  public async addUserToWhitelistCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -206,7 +207,7 @@ export class IntegrationService {
     components: InteractionComponentDTO[],
   ) {
     try {
-      return await this.interactionsBotManagingService.addingUserToWhitelistCallback(
+      return await this.interactionsBotManagingService.addUserToWhitelistCallback(
         discordUser,
         values,
         token,
@@ -219,7 +220,7 @@ export class IntegrationService {
     }
   }
 
-  public async removingUserFromWhitelist(
+  public async removeUserFromWhitelist(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -227,7 +228,7 @@ export class IntegrationService {
     id: string,
   ) {
     try {
-      return await this.interactionsBotManagingService.removingUserFromWhitelist(
+      return await this.interactionsBotManagingService.removeUserFromWhitelist(
         discordUser,
         values,
         token,
@@ -239,7 +240,7 @@ export class IntegrationService {
     }
   }
 
-  public async removingUserFromWhitelistCallback(
+  public async removeUserFromWhitelistCallback(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -248,7 +249,7 @@ export class IntegrationService {
     components: InteractionComponentDTO[],
   ) {
     try {
-      return await this.interactionsBotManagingService.removingUserFromWhitelistCallback(
+      return await this.interactionsBotManagingService.removeUserFromWhitelistCallback(
         discordUser,
         values,
         token,
@@ -261,7 +262,7 @@ export class IntegrationService {
     }
   }
 
-  public async settingUserConnections(
+  public async setUserConnections(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -269,7 +270,7 @@ export class IntegrationService {
     id: string,
   ) {
     try {
-      return await this.interactionsBotManagingService.settingUserConnections(
+      return await this.interactionsBotManagingService.setUserConnections(
         discordUser,
         values,
         token,
@@ -281,7 +282,7 @@ export class IntegrationService {
     }
   }
 
-  public async settingUserConUserSelected(
+  public async setUserConUserSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -290,7 +291,7 @@ export class IntegrationService {
     components: InteractionComponentDTO[],
   ) {
     try {
-      return await this.interactionsBotManagingService.settingUserConUserSelected(
+      return await this.interactionsBotManagingService.setUserConUserSelected(
         discordUser,
         values,
         token,
@@ -303,7 +304,7 @@ export class IntegrationService {
     }
   }
 
-  public async settingUserConHostSelected(
+  public async setUserConHostSelected(
     discordUser: DiscordUserDTO,
     values: string[],
     token: string,
@@ -313,7 +314,7 @@ export class IntegrationService {
     message: InteractionMessageDTO,
   ) {
     try {
-      return await this.interactionsBotManagingService.settingUserConHostSelected(
+      return await this.interactionsBotManagingService.setUserConHostSelected(
         discordUser,
         values,
         token,
@@ -358,7 +359,7 @@ export class IntegrationService {
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
-        type: 4,
+        type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
         content: 'No action implemented for await this command yet.',
       });
     } catch (err: any) {

@@ -147,7 +147,9 @@ export class UsersService {
         throw Error('User or host not found');
       }
 
-      const usersCalendar: HostCalendar | null = await HostCalendar.findByPk(hostDId);
+      const usersCalendar: HostCalendar | null = await HostCalendar.findByPk(
+        hostDId,
+      );
       if (!usersCalendar)
         error =
           "Host didn't auth the app and connect his calander yet. Let him know about this fact to book a meeting!";

@@ -1,7 +1,7 @@
 import { CommandsComponents } from '../enums/commands-components.enum';
 
 export const commandsComponents: Record<string, AppCommandComponent[]> = {
-  managingBot: [
+  manageBot: [
     {
       type: 2,
       label: 'add user to whitelist',
@@ -10,7 +10,7 @@ export const commandsComponents: Record<string, AppCommandComponent[]> = {
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'addingUserToWhitelist',
+      controller_service_method: 'addUserToWhitelist',
     },
     {
       type: 2,
@@ -20,7 +20,7 @@ export const commandsComponents: Record<string, AppCommandComponent[]> = {
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'removingUserFromWhitelist',
+      controller_service_method: 'removeUserFromWhitelist',
     },
     {
       type: 2,
@@ -30,7 +30,7 @@ export const commandsComponents: Record<string, AppCommandComponent[]> = {
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: ['Calendar-bot-admin', 'Mentor'],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'settingUserConnections',
+      controller_service_method: 'setUserConnections',
     },
     {
       type: 2,
@@ -52,7 +52,7 @@ export const commandsComponents: Record<string, AppCommandComponent[]> = {
       authenticated_guard_rule: 'isAuthenticated',
       role_guard_rules: [],
       whitelisting_guard_rule: 'notWhitelisted',
-      controller_service_method: 'meetingChooseMentorCallback',
+      controller_service_method: 'getMeetingSelectMentor',
     },
   ],
 };
@@ -66,10 +66,10 @@ export type AppCommandComponent = {
   role_guard_rules: ('Mentor' | 'Calendar-bot-admin')[]; // !!USE ROLE NAMES FROM DISCORD OR CHANGE NAMES IN THIS FILE! ROLE IDS ARE MANAGED BY THIS APP AND YOU DONT HAVE TO KNOW THEM!!
   whitelisting_guard_rule: 'isWhitelisted' | 'notWhitelisted';
   controller_service_method:
-    | 'addingUserToWhitelist'
-    | 'removingUserFromWhitelist'
-    | 'settingUserConnections'
-    | 'meetingChooseMentorCallback'
+    | 'addUserToWhitelist'
+    | 'removeUserFromWhitelist'
+    | 'setUserConnections'
+    | 'getMeetingSelectMentor'
     | 'authenticate'
     | 'displayWhitelist';
   url?: string;
