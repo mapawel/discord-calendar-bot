@@ -52,9 +52,10 @@ export class HostCalendarService {
   public async getMeetingTimeProposals(
     hostDId: string,
     durationMs: number,
-    resolutionFactor: 0.5 | 1 = 0.5,
   ): Promise<{ data: FreeBusyRanges; error: string }> {
     try {
+      const resolutionFactor: 0.5 | 1 = this.getResolutionFactor();
+
       const hostCalendar = await HostCalendar.findByPk(hostDId);
       if (!hostCalendar)
         return {
@@ -160,11 +161,9 @@ export class HostCalendarService {
     }
   }
 
-  private async getMeetingWindows(
-    hostDId: string,
-    daysRangeNo = 4,
-  ): Promise<FreeBusyRanges> {
+  private async getMeetingWindows(hostDId: string): Promise<FreeBusyRanges> {
     try {
+      const daysRangeNo: number = this.getDaysRangeNo();
       const timeMin = new Date().toISOString().toString();
       const timeMax = new Date(Date.now() + daysRangeNo * 24 * 60 * 60 * 1000)
         .toISOString()
@@ -244,5 +243,16 @@ export class HostCalendarService {
     } catch (err: any) {
       throw new HostCalendarException(err?.message, { causeErr: err });
     }
+  }
+
+  private getResolutionFactor() {
+    return (process.env.LOW_RESOLUTION_OF_MEETING_TIMERANGE_PROPOSALS || '') ==
+      'true'
+      ? 1
+      : 0.5;
+  }
+
+  private getDaysRangeNo() {
+    return parseInt(process.env.DAYS_NO_FOR_MEETING_PROPOSAL || '') || 4;
   }
 }

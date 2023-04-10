@@ -64,6 +64,7 @@ export class GoogleApiService {
       const currentCalendar: HostCalendar | null = await HostCalendar.findOne({
         where: { calendarId },
       });
+
       if (!currentCalendar?.googleRefreshToken)
         throw new Error('Calendar access cannot be refreshed');
       const { googleRefreshToken }: { googleRefreshToken: string } =

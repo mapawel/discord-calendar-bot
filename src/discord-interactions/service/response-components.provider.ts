@@ -1,11 +1,14 @@
 import { Injectable } from '@nestjs/common';
-import { InteractionResponseType } from 'discord-interactions';
-import { DiscordApiService } from 'src/APIs/Discord-api.service';
+import { DiscordApiService } from '../../APIs/Discord-api.service';
 import { DiscordInteractionException } from '../exception/Discord-interaction.exception';
-import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
-import { AppAllCommandComponentsType } from 'src/app-SETUP/lists/types/App-all-types-component.type';
+import { AppAllCommandComponentsType } from '../../app-SETUP/lists/types/App-all-types-component.type';
 import { AxiosResponse } from 'axios';
-import { isStatusValid } from 'src/APIs/APIs.helpers';
+import { isStatusValid } from '../../APIs/APIs.helpers';
+import { InteractionModalComponentArgs } from '../types/Interaction-modal-component-args.type';
+import {
+  InteractionResponseArgs,
+  InteractionResponseMultilineArgs,
+} from '../types/Interaction-response-components.type';
 
 @Injectable()
 export class ResponseComponentsProvider {
@@ -18,16 +21,7 @@ export class ResponseComponentsProvider {
     content,
     componentsArrays,
     embed,
-  }: {
-    id: string;
-    token: string;
-    type:
-      | InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
-      | InteractionResponseType.UPDATE_MESSAGE;
-    content?: string;
-    componentsArrays?: AppAllCommandComponentsType[][];
-    embed?: { title: string; fields: { name: string; value: string }[] };
-  }) {
+  }: InteractionResponseMultilineArgs) {
     try {
       const { status }: AxiosResponse =
         await this.discordApiService.axiosInstance({
@@ -77,16 +71,7 @@ export class ResponseComponentsProvider {
     content,
     components,
     embed,
-  }: {
-    id: string;
-    token: string;
-    type:
-      | InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE
-      | InteractionResponseType.UPDATE_MESSAGE;
-    content?: string;
-    components?: AppAllCommandComponentsType[];
-    embed?: { title: string; fields: { name: string; value: string }[] };
-  }) {
+  }: InteractionResponseArgs) {
     try {
       const { status }: AxiosResponse =
         await this.discordApiService.axiosInstance({
@@ -133,11 +118,7 @@ export class ResponseComponentsProvider {
     id,
     token,
     component,
-  }: {
-    id: string;
-    token: string;
-    component: AppCommandModalComponent[];
-  }) {
+  }: InteractionModalComponentArgs) {
     const [data] = component;
     try {
       const { status }: AxiosResponse =
