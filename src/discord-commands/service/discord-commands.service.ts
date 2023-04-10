@@ -4,12 +4,14 @@ import { commands } from '../../app-SETUP/lists/commands.list';
 import { DiscordCommandsException } from '../exception/Discord-commands.exception';
 import { AppCommand } from '../../app-SETUP/lists/commands.list';
 import { isStatusValid } from '../../APIs/APIs.helpers';
+import { AppCommandWithId } from '../types/AppCommandWithId.type';
+import { DiscordRequestArgs } from '../types/Discord-request-args.type';
 
 @Injectable()
 export class DiscordCommandsService {
   constructor(private readonly discordApiService: DiscordApiService) {}
 
-  public async commandsInit(commands: AppCommand[]) {
+  public async commandsInit(commands: AppCommand[]): Promise<void> {
     try {
       // const existingCommands = await this.getExistingCommands();
       // console.log('initialized discord commands ----> ', existingCommands);
@@ -28,7 +30,7 @@ export class DiscordCommandsService {
     }
   }
 
-  private async getExistingCommands() {
+  private async getExistingCommands(): Promise<AppCommandWithId[]> {
     try {
       return await this.discordRequest({
         method: 'GET',
@@ -39,9 +41,9 @@ export class DiscordCommandsService {
     }
   }
 
-  private async addCommand(command: AppCommand) {
+  private async addCommand(command: AppCommand): Promise<void> {
     try {
-      return await this.discordRequest({
+      await this.discordRequest({
         method: 'POST',
         data: command,
         url: '',
@@ -51,9 +53,9 @@ export class DiscordCommandsService {
     }
   }
 
-  private async deleteCommand(id: string) {
+  private async deleteCommand(id: string): Promise<void> {
     try {
-      return await this.discordRequest({
+      await this.discordRequest({
         method: 'DELETE',
         url: `/${id}`,
       });
@@ -66,11 +68,7 @@ export class DiscordCommandsService {
     method,
     data,
     url,
-  }: {
-    method: 'GET' | 'POST' | 'DELETE';
-    data?: AppCommand;
-    url?: string;
-  }): Promise<AppCommand & { id: string }[]> {
+  }: DiscordRequestArgs): Promise<AppCommandWithId[]> {
     try {
       const response = await this.discordApiService.axiosInstance({
         method,

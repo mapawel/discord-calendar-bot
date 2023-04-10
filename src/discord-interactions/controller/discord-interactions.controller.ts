@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards, UseFilters } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards } from '@nestjs/common';
 import { IntegrationService } from '../service/interactions.service';
 import { MappedInteractionDTO } from '../dto/Interaction.dto';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
@@ -8,7 +8,7 @@ import { WhitelistGuard } from '../../guards/whitelist.guard';
 import { commands } from '../../app-SETUP/lists/commands.list';
 import { allCommandsComponents } from '../components-operations/discord-component-operations.helper';
 import { getInteractionSettingObject } from '../components-operations/discord-component-operations.helper';
-// import { AppErrorsFilter } from '../../exception-filters/app-errors.filter';
+import { InteractionBodyFieldsType } from '../types/Body-fields.type';
 
 @Controller()
 export class DiscordInteractionController {
@@ -18,7 +18,6 @@ export class DiscordInteractionController {
   @UseGuards(WhitelistGuard)
   @UseGuards(RolesdGuard)
   @UseGuards(AuthenticatedGuard)
-  // @UseFilters(AppErrorsFilter)
   async interactionsHandler(
     @Body()
     body: MappedInteractionDTO,
@@ -28,9 +27,19 @@ export class DiscordInteractionController {
       token,
       type,
       data: { name, custom_id, values, components },
-      discord_usr,
+      discordUser,
       message,
     } = body;
+
+    const interactionBodyFields: InteractionBodyFieldsType = {
+      discordUser,
+      values: values || [],
+      token,
+      custom_id: custom_id || '',
+      id,
+      components: components || [],
+      message,
+    };
 
     if (type === 1) return this.interactionService.responseWithPong();
 
@@ -45,14 +54,6 @@ export class DiscordInteractionController {
     const serviceMethod =
       interactionSettingObject?.controller_service_method || 'default';
 
-    return await this.interactionService[serviceMethod](
-      discord_usr,
-      values || [],
-      token,
-      custom_id || '',
-      id,
-      components || [],
-      message,
-    );
+    return await this.interactionService[serviceMethod](interactionBodyFields);
   }
 }

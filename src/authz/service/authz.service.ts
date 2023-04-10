@@ -50,7 +50,7 @@ export class AuthzService {
     }
   }
 
-  public async getToken(code: string, state: string) {
+  public async getToken(code: string, state: string): Promise<void> {
     try {
       const { id, isHost } = await this.jwtService.verifyAsync(state);
       const { data, status }: AxiosResponse =
@@ -105,7 +105,7 @@ export class AuthzService {
     }
   }
 
-  private async handleHostLogin(dId: string, aId: string) {
+  private async handleHostLogin(dId: string, aId: string): Promise<void> {
     try {
       const currentCalendar: HostCalendar | null = await HostCalendar.findOne({
         where: { dId },

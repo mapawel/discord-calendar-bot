@@ -14,7 +14,7 @@ export class RolesdGuard implements CanActivate {
       const {
         body: {
           type,
-          discord_usr: { id },
+          discordUser: { id },
           data: { name, custom_id },
         },
       }: { body: MappedInteractionDTO } = context.switchToHttp().getRequest();

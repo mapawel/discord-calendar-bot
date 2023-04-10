@@ -9,9 +9,9 @@ import { settings } from '../../../app-SETUP/settings';
 import { InteractionMessageDTO } from '../../../discord-interactions/dto/Interaction-message.dto';
 import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
 import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
-import { InteractionComponentDTO } from '../../../discord-interactions/dto/Interaction-component.dto';
 import { DiscordInteractionException } from '../../../discord-interactions/exception/Discord-interaction.exception';
 import { InteractionResponseType } from 'discord-interactions';
+import { InteractionBodyFieldsType } from 'src/discord-interactions/types/Body-fields.type';
 
 @Injectable()
 export class InteractionsBotManagingService {
@@ -21,13 +21,12 @@ export class InteractionsBotManagingService {
   ) {}
 
   public async addUserToWhitelist(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       await this.responseComponentsProvider.generateOneInputModal({
         id,
         token,
@@ -39,14 +38,12 @@ export class InteractionsBotManagingService {
   }
 
   public async addUserToWhitelistCallback(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token, components }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       const userId: string | undefined =
         components?.[0]?.components?.[0]?.value ||
         'not parsed to int and throws error';
@@ -70,13 +67,12 @@ export class InteractionsBotManagingService {
   }
 
   public async removeUserFromWhitelist(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       const usersToShow: AppUserDTO[] =
         await this.usersService.getAllWhitelistedUsers();
 
@@ -101,14 +97,12 @@ export class InteractionsBotManagingService {
   }
 
   public async removeUserFromWhitelistCallback(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token, components }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       const idToRemove: string | undefined =
         components?.[0]?.components?.[0]?.value ||
         'not parsed to int throws error';
@@ -128,13 +122,12 @@ export class InteractionsBotManagingService {
   }
 
   public async setUserConnections(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       await this.responseComponentsProvider.generateOneInputModal({
         id,
         token,
@@ -146,14 +139,12 @@ export class InteractionsBotManagingService {
   }
 
   public async setUserConUserSelected(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token, components }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       const userToConnectId: string | undefined =
         components?.[0]?.components?.[0]?.value ||
         'not parsed to int throws error';
@@ -205,15 +196,12 @@ export class InteractionsBotManagingService {
   }
 
   public async setUserConHostSelected(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
-    message: InteractionMessageDTO,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token, values, message }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       const [mentorToConnectId] = values;
       const currentEmbedFields: InteractionEmbedFieldDTO[] =
         this.extractFieldsFromMessage(message);
@@ -251,13 +239,12 @@ export class InteractionsBotManagingService {
   }
 
   public async displayWhitelist(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       const usersToShow: AppUserDTO[] =
         await this.usersService.getAllWhitelistedUsers();
 

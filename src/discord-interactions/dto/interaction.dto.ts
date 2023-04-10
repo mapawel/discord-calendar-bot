@@ -22,7 +22,7 @@ export class MappedInteractionDTO {
   @Type(() => InteractionDataDTO)
   data: InteractionDataDTO;
 
-  discord_usr: DiscordUserDTO;
+  discordUser: DiscordUserDTO;
   message: InteractionMessageDTO;
 }
 

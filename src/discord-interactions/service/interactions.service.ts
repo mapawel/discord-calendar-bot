@@ -1,13 +1,11 @@
 import { Injectable } from '@nestjs/common';
-import { DiscordUserDTO } from '../dto/Discord-user.dto';
 import { IntegrationSlashCommandsService } from './subservices/interactions-slash-commands.service';
 import { InteractionsGetMeetingService } from './subservices/interactions-get-meeting.service';
 import { InteractionsBotManagingService } from './subservices/interactions-bot-managing.service';
 import { ResponseComponentsProvider } from './response-components.provider';
-import { InteractionMessageDTO } from '../dto/Interaction-message.dto';
-import { InteractionComponentDTO } from '../dto/Interaction-component.dto';
 import { DiscordInteractionException } from '../exception/Discord-interaction.exception';
 import { InteractionResponseType } from 'discord-interactions';
+import { InteractionBodyFieldsType } from '../types/Body-fields.type';
 
 @Injectable()
 export class IntegrationService {
@@ -26,20 +24,10 @@ export class IntegrationService {
     }
   }
 
-  public async manageBot(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-  ) {
+  public async manageBot(interactionBodyFieldsType: InteractionBodyFieldsType) {
     try {
       return await this.integrationSlashCommandsService.manageBot(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -47,19 +35,11 @@ export class IntegrationService {
   }
 
   public async authenticate(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.integrationSlashCommandsService.authenticate(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -67,19 +47,11 @@ export class IntegrationService {
   }
 
   public async getMeetingInit(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.integrationSlashCommandsService.getMeetingInit(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -87,19 +59,11 @@ export class IntegrationService {
   }
 
   public async getMeetingSelectMentor(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsGetMeetingService.getMeetingSelectMentor(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -107,23 +71,11 @@ export class IntegrationService {
   }
 
   public async getMeetingSelectTopic(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
-    message: InteractionMessageDTO,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsGetMeetingService.getMeetingSelectTopic(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
-        components,
-        message,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -131,23 +83,11 @@ export class IntegrationService {
   }
 
   public async getMeetingSelectDuration(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
-    message: InteractionMessageDTO,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsGetMeetingService.getMeetingSelectDuration(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
-        components,
-        message,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -155,23 +95,11 @@ export class IntegrationService {
   }
 
   public async getMeetingSelectTime(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
-    message: InteractionMessageDTO,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsGetMeetingService.getMeetingSelectTime(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
-        components,
-        message,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -179,19 +107,11 @@ export class IntegrationService {
   }
 
   public async addUserToWhitelist(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsBotManagingService.addUserToWhitelist(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -199,21 +119,11 @@ export class IntegrationService {
   }
 
   public async addUserToWhitelistCallback(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsBotManagingService.addUserToWhitelistCallback(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
-        components,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -221,19 +131,11 @@ export class IntegrationService {
   }
 
   public async removeUserFromWhitelist(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsBotManagingService.removeUserFromWhitelist(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -241,21 +143,11 @@ export class IntegrationService {
   }
 
   public async removeUserFromWhitelistCallback(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsBotManagingService.removeUserFromWhitelistCallback(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
-        components,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -263,19 +155,11 @@ export class IntegrationService {
   }
 
   public async setUserConnections(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsBotManagingService.setUserConnections(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -283,21 +167,11 @@ export class IntegrationService {
   }
 
   public async setUserConUserSelected(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsBotManagingService.setUserConUserSelected(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
-        components,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -305,23 +179,11 @@ export class IntegrationService {
   }
 
   public async setUserConHostSelected(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
-    message: InteractionMessageDTO,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsBotManagingService.setUserConHostSelected(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
-        components,
-        message,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
@@ -329,33 +191,22 @@ export class IntegrationService {
   }
 
   public async displayWhitelist(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
       return await this.interactionsBotManagingService.displayWhitelist(
-        discordUser,
-        values,
-        token,
-        custom_id,
-        id,
+        interactionBodyFieldsType,
       );
     } catch (err: any) {
       throw new DiscordInteractionException(err.message, { causeErr: err });
     }
   }
 
-  public async default(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-  ) {
+  public async default(interactionBodyFieldsType: InteractionBodyFieldsType) {
     try {
+      const { id, token }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,

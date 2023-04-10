@@ -15,7 +15,7 @@ export class AuthenticatedGuard implements CanActivate {
     try {
       const {
         body: {
-          discord_usr,
+          discordUser,
           type,
           data: { name, custom_id },
         },
@@ -32,7 +32,7 @@ export class AuthenticatedGuard implements CanActivate {
       const serviceMethod =
         interactionSettingObject?.authenticated_guard_rule || 'default';
 
-      return await this.authenticatedGuardService[serviceMethod](discord_usr);
+      return await this.authenticatedGuardService[serviceMethod](discordUser);
     } catch (err: any) {
       throw new AuthenticatedGuarsServiceException(err.message, {
         causeErr: err,

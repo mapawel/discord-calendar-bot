@@ -12,7 +12,7 @@ export class MapDiscUserMiddleware implements NestMiddleware {
     const body: InteractionWMemberDTO | InteractionWUserDTO = req.body;
     const discordUser: DiscordUserDTO = body.user || body.member?.user;
 
-    req.body.discord_usr = discordUser;
+    req.body.discordUser = discordUser;
 
     next();
   }

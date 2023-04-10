@@ -1,5 +1,4 @@
 import { Injectable } from '@nestjs/common';
-import { DiscordUserDTO } from '../../../discord-interactions/dto/Discord-user.dto';
 import { AppUserDTO } from '../../../users/dto/App-user.dto';
 import { UsersService } from '../../../users/providers/users.service';
 import { commandsSelectComponents } from '../../../app-SETUP/lists/commands-select-components.list';
@@ -12,9 +11,9 @@ import { InteractionMessageDTO } from '../../../discord-interactions/dto/Interac
 import { embedTitles } from '../../../app-SETUP/lists/embed-titles.list';
 import { InteractionEmbedFieldDTO } from '../../../discord-interactions/dto/Interaction-embed-field.dto';
 import { EmbedFieldsMeeting } from '../../../discord-interactions/Meeting/EmbedFieldsMeeting.type';
-import { InteractionComponentDTO } from 'src/discord-interactions/dto/Interaction-component.dto';
 import { DiscordInteractionException } from '../../../discord-interactions/exception/Discord-interaction.exception';
 import { InteractionResponseType } from 'discord-interactions';
+import { InteractionBodyFieldsType } from 'src/discord-interactions/types/Body-fields.type';
 
 @Injectable()
 export class InteractionsGetMeetingService {
@@ -25,13 +24,12 @@ export class InteractionsGetMeetingService {
   ) {}
 
   async getMeetingSelectMentor(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { discordUser, id, token, custom_id }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       const userDId: string = discordUser.id;
       const hostDId: string = custom_id.split(':')[1];
 
@@ -75,15 +73,12 @@ export class InteractionsGetMeetingService {
   }
 
   public async getMeetingSelectTopic(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
-    message: InteractionMessageDTO,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token, values, message }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       const topic: string = values[0];
       const currentEmbedFields: InteractionEmbedFieldDTO[] =
         this.extractFieldsFromMessage(message);
@@ -111,15 +106,12 @@ export class InteractionsGetMeetingService {
   }
 
   public async getMeetingSelectDuration(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
-    message: InteractionMessageDTO,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token, values, message }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       const durationMs = Number(values[0]);
       const currentEmbedFields = this.extractFieldsFromMessage(message);
       const hostDId: string = currentEmbedFields[0].value;
@@ -171,15 +163,12 @@ export class InteractionsGetMeetingService {
   }
 
   async getMeetingSelectTime(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-    components: InteractionComponentDTO[],
-    message: InteractionMessageDTO,
+    interactionBodyFieldsType: InteractionBodyFieldsType,
   ) {
     try {
+      const { id, token, values, message }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       const start: string = values[0].split('/')[0];
       const end: string = values[0].split('/')[1];
       const currentEmbedFields = this.extractFieldsFromMessage(message);

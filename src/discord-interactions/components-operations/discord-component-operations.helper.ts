@@ -1,10 +1,10 @@
 import { commandsComponents } from '../../app-SETUP/lists/commands-components.list';
 import { commandsSelectComponents } from '../../app-SETUP/lists/commands-select-components.list';
-import { commandsModalComponents } from 'src/app-SETUP/lists/commands-modal-components.list';
+import { commandsModalComponents } from '../../app-SETUP/lists/commands-modal-components.list';
 import { AppCommandComponent } from '../../app-SETUP/lists/commands-components.list';
 import { AppCommandSelectComponent } from '../../app-SETUP/lists/commands-select-components.list';
-import { AppCommandModalComponent } from 'src/app-SETUP/lists/commands-modal-components.list';
-import { AppCommand } from 'src/app-SETUP/lists/commands.list';
+import { AppCommandModalComponent } from '../../app-SETUP/lists/commands-modal-components.list';
+import { AppCommand } from '../../app-SETUP/lists/commands.list';
 
 type CommandComponentsType = (
   | AppCommandComponent

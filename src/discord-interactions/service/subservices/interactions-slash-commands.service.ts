@@ -1,6 +1,5 @@
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
-import { DiscordUserDTO } from '../../dto/Discord-user.dto';
 import { AppUserDTO } from '../../../users/dto/App-user.dto';
 import { AppRoutes } from '../../../routes/routes.enum';
 import { commandsComponents } from '../../../app-SETUP/lists/commands-components.list';
@@ -12,6 +11,7 @@ import { ResponseComponentsProvider } from '../response-components.provider';
 import { CommandsComponents } from '../../../app-SETUP/enums/commands-components.enum';
 import { authButtonComponent } from '../../../app-SETUP/lists/auth-button-component.list';
 import { DiscordInteractionException } from '../../../discord-interactions/exception/Discord-interaction.exception';
+import { InteractionBodyFieldsType } from 'src/discord-interactions/types/Body-fields.type';
 
 @Injectable()
 export class IntegrationSlashCommandsService {
@@ -32,14 +32,10 @@ export class IntegrationSlashCommandsService {
     }
   }
 
-  async getMeetingInit(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-  ) {
+  async getMeetingInit(interactionBodyFieldsType: InteractionBodyFieldsType) {
     try {
+      const { discordUser, id, token }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
       const foundUser: AppUserDTO | undefined =
         await this.usersService.getUserByDId(discordUser.id);
       if (!foundUser) throw new NotFoundException('User not found!');
@@ -72,14 +68,11 @@ export class IntegrationSlashCommandsService {
     }
   }
 
-  async authenticate(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-  ) {
+  async authenticate(interactionBodyFieldsType: InteractionBodyFieldsType) {
     try {
+      const { discordUser, id, token }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       await this.usersService.createUserIfNotExisting(discordUser);
 
       await this.responseComponentsProvider.generateInteractionResponse({
@@ -98,14 +91,11 @@ export class IntegrationSlashCommandsService {
     }
   }
 
-  async manageBot(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-  ) {
+  async manageBot(interactionBodyFieldsType: InteractionBodyFieldsType) {
     try {
+      const { id, token }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
@@ -120,14 +110,11 @@ export class IntegrationSlashCommandsService {
     }
   }
 
-  public async default(
-    discordUser: DiscordUserDTO,
-    values: string[],
-    token: string,
-    custom_id: string,
-    id: string,
-  ) {
+  public async default(interactionBodyFieldsType: InteractionBodyFieldsType) {
     try {
+      const { id, token }: InteractionBodyFieldsType =
+        interactionBodyFieldsType;
+
       await this.responseComponentsProvider.generateInteractionResponse({
         id,
         token,
