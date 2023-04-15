@@ -189,7 +189,6 @@ export class UsersRepository {
           targetUserId: targetUser.dId,
         },
       });
-
       if (found) {
         await found.update({ targetUserId: targetUser.dId });
       } else {
