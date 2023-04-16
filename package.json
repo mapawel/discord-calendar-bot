@@ -41,6 +41,7 @@
     "express-session": "^1.17.3",
     "jsonwebtoken": "^9.0.0",
     "jwks-rsa": "^3.0.1",
+    "nock": "^13.3.0",
     "passport": "^0.6.0",
     "passport-jwt": "^4.0.1",
     "reflect-metadata": "^0.1.13",

@@ -1,5 +1,6 @@
 import { AppUser } from '../../entity/App-user.entity';
 import { AppUserDTO } from '../../dto/App-user.dto';
+import { HostCalendar } from '../../../Host-calendar/entity/Host-calendar.entity';
 
 export class UsersTestSetup {
   public mockUser1 = {
@@ -85,9 +86,29 @@ export class UsersTestSetup {
     username: 'testUsername2',
   };
 
+  public user1AuthData = {
+    sub: '123|google',
+    name: 'authName',
+    picture: 'https://authPictureLink.jpg',
+    email: 'authEmail',
+  };
+
+  public mockCalendarData = {
+    dId: '123',
+    googleToken: 'testToken',
+    googleRefreshToken: 'testRefreshToken',
+    calendarId: 'testCalendarId',
+  };
+
   public getMockUser(user: AppUserDTO): AppUser {
     const mockedAppUser: AppUser = new AppUser();
     Object.assign(mockedAppUser, user);
     return mockedAppUser;
+  }
+
+  public getMockCalendar(mockCalendarData: any): HostCalendar {
+    const mockedHostCalendar: HostCalendar = new HostCalendar();
+    Object.assign(mockedHostCalendar, mockCalendarData);
+    return mockedHostCalendar;
   }
 }

@@ -148,7 +148,11 @@ export class UsersService {
   }: {
     userDId: string;
     hostDId: string;
-  }) {
+  }): Promise<{
+    user: AppUserDTO;
+    host: AppUserDTO;
+    error: string | undefined;
+  }> {
     try {
       let error: string | undefined;
       const [user, host]: (AppUserDTO | undefined)[] = await Promise.all(
@@ -170,18 +174,6 @@ export class UsersService {
     } catch (err: any) {
       throw new UsersServiceException(err?.message, { causeErr: err });
     }
-  }
-
-  private filterUsersByRole(
-    data: { roles: string[]; user: DiscordUserDTO }[],
-    roles: string[],
-  ): {
-    roles: string[];
-    user: DiscordUserDTO;
-  }[] {
-    return data.filter((item) => {
-      return item.roles.some((role) => roles.includes(role));
-    });
   }
 
   public async updateUserWhitelistStatus(
@@ -213,6 +205,18 @@ export class UsersService {
     } catch (err: any) {
       throw new UsersServiceException(err?.message, { causeErr: err });
     }
+  }
+
+  private filterUsersByRole(
+    data: { roles: string[]; user: DiscordUserDTO }[],
+    roles: string[],
+  ): {
+    roles: string[];
+    user: DiscordUserDTO;
+  }[] {
+    return data.filter((item) => {
+      return item.roles.some((role) => roles.includes(role));
+    });
   }
 
   async onModuleInit() {
