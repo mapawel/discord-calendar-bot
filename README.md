@@ -11,7 +11,7 @@
 - Class Validator
 - Jest for unit tests
 
-> tests in progress...
+> tests in progress... Then the app will be dockerized and deployed on AWS. Now to run you need to use Ngrok for tunneling and your Auth0 credentials
 
 ------------
 
