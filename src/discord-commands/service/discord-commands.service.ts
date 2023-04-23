@@ -13,18 +13,18 @@ export class DiscordCommandsService {
 
   public async commandsInit(commands: AppCommand[]): Promise<void> {
     try {
-      // const existingCommands = await this.getExistingCommands();
-      // console.log('initialized discord commands ----> ', existingCommands);
-      // await Promise.all(
-      //   existingCommands.map(
-      //     async ({ id }: { id: string }) => await this.deleteCommand(id),
-      //   ),
-      // );
-      // await Promise.all(
-      //   commands.map(
-      //     async (command: AppCommand) => await this.addCommand(command),
-      //   ),
-      // );
+      const existingCommands = await this.getExistingCommands();
+      console.log('initialized discord commands ----> ', existingCommands);
+      await Promise.all(
+        existingCommands.map(
+          async ({ id }: { id: string }) => await this.deleteCommand(id),
+        ),
+      );
+      await Promise.all(
+        commands.map(
+          async (command: AppCommand) => await this.addCommand(command),
+        ),
+      );
     } catch (err: any) {
       throw new DiscordCommandsException(err?.message, { causeErr: err });
     }

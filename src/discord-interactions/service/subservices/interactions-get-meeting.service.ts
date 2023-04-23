@@ -313,8 +313,10 @@ export class InteractionsGetMeetingService {
   private constructShortDate(dateString: string): string {
     return `${new Date(dateString).toLocaleTimeString('pl-PL', {
       timeStyle: 'short',
+      timeZone: 'Europe/Warsaw',
     })}, ${new Date(dateString).toLocaleDateString('pl-PL', {
       dateStyle: 'short',
+      timeZone: 'Europe/Warsaw',
     })}`;
   }
 }
