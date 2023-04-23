@@ -5,18 +5,20 @@ import {
   BadRequestException,
   NotFoundException,
   ForbiddenException,
+  Logger,
 } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
 import { AppError } from '../../App-error/App-error';
 import { ResponseComponentsProvider } from '../service/response-components.provider';
 import { MappedInteractionDTO } from '../dto/Interaction.dto';
 import { makeFlatAppErrorsArr } from 'src/App-error/error.helpers';
-import { logError } from 'src/App-error/error.helpers';
+import { getErrorString } from 'src/App-error/error.helpers';
 
 @Catch()
 export class InteractionsErrorsFilter implements ExceptionFilter {
   constructor(
     private readonly responseComponentsProvider: ResponseComponentsProvider,
+    private readonly logger: Logger,
   ) {}
 
   async catch(exception: AppError, host: ArgumentsHost) {
@@ -26,7 +28,8 @@ export class InteractionsErrorsFilter implements ExceptionFilter {
     }: { body: MappedInteractionDTO } = ctx.getRequest();
     const exceptionsArray: AppError[] = makeFlatAppErrorsArr(exception);
 
-    logError(exceptionsArray);
+    const errorString: string = getErrorString(exceptionsArray);
+    this.logger.error(errorString);
 
     for (const appError of exceptionsArray) {
       if (appError instanceof ForbiddenException)

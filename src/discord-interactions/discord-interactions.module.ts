@@ -1,4 +1,4 @@
-import { MiddlewareConsumer, Module, NestModule } from '@nestjs/common';
+import { MiddlewareConsumer, Module, NestModule, Logger } from '@nestjs/common';
 import { DiscordInteractionController } from './controller/discord-interactions.controller';
 import { IntegrationSlashCommandsService } from './service/subservices/interactions-slash-commands.service';
 import { InteractionService } from './service/interactions.service';
@@ -20,6 +20,7 @@ import { HostCalendarModule } from '../Host-calendar/Host-calendar.module';
   imports: [RolesModule, UsersModule, ApisModule, HostCalendarModule],
   controllers: [DiscordInteractionController],
   providers: [
+    Logger,
     IntegrationSlashCommandsService,
     InteractionService,
     AuthenticatedGuardService,

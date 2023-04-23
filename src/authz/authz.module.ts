@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, Logger } from '@nestjs/common';
 import { PassportModule } from '@nestjs/passport';
 import { JwtStrategy } from './strategies/jwt.strategy';
 import { AuthzService } from './service/authz.service';
@@ -21,7 +21,7 @@ dotenv.config();
     ApisModule,
     HostCalendarModule,
   ],
-  providers: [JwtStrategy, AuthzService],
+  providers: [Logger, JwtStrategy, AuthzService],
   exports: [PassportModule, AuthzService],
 })
 export class AuthzModule {}
