@@ -58,3 +58,5 @@ export class AppUser extends Model {
   )
   students: AppUser[];
 }
+
+export default AppUser;

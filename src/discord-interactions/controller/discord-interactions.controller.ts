@@ -1,4 +1,4 @@
-import { Controller, Post, Body, UseGuards } from '@nestjs/common';
+import { Controller, Post, Body, UseGuards, UseFilters } from '@nestjs/common';
 import { InteractionService } from '../service/interactions.service';
 import { MappedInteractionDTO } from '../dto/Interaction.dto';
 import { AuthenticatedGuard } from '../../guards/authenticated.guard';
@@ -9,12 +9,14 @@ import { commands } from '../../app-SETUP/lists/commands.list';
 import { allCommandsComponents } from '../components-operations/discord-component-operations.helper';
 import { getInteractionSettingObject } from '../components-operations/discord-component-operations.helper';
 import { InteractionBodyFieldsType } from '../types/Body-fields.type';
+import { InteractionsErrorsFilter } from 'src/discord-interactions/filters/interactions-errors.filter';
 
 @Controller()
 export class DiscordInteractionController {
   constructor(private readonly interactionService: InteractionService) {}
 
   @Post(AppRoutes.DISCORD_INTERACTIONS_METHOD)
+  @UseFilters(InteractionsErrorsFilter)
   @UseGuards(WhitelistGuard)
   @UseGuards(RolesdGuard)
   @UseGuards(AuthenticatedGuard)

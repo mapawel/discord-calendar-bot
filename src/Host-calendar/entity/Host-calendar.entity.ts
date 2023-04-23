@@ -16,3 +16,5 @@ export class HostCalendar extends Model {
   @Column
   calendarId: string;
 }
+
+export default HostCalendar;

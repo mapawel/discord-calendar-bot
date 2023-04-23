@@ -10,3 +10,5 @@ export class Role extends Model {
   @Column
   name: string;
 }
+
+export default Role;

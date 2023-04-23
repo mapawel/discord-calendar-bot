@@ -23,3 +23,5 @@ export class AppUsersRelated extends Model {
   @Column
   targetUserId: string;
 }
+
+export default AppUsersRelated;
