@@ -7,12 +7,14 @@ import {
   ForbiddenException,
 } from '@nestjs/common';
 import { InteractionResponseType } from 'discord-interactions';
-import { AppError } from '../App-error/App-error';
-import { ResponseComponentsProvider } from '../discord-interactions/service/response-components.provider';
-import { MappedInteractionDTO } from '../discord-interactions/dto/Interaction.dto';
+import { AppError } from '../../App-error/App-error';
+import { ResponseComponentsProvider } from '../service/response-components.provider';
+import { MappedInteractionDTO } from '../dto/Interaction.dto';
+import { makeFlatAppErrorsArr } from 'src/App-error/error.helpers';
+import { logError } from 'src/App-error/error.helpers';
 
 @Catch()
-export class AppErrorsFilter implements ExceptionFilter {
+export class InteractionsErrorsFilter implements ExceptionFilter {
   constructor(
     private readonly responseComponentsProvider: ResponseComponentsProvider,
   ) {}
@@ -22,10 +24,9 @@ export class AppErrorsFilter implements ExceptionFilter {
     const {
       body: { id, token },
     }: { body: MappedInteractionDTO } = ctx.getRequest();
+    const exceptionsArray: AppError[] = makeFlatAppErrorsArr(exception);
 
-    const exceptionsArray: AppError[] = this.makeFlatAppErrorsArr(exception);
-
-    this.printErrorsToConsole(exceptionsArray);
+    logError(exceptionsArray);
 
     for (const appError of exceptionsArray) {
       if (appError instanceof ForbiddenException)
@@ -65,43 +66,5 @@ export class AppErrorsFilter implements ExceptionFilter {
       type: InteractionResponseType.CHANNEL_MESSAGE_WITH_SOURCE,
       content: 'Server error! Try again later!',
     });
-  }
-
-  private makeFlatAppErrorsArr(appErrorOrginal: any): AppError[] {
-    let errorsArr: AppError[] = [];
-    const run = (appError: AppError) => {
-      errorsArr = [...errorsArr, appError];
-      if (!!appError?.causeErrors) run(appError.causeErrors);
-    };
-    run(appErrorOrginal);
-    return errorsArr;
-  }
-
-  private printErrorsToConsole(exceptionsArray: AppError[]): void {
-    console.log(
-      '\n',
-      '>>>>>          MAIN APP EXCEPTIONS HANDLER:          <<<<<<',
-    );
-    console.log('\n', '> FULL EXCEPTIONS LIST: <', '\n');
-    exceptionsArray.forEach((appError: AppError, i: number) =>
-      console.error(
-        `>>> Error no ${exceptionsArray.length - i}`,
-        appError,
-        '\n',
-      ),
-    );
-    console.log('\n', '> SHORT EXCEPTIONS LIST: <', '\n');
-    exceptionsArray.forEach((appError: AppError, i: number) =>
-      console.error(
-        `>>> Error no ${exceptionsArray.length - i}`,
-        '\n',
-        'Err name -> ',
-        appError.name,
-        '\n',
-        'Err message -> ',
-        appError.message,
-        '\n',
-      ),
-    );
   }
 }

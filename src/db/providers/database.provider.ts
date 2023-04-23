@@ -11,12 +11,13 @@ export const databaseProviders = [
     useFactory: async () => {
       const sequelize = new Sequelize({
         logging: false,
-        dialect: 'sqlite',
-        storage: join(
-          process.cwd(),
-          process.env.DB_FOLDER || 'db',
-          process.env.DB_FILENAME || 'db.sqlite',
-        ),
+        dialect: 'postgres',
+        host: process.env.POSTGRES_DB,
+        port: Number(process.env.DB_PORT),
+        username: process.env.POSTGRES_USER,
+        password: process.env.POSTGRES_PASSWORD,
+        database: process.env.POSTGRES_DB,
+        models: [join(__dirname, '../..', '**/*.entity{.ts,.js}')],
       });
       sequelize.addModels([Role, AppUser, AppUsersRelated, HostCalendar]);
       await sequelize.sync();

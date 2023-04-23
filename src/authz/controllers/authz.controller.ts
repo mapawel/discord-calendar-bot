@@ -1,8 +1,10 @@
-import { Controller, Res, Query, Get } from '@nestjs/common';
+import { Controller, Res, Query, Get, UseFilters } from '@nestjs/common';
 import { Response } from 'express';
 import { AppRoutes } from '../../routes/routes.enum';
 import { AuthzService } from '../service/authz.service';
+import { AuthErrorsFilter } from '../filters/auth-errors.filter';
 
+@UseFilters(AuthErrorsFilter)
 @Controller(AppRoutes.LOGIN_CONTROLLER)
 export class AuthzController {
   constructor(private readonly authzService: AuthzService) {}
