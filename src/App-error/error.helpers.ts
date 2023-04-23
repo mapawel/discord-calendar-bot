@@ -1,27 +1,27 @@
 import { AppError } from './App-error';
 
-export const logError = (exceptionsArray: AppError[]): void => {
-  console.log(
-    '\n',
-    '>>>>>          MAIN APP EXCEPTIONS HANDLER:          <<<<<<',
+export const getErrorString = (exceptionsArray: AppError[]): string => {
+  let errorString = '';
+
+  errorString += `\n >>>>> MAIN APP EXCEPTIONS HANDLER: <<<<<<`;
+  errorString += `\n > FULL EXCEPTIONS LIST: < \n`;
+  exceptionsArray.forEach(
+    (appError: AppError, i: number) =>
+      (errorString += `>>> Error no ${
+        exceptionsArray.length - i
+      } ${appError}\n`),
   );
-  console.log('\n', '> FULL EXCEPTIONS LIST: <', '\n');
-  exceptionsArray.forEach((appError: AppError, i: number) =>
-    console.error(`>>> Error no ${exceptionsArray.length - i}`, appError, '\n'),
+  errorString += `\n > SHORT EXCEPTIONS LIST: < \n`;
+  exceptionsArray.forEach(
+    (appError: AppError, i: number) =>
+      (errorString += `>>> Error no ${
+        exceptionsArray.length - i
+      } \n Err name -> ${appError.name} \n Err message -> ${
+        appError.message
+      } \n`),
   );
-  console.log('\n', '> SHORT EXCEPTIONS LIST: <', '\n');
-  exceptionsArray.forEach((appError: AppError, i: number) =>
-    console.error(
-      `>>> Error no ${exceptionsArray.length - i}`,
-      '\n',
-      'Err name -> ',
-      appError.name,
-      '\n',
-      'Err message -> ',
-      appError.message,
-      '\n',
-    ),
-  );
+
+  return errorString;
 };
 
 export const makeFlatAppErrorsArr = (appErrorOrginal: any): AppError[] => {
